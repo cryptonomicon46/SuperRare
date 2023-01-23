@@ -292,47 +292,6 @@
         "IERC165"
       ]
     },
-    "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SuperRare.sol": {
-      "lastModificationDate": 1674517182015,
-      "contentHash": "2f2adebefdc0244bcc316745a877e027",
-      "sourceName": "contracts/SuperRare.sol",
-      "solcConfig": {
-        "version": "0.7.6",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/math/SafeMath.sol",
-        "@openzeppelin/contracts/utils/Address.sol",
-        "./IERC721Metadata.sol",
-        "./ERC721Token.sol",
-        "./Ownable.sol"
-      ],
-      "versionPragmas": [
-        "=0.7.6"
-      ],
-      "artifacts": [
-        "SupeRare"
-      ]
-    },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/IERC721Metadata.sol": {
       "lastModificationDate": 1674516475680,
       "contentHash": "b5cff3c10f756528a6504fafc4431a11",
@@ -401,6 +360,45 @@
       ],
       "artifacts": [
         "Ownable"
+      ]
+    },
+    "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SupeRare.sol": {
+      "lastModificationDate": 1674517645358,
+      "contentHash": "d7c2f00c646f6ddaea988d5052299d55",
+      "sourceName": "contracts/SupeRare.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IERC721Metadata.sol",
+        "./ERC721Token.sol",
+        "./Ownable.sol"
+      ],
+      "versionPragmas": [
+        "=0.7.6"
+      ],
+      "artifacts": [
+        "SupeRare"
       ]
     }
   }

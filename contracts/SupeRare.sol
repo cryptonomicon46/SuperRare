@@ -1,17 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.7.6;
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-// import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
 import "./IERC721Metadata.sol";
-// import "./IERC721Metadata.sol";
 import "./ERC721Token.sol";
 import "./Ownable.sol";
 
-
-
-// contract SupeRare is   Ownable, IERC721Metadata, ERC721 {
-  contract SupeRare is  Ownable,ERC721Token,IERC721Metadata {
+    contract SupeRare is ERC721Token, Ownable, IERC721Metadata {
     using SafeMath for uint256;
     
     // Percentage to owner of SupeRare. (* 10) to allow for < 1% 
@@ -82,7 +76,6 @@ import "./Ownable.sol";
         require(creatorWhitelist[msg.sender] == true);
         _;
     }
-
 
 
     /**

@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for contracts/SwapContract.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> SwapContract.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">78.57% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>33/42</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">50% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>9/18</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">52.63% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>10/19</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">83.33% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>45/54</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line medium'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: GPL-2.0-or-later
+pragma solidity =0.7.6;
+pragma abicoder v2;
+&nbsp;
+&nbsp;
+&nbsp;
+import "hardhat/console.sol";
+import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
+import "./IERC20.sol";
+import "./IWETH.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+&nbsp;
+  /// @notice SwapContract has two functions that allow the user to swap ETH to DAI. 
+  /// The following functions achieve swapping either some or all of their ETH. 
+  /// SwapAllETH_DAI: swaps 100% of elected ETH to DAI.
+  /// SwapSomeETH_DAI: uses some amount of the sent ETH, refunds the balance unused ETH, and then swaps to DAI.
+&nbsp;
+ 
+contract SwapContract {
+    ISwapRouter public immutable swapRouter;
+    using SafeMath for uint;
+&nbsp;
+    address private _owner;
+    IWETH private weth;
+    IERC20 private dai;
+    address private WETH_ADDR;
+    address private DAI_ADDR;
+    bool private _stopped;
+    event SwapCompleted(uint _amount);
+    event Refund(address _refunder, uint _value);
+    event WETHAddr_Changed(address _weth);
+    event ToggleStartStop(bool);
+    constructor(
+            address  WETH_,
+            address  DAI_,
+            ISwapRouter _swapRouter)  payable {
+        WETH_ADDR = WETH_;
+        DAI_ADDR = DAI_;
+        weth = IWETH(WETH_ADDR);
+        dai = IERC20(DAI_ADDR);
+        swapRouter = _swapRouter;
+        _owner = msg.sender;
+    }
+&nbsp;
+  
+&nbsp;
+&nbsp;
+&nbsp;
+  /// @notice SwapSomeETH_DAI takes in the user's ETH but only uses some ETH to wrap and swap to DAI 
+    /// @dev The user gets a refund of the ETH amount not used to Wrap or swap. 
+    ///  emits a SwapCompleted event
+    ///
+    function SwapSomeETH_DAI(uint amountToUse) external payable StopDeposits returns (uint amountOut) {
+        console.log("Amount Sent:", msg.value);
+        console.log("Amount To use:", amountToUse);
+        _refund(msg.sender, amountToUse, msg.value);
+        _deposit(amountToUse);
+        console.log("WETH Balance of this contract", address(this).balance);
+        // uint amountInWETH = _wethBal(address(this));
+        // console.log("Balance of address(this) after",amountInWETH);  
+        // uint amountInWETH = _wethBal(address(this));
+        weth.approve(address(swapRouter), amountToUse );
+        uint getRouterAllowance = weth.allowance(address(this),address(swapRouter));
+        console.log("Swap Router's allowance updated to:",getRouterAllowance);
+        amountOut = _swap(WETH_ADDR, DAI_ADDR,3000, amountToUse);
+        console.log("DAI balace to be withdrawn later:", dai.balanceOf(msg.sender));
+        emit SwapCompleted(amountOut);
+    }
+&nbsp;
+&nbsp;
+/// @notice SwapAllETH_DAI takes in the user's ETH and wraps to WETH before the swap operation to DAI
+    /// @dev uses all the mag.value provided to wrap to WETH and then swap to DAI
+    /// emits a SwapCompleted event
+    function SwapAllETH_DAI() external payable <span class="missing-if-branch" title="else path not taken" >E</span>StopDeposits returns (uint amountOut) {
+        console.log("Amount Sent:", msg.value);
+        _deposit(msg.value);
+        // uint amountInWETH = weth.balanceOf(address(this));
+        // uint amountInWETH = _wethBal(address(this));
+        uint amountInWETH = msg.value;
+&nbsp;
+        console.log("Balance of address(this) after",amountInWETH);      
+        weth.approve(address(swapRouter), amountInWETH );
+        uint getRouterAllowance = weth.allowance(address(this),address(swapRouter));
+        console.log("Swap Router's allowance updated to:",getRouterAllowance);
+        amountOut = _swap(WETH_ADDR, DAI_ADDR,3000, amountInWETH);
+        console.log("amountOut:", amountOut);
+        emit SwapCompleted(amountOut);
+    }
+&nbsp;
+&nbsp;
+    /// @notice _swap internal function that  swaps amountIn tokens to exact amountOut
+    /// using the DAI/WETH9 0.3% pool by calling the 
+    /// @param tokenIn  Input token address to swap
+    /// @param tokenOut  Output token address to swap
+    /// @param poolFee  pool swap fees
+    /// @param amountIn  fixed amount of token input DAI or WETH
+    /// @return _amountOut maximum possible output of WET or DAI received
+    function _swap(address tokenIn,
+                address tokenOut, 
+                uint24 poolFee,
+                uint256 amountIn) 
+                internal returns 
+            (uint _amountOut) {
+        ISwapRouter.ExactInputSingleParams memory params = 
+            ISwapRouter.ExactInputSingleParams({
+                tokenIn : tokenIn,
+                tokenOut : tokenOut,
+                fee: poolFee,
+                recipient: msg.sender,
+                deadline: block.timestamp,
+                amountIn: amountIn,
+                amountOutMinimum: 0,
+                sqrtPriceLimitX96: 0
+            });
+            //Executes the swap
+        _amountOut = ISwapRouter(swapRouter).exactInputSingle(params);
+        // console.log("amountOut=", _amountOut);     
+    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+    /// @notice owner, returns the owner address or deployer address
+    /// @return owner who deployed the SwapETH2DAI contract
+<span class="fstat-no" title="function not covered" >    function owner() external view returns (address) {</span>
+<span class="cstat-no" title="statement not covered" >        return _owner;</span>
+    }
+&nbsp;
+    ///@notice checks if the msg.sender is the owner who deployed this contract
+    modifier onlyOwner() {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_owner == msg.sender, "NOT_THE_OWNER");
+        _;
+    }
+&nbsp;
+&nbsp;
+&nbsp;
+    ///@notice if _stopped = false, then deposits are enabled, else disabled
+    modifier StopDeposits {
+        require(!_stopped,"DEPOSITS_DISABLED");
+        _;
+    }
+&nbsp;
+&nbsp;
+    
+&nbsp;
+&nbsp;
+    ///@notice ToggleContract, toggle stopped flag to stop deposits and only enable withdraws
+    function ToggleContract() <span class="missing-if-branch" title="else path not taken" >E</span>onlyOwner public{
+        _stopped = !_stopped;
+        emit ToggleStartStop(_stopped);
+    }
+&nbsp;
+&nbsp;
+    ///@notice _refund, internal function that handles the sending the excess ETH refund
+    ///@param account, the account that'll receive the excess refund
+    ///@dev emits either a Refund or NoRefund event
+    function _refund(address payable account, uint amountToUse, uint amountSent) internal  {
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (amountSent &gt; amountToUse) {
+            uint amountToRefund = (amountSent).sub(amountToUse);
+            console.log("_refund Function: Refund Amount:",amountToRefund);
+            _sendETH(account,amountToRefund);
+            emit Refund(account,amountToRefund);
+        } 
+&nbsp;
+    }
+&nbsp;
+&nbsp;
+    ///@notice _sendETH internal function to handle sending ETH, emits Refund event
+    ///@param account: payable account that'll get the refund in ETH
+    ///@param _value: amount of ETH to be refunded to the account
+    function _sendETH(address payable account, uint _value) internal  {
+        console.log("_sentEth function: Sending refund to \nAddr: %s \nETH Refund: %s", account, _value);
+        (bool success, ) = payable(account).call{value: _value}("");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(success, "Refund failed");
+    }
+&nbsp;
+    ///@notice getDAIAddr returns the DAI token address
+<span class="fstat-no" title="function not covered" >    function getDAIAddr() external view returns (address){</span>
+<span class="cstat-no" title="statement not covered" >        return DAI_ADDR;</span>
+    }
+&nbsp;
+    ///@notice getWETHAddr returns the WETH token address
+<span class="fstat-no" title="function not covered" >    function getWETHAddr() external view returns (address) {</span>
+<span class="cstat-no" title="statement not covered" >        return WETH_ADDR;</span>
+    }
+&nbsp;
+// Dangerous to use a delegatecall to another contract with a differetn layout of storage vars
+// function _deposit(uint _amountToUse) internal  {
+//     uint amountToUse = _amountToUse;
+//     console.log("ETH being deposted into the WETH contract...", amountToUse);
+//     (bool success, ) = WETH_ADDR.call{value: amountToUse}(abi.encodeWithSignature("deposit()"));
+//     require(success,"Deposit failed!");
+// }
+&nbsp;
+&nbsp;
+///@notice _deposit function will Wrap ETH and hold the WETH amount to use for the DAI swap.
+///@dev the contract deson't transfer WETH back to the sender, it holds it.
+function  _deposit(uint _amountToUse) internal  {
+    console.log("Depositing caller's ETH amount to use ...");
+    weth.deposit{value: _amountToUse}();
+&nbsp;
+}
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function _wethBal(address account) internal view returns (uint) {</span>
+<span class="cstat-no" title="statement not covered" >    return weth.balanceOf(account);</span>
+  }
+<span class="fstat-no" title="function not covered" >  function _daiBal(address account) internal view returns (uint) {</span>
+<span class="cstat-no" title="statement not covered" >    return dai.balanceOf(account);</span>
+  }
+&nbsp;
+&nbsp;
+    ///@notice getContractBalance , returns the balance of the contract
+    ///@dev onlyOwner modifier ensures that only the deployer can make this query
+<span class="fstat-no" title="function not covered" >    function getContractBalance() external view onlyOwner returns (uint) {</span>
+<span class="cstat-no" title="statement not covered" >        return address(this).balance;</span>
+    }
+&nbsp;
+        ///@notice getContractWETHBalance , returns the balance of the contract
+    ///@dev onlyOwner modifier ensures that only the deployer can make this query
+<span class="fstat-no" title="function not covered" >    function getContractWETHBalance() external view onlyOwner returns (uint) {</span>
+<span class="cstat-no" title="statement not covered" >        return _wethBal(address(this));</span>
+    }
+&nbsp;
+&nbsp;
+    ///@notice getWETHBalance , returns the WETH balance of the contract
+    ///@param account, balance of account address is returned
+<span class="fstat-no" title="function not covered" >    function getWETHBalance(address account) external view returns (uint) {</span>
+<span class="cstat-no" title="statement not covered" >        return _wethBal(account);</span>
+    }
+&nbsp;
+&nbsp;
+    ///@notice getDAIBalance , returns the WETH balance of the contract
+    ///@param account, balance of account address is returned
+<span class="fstat-no" title="function not covered" >    function getDAIBalance(address account) external view returns (uint) {</span>
+<span class="cstat-no" title="statement not covered" >        return _daiBal(account);</span>
+    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+    }</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Dec 27 2022 08:48:35 GMT-0800 (Pacific Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

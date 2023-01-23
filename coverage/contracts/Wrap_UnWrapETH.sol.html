@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for contracts/Wrap_UnWrapETH.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> Wrap_UnWrapETH.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/23</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/10</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/13</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/28</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&nbsp;
+// SPDX-License-Identifier: GPL-2.0-or-later
+pragma solidity =0.7.6;
+&nbsp;
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "hardhat/console.sol";
+import "./IWETH.sol";
+&nbsp;
+&nbsp;
+&nbsp;
+///@notice Wrap_UnWrapETH handles wrapping the unwrapping ETH to WETH for the caller
+contract Wrap_UnWrapETH  {
+&nbsp;
+address private WETH_ADDR;
+IWETH weth;
+address private _owner;
+mapping (address =&gt; uint) public wethDepositBalance;
+event UnWrappedWETH(uint amountWETH);
+event WrappedETH(uint amountETH);
+event Log(string func, uint gas);
+event deposit_NotHeld(uint amount);
+event deposit_holdWETH(uint amount);
+<span class="fstat-no" title="function not covered" >constructor(address WETH_ADDR_) payable {</span>
+    WETH_ADDR = WETH_ADDR_;
+    weth = IWETH(WETH_ADDR);
+    _owner = msg.sender;
+}
+&nbsp;
+///@notice deposit function will Wrap ETH and transfer WETH back to the sender,
+///@dev the contract doesn't hold the WETH funds. deposit_NotHeld(uint) event emitted
+<span class="fstat-no" title="function not covered" >function  deposit() external payable {</span>
+<span class="cstat-no" title="statement not covered" >    console.log("Depositing caller's ETH and transfer the WETH to the caller ...")</span>;
+<span class="cstat-no" title="statement not covered" >    uint amount = msg.value;</span>
+<span class="cstat-no" title="statement not covered" >    weth.deposit{value: msg.value}()</span>;
+<span class="cstat-no" title="statement not covered" >    weth.transfer(msg.sender,amount)</span>;
+<span class="cstat-no" title="statement not covered" >    emit deposit_NotHeld(msg.value);</span>
+    // console.log("Owner's WETH balance:",IWETH(WETH_ADDR).balanceOf(msg.sender));
+    
+}
+&nbsp;
+///@notice deposit_HoldWETH function will Wrap ETH and but hold the WETH funds in the contract
+///@dev an internal mapping wethDepositBalance[msg.sender] is updated to 
+///        track the sender's WETH balance to be withdrawn at a later stage
+///         deposit_holdWETH(uint) event emitted
+<span class="fstat-no" title="function not covered" >function  deposit_HoldWETH() external payable {</span>
+<span class="cstat-no" title="statement not covered" >    console.log("Depositing caller's ETH to be held in the contract...")</span>;
+<span class="cstat-no" title="statement not covered" >    weth.deposit{value: msg.value}()</span>;
+    wethDepositBalance[msg.sender] += msg.value;
+<span class="cstat-no" title="statement not covered" >    emit deposit_holdWETH(msg.value);</span>
+    // console.log("Deposit balance updated:", wethDepositBalance[msg.sender] );
+    // console.log("Contract's WETH balance should be &gt;0:",weth.balanceOf(address(this)));
+&nbsp;
+&nbsp;
+}
+&nbsp;
+    /// @notice withdraw all of the sender's WETH balance being held in the contract
+    /// @dev Checks and effects pattern used, balances variables are updated
+    ///      before doing a low level call to transfer the sender's ETH funds
+<span class="fstat-no" title="function not covered" >    function withdraw() external payable {</span>
+<span class="cstat-no" title="statement not covered" >        uint256 value = weth.balanceOf(address(this));</span>
+<span class="cstat-no" title="statement not covered" >        uint256 senderBalance = wethDepositBalance[msg.sender];</span>
+<span class="cstat-no" title="statement not covered" >         require(value&gt;= senderBalance,"Contract has insufficient funds")</span>;
+<span class="cstat-no" title="statement not covered" >            weth.withdraw(senderBalance)</span>;
+<span class="cstat-no" title="statement not covered" >            safeTransferETH(payable(msg.sender),address(this).balance)</span>;
+&nbsp;
+    }
+    // Function to receive Ether. msg.data must be empty
+    receive() external payable {}
+&nbsp;
+    ///@notice safeTransferETH internal function performs the low level call function
+<span class="fstat-no" title="function not covered" >    function safeTransferETH(address payable to, uint256 value) internal {</span>
+<span class="cstat-no" title="statement not covered" >        (bool success, ) = to.call{value: value}(new bytes(0));</span>
+<span class="cstat-no" title="statement not covered" >        require(success, 'TransferHelper::safeTransferETH: ETH transfer failed')</span>;
+    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+    ///@notice checks if the msg.sender is the owner who deployed this contract
+<span class="fstat-no" title="function not covered" >    modifier onlyOwner() {</span>
+<span class="cstat-no" title="statement not covered" >        require(_owner == msg.sender, "Caller is not the owner")</span>;
+        _;
+    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+    ///@notice getWETHAddr returns the WETH token address
+<span class="fstat-no" title="function not covered" >    function getWETHAddr() external view returns (address) {</span>
+<span class="cstat-no" title="statement not covered" >        return WETH_ADDR;</span>
+    }
+&nbsp;
+    ///@notice getOwner returns the address that deployed the contract
+<span class="fstat-no" title="function not covered" >    function getOwner() external view returns (address) {</span>
+<span class="cstat-no" title="statement not covered" >        return _owner;</span>
+    }
+    ///@notice getContractBalance , returns the balance of the contract
+    ///@dev onlyOwner modifier ensures that only the deployer can make this query
+<span class="fstat-no" title="function not covered" >    function getContractBalance() external view onlyOwner returns (uint) {</span>
+<span class="cstat-no" title="statement not covered" >        return address(this).balance;</span>
+    }
+&nbsp;
+        ///@notice getContractWETHBalance , returns the balance of the contract
+    ///@dev onlyOwner modifier ensures that only the deployer can make this query
+<span class="fstat-no" title="function not covered" >    function getContractWETHBalance() external view onlyOwner returns (uint) {</span>
+<span class="cstat-no" title="statement not covered" >        return _wethBal(address(this));</span>
+    }
+&nbsp;
+&nbsp;
+    ///@notice getWETHBalance , returns the WETH balance of the contract
+    ///@param account, balance of account address is returned
+<span class="fstat-no" title="function not covered" >    function getWETHBalance(address account) external view returns (uint) {</span>
+<span class="cstat-no" title="statement not covered" >        return _wethBal(account);</span>
+    }
+&nbsp;
+&nbsp;
+    ///@notice getETHBalance , returns the WETH balance of the contract
+    ///@param account, balance of account address is returned
+<span class="fstat-no" title="function not covered" >    function getETHBalance(address account) external view returns (uint) {</span>
+<span class="cstat-no" title="statement not covered" >        return account.balance;</span>
+    }
+&nbsp;
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function _wethBal(address account) internal view returns (uint) {</span>
+<span class="cstat-no" title="statement not covered" >    return weth.balanceOf(account);</span>
+  }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Dec 26 2022 15:48:34 GMT-0800 (Pacific Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

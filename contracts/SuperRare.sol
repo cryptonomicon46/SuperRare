@@ -2,17 +2,16 @@
 pragma solidity =0.7.6;
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
-
+// import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "./IERC721Metadata.sol";
-import "./IERC721Receiver.sol";
+// import "./IERC721Metadata.sol";
 import "./ERC721Token.sol";
 import "./Ownable.sol";
 
 
 
-
 // contract SupeRare is   Ownable, IERC721Metadata, ERC721 {
-  contract SupeRare is  Ownable,IERC721Metadata,ERC721Token {
+  contract SupeRare is  Ownable,ERC721Token,IERC721Metadata {
     using SafeMath for uint256;
     
     // Percentage to owner of SupeRare. (* 10) to allow for < 1% 
@@ -44,7 +43,12 @@ import "./Ownable.sol";
 
     // Mapping of address to boolean indicating whether the add
     mapping(address => bool) private creatorWhitelist;
+    //Token Name
+    string private _name = 'SupeRare';
 
+    // Token symbol
+    string private _symbol ="SUPR";
+    
 
     event WhitelistCreator(address indexed _creator);
     event Bid(address indexed _bidder, uint256 indexed _amount, uint256 indexed _tokenId);
@@ -78,6 +82,7 @@ import "./Ownable.sol";
         require(creatorWhitelist[msg.sender] == true);
         _;
     }
+
 
 
     /**
@@ -114,7 +119,7 @@ import "./Ownable.sol";
       for (uint256 i=0; i<_editions; i++){
         uint256 newId = createToken(_uri, msg.sender);
         tokenSalePrice[newId] = _salePrice;
-        SalePriceSet(newId, _salePrice);
+        emit SalePriceSet(newId, _salePrice);
       }
     }
 
@@ -127,7 +132,7 @@ import "./Ownable.sol";
         returnCurrentBid(_tokenId);
         tokenBidder[_tokenId] = msg.sender;
         tokenCurrentBid[_tokenId] = msg.value;
-        Bid(msg.sender, msg.value, _tokenId);
+        emit Bid(msg.sender, msg.value, _tokenId);
     }
 
     /**
@@ -142,7 +147,7 @@ import "./Ownable.sol";
         clearApprovalAndTransfer(msg.sender, currentBidder, _tokenId);
         payout(currentBid, owner, creator, tokenOwner, _tokenId);
         clearBid(_tokenId);
-        AcceptBid(currentBidder, tokenOwner, currentBid, _tokenId);
+        emit AcceptBid(currentBidder, tokenOwner, currentBid, _tokenId);
         tokenSalePrice[_tokenId] = 0;
     }
     
@@ -156,7 +161,7 @@ import "./Ownable.sol";
         uint256 bidAmount = tokenCurrentBid[_tokenId];
         msg.sender.transfer(bidAmount);
         clearBid(_tokenId);
-        CancelBid(bidder, bidAmount, _tokenId);
+        emit CancelBid(bidder, bidAmount, _tokenId);
     }
     
     /**
@@ -176,7 +181,7 @@ import "./Ownable.sol";
         clearApprovalAndTransfer(tokenOwner, buyer, _tokenId);
         payout(sentPrice, owner, creator, tokenOwner, _tokenId);
         tokenSalePrice[_tokenId] = 0;
-        Sold(buyer, tokenOwner, sentPrice, _tokenId);
+        emit Sold(buyer, tokenOwner, sentPrice, _tokenId);
     }
 
     /**
@@ -187,7 +192,7 @@ import "./Ownable.sol";
         uint256 currentBid = tokenCurrentBid[_tokenId];
         require(_salePrice > currentBid);
         tokenSalePrice[_tokenId] = _salePrice;
-        SalePriceSet(_tokenId, _salePrice);
+        emit SalePriceSet(_tokenId, _salePrice);
     }
 
     /**
@@ -196,7 +201,7 @@ import "./Ownable.sol";
      */
     function whitelistCreator(address _creator) public onlyOwner {
       creatorWhitelist[_creator] = true;
-      WhitelistCreator(_creator);
+      emit WhitelistCreator(_creator);
     }
     
     /**
@@ -214,19 +219,19 @@ import "./Ownable.sol";
     function setCreatorPercentage(uint256 _percentage) public onlyOwner() {
        creatorPercentage = _percentage;
     }
-    
+
     /**
      * @notice A descriptive name for a collection of NFTs in this contract
      */
-    function name() external pure virtual override returns (string memory _name) {
-        return 'SupeRare';
+    function name() external view virtual override returns (string memory) {
+        return _name;
     }
 
     /**
      * @notice An abbreviated name for NFTs in this contract
      */
-    function symbol() external pure virtual override returns (string memory _symbol) {
-        return 'SUPR';
+    function symbol() external view virtual override returns (string memory) {
+        return _symbol;
     }
 
 
@@ -368,5 +373,7 @@ import "./Ownable.sol";
       tokenToURI[newId] = _uri;
       return newId;
     }
+
+
 
 }

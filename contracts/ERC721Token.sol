@@ -16,6 +16,8 @@ import "./IERC721Receiver.sol";
 contract ERC721Token is Context ,ERC165, IERC721 {
   using SafeMath for uint256;
     using Address for address;
+
+ 
   // Total amount of tokens
   uint256 private totalTokens;
 

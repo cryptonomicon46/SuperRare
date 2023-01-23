@@ -4,10 +4,10 @@ pragma solidity =0.7.6;
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/introspection/ERC165.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
+import "./IERC721Receiver.sol";
 
 /**
  * @title ERC721Token

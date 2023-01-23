@@ -362,10 +362,52 @@
         "IERC721Receiver"
       ]
     },
-    "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/OwnableContract.sol": {
-      "lastModificationDate": 1674511928685,
-      "contentHash": "98536b0b3ffa8e0aeddf2a65b9d5a339",
-      "sourceName": "contracts/OwnableContract.sol",
+    "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SuperRare.sol": {
+      "lastModificationDate": 1674513661258,
+      "contentHash": "ab777d45e75dcf3dfc8f1b8f514ed23b",
+      "sourceName": "contracts/SuperRare.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/math/SafeMath.sol",
+        "@openzeppelin/contracts/utils/Address.sol",
+        "@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol",
+        "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+        "./ERC721Token.sol",
+        "./Ownable.sol"
+      ],
+      "versionPragmas": [
+        "=0.7.6"
+      ],
+      "artifacts": [
+        "SupeRare"
+      ]
+    },
+    "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/Ownable.sol": {
+      "lastModificationDate": 1674513053669,
+      "contentHash": "885242a6754042ff38aa222097add642",
+      "sourceName": "contracts/Ownable.sol",
       "solcConfig": {
         "version": "0.7.6",
         "settings": {
@@ -394,7 +436,44 @@
         "=0.7.6"
       ],
       "artifacts": [
-        "OwnableContract"
+        "Ownable"
+      ]
+    },
+    "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol": {
+      "lastModificationDate": 1674489014135,
+      "contentHash": "7fe751b35ebe8466b56415cce55a7074",
+      "sourceName": "@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IERC721.sol"
+      ],
+      "versionPragmas": [
+        "^0.7.0"
+      ],
+      "artifacts": [
+        "IERC721Metadata"
       ]
     }
   }

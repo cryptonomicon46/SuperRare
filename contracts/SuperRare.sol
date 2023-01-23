@@ -3,10 +3,11 @@ pragma solidity =0.7.6;
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 // import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+// import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "./ERC721Token.sol";
+import "./Ownable.sol";
 
 
 
@@ -229,12 +230,6 @@ import "./ERC721Token.sol";
         return 'SUPR';
     }
 
-    /**
-     * @notice approve is not a supported function for this contract
-     */
-    function approve(address _to, uint256 _tokenId) public {
-        revert();
-    }
 
     /** 
      * @dev Returns whether the creator is whitelisted
@@ -304,7 +299,9 @@ import "./ERC721Token.sol";
         uint256 currentBid = tokenCurrentBid[_tokenId];
         address currentBidder = tokenBidder[_tokenId];
         if(currentBidder != address(0)) {
-            currentBidder.transfer(currentBid);
+            // payable(currentBidder).transfer(currentBid);
+            (bool success, ) = payable(currentBidder).call{value: currentBid}("");
+            require(success, "Refund failed");
         }
     }
     
@@ -346,9 +343,18 @@ import "./ERC721Token.sol";
             ownerPayment = 0;
             tokenSold[_tokenId] = true;
         }
-        _maintainer.transfer(maintainerPayment);
-        _creator.transfer(creatorPayment);
-        _tokenOwner.transfer(ownerPayment);
+        // _maintainer.transfer(maintainerPayment);
+        // _creator.transfer(creatorPayment);
+        // _tokenOwner.transfer(ownerPayment);
+
+        (bool success_m, ) = payable(_maintainer).call{value: maintainerPayment}("");
+        require(success_m, "Maintainer payout failed");
+
+        (bool success_c, ) = payable(_creator).call{value: creatorPayment}("");
+        require(success_c, "Creator payout failed");
+
+        (bool success_to, ) = payable(_tokenOwner).call{value: creatorPayment}("");
+        require(success_to, "Token Owner payout failed");
       
     }
 

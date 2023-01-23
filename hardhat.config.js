@@ -1,7 +1,7 @@
 require("@nomiclabs/hardhat-waffle");
 require("dotenv").config();
 require("@nomiclabs/hardhat-etherscan");
-require('solidity-coverage');
+require("solidity-coverage");
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const GOERLI_URL_ALCHEMY = process.env.GOERLI_URL_ALCHEMY;
@@ -27,19 +27,20 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 // Go to https://hardhat.org/config/ to learn more
 
 task(
-    "blockNumber",
-    "Prints the current block number",
-    async (_, { ethers }) => {
-      await ethers.provider.getBlockNumber().then((blockNumber) => {
-        console.log("Current block number: " + blockNumber);
-      });
-    }
-  );
+  "blockNumber",
+  "Prints the current block number",
+  async (_, { ethers }) => {
+    await ethers.provider.getBlockNumber().then((blockNumber) => {
+      console.log("Current block number: " + blockNumber);
+    });
+  }
+);
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
   solidity: "0.7.6",
+  //   solidity: "0.4.18",
   settings: {
     evmVersion: "istanbul",
     optimizer: {
@@ -47,39 +48,32 @@ module.exports = {
       runs: 1000,
     },
   },
-  viaIR : true,
+  viaIR: true,
   defaultNetwork: "hardhat",
   paths: {
-    artifacts: './src/artifacts',
+    artifacts: "./src/artifacts",
   },
   networks: {
-
     hardhat: {
-        forking: {
-            url: `${MAINNET_FORK_URL}`,
-            accounts: [`0x${PRIVATE_KEY}`]
-
-        }
+      forking: {
+        url: `${MAINNET_FORK_URL}`,
+        accounts: [`0x${PRIVATE_KEY}`],
       },
+    },
     goerli: {
       url: `${GOERLI_URL_ALCHEMY}${GOERLI_ALCHEMY_KEY}`,
-      accounts: [`0x${PRIVATE_KEY}`]
-    },   
-     mainnet: {
-        url: `${MAINNET_URL_ALCHEMY}${MAINNET_ALCHEMY_KEY}`,
-        accounts: [`0x${PRIVATE_KEY}`]
-      }
-
-
-
+      accounts: [`0x${PRIVATE_KEY}`],
+    },
+    mainnet: {
+      url: `${MAINNET_URL_ALCHEMY}${MAINNET_ALCHEMY_KEY}`,
+      accounts: [`0x${PRIVATE_KEY}`],
+    },
   },
 
   etherscan: {
     apiKey: {
       goerli: ETH_API_KEY,
-      mainnet: ETH_API_KEY
-    }
-
-
-},
+      mainnet: ETH_API_KEY,
+    },
+  },
 };

@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "IERC721Receiver",
-  "sourceName": "contracts/SuperRare.sol",
+  "sourceName": "contracts/IERC721Receiver.sol",
   "abi": [
     {
       "inputs": [

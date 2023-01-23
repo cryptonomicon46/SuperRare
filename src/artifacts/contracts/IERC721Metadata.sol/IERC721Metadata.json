@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "ERC721Metadata",
-  "sourceName": "contracts/SuperRare.sol",
+  "contractName": "IERC721Metadata",
+  "sourceName": "contracts/IERC721Metadata.sol",
   "abi": [
     {
       "inputs": [],

@@ -14,4 +14,20 @@ constructor() ERC721 ("Eschrow","ESH") {
 function onERC721Received( address , address , uint256 , bytes calldata  ) public pure override returns (bytes4) {
     return this.onERC721Received.selector;
 }
+
+    /**
+     * @dev See {IERC721Metadata-name}.
+     */
+    function name() public view virtual override returns (string memory) {
+        return "Eschrow";
+    }
+
+    /**
+     * @dev See {IERC721Metadata-symbol}.
+     */
+    function symbol() public view virtual override returns (string memory) {
+        return "ESH";
+    }
+
+
 }   

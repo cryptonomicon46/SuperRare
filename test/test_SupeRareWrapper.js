@@ -415,6 +415,24 @@ describe("Safe Transfer Function Tests", function () {
     expect(tokenId[0]).to.equal(BigNumber.from(2));
   });
 
+  it("Escrow Contract: Check Name, Symbol and onERC721Received function selector", async function () {
+    const { supeRare, supeRareWrapper, eschrow, owner, addr1, creator } =
+      await loadFixture(deployTokenFixture);
+
+    expect(await eschrow.name()).to.be.equal("Eschrow");
+
+    expect(await eschrow.symbol()).to.be.equal("ESH");
+
+    const onReceivedEschrow = await eschrow.onERC721Received(
+      supeRareWrapper.address,
+      eschrow.address,
+      2,
+      "0x00"
+    );
+
+    expect(onReceivedEschrow).to.be.equal("0x150b7a02");
+  });
+
   it("WrapperContract ST to Eschrow: Wrapper contract invokes safeTransfer into Eschrow contract", async function () {
     const { supeRare, supeRareWrapper, eschrow, owner, addr1, creator } =
       await loadFixture(deployTokenFixture);
@@ -437,11 +455,17 @@ describe("Safe Transfer Function Tests", function () {
 
     await supeRareWrapper
       .connect(owner)
-      .safeTransfer(
-        supeRareWrapper.address,
-        eschrow.address,
-        BigNumber.from(2),
-        "0x00"
-      );
+      .safeTransferFrom(supeRareWrapper.address, eschrow.address, 2, "0x00");
+    console.log(
+      `Escrow contract balance ${await eschrow
+        .connect(owner)
+        .balanceOf(eschrow.address)}`
+    );
+
+    console.log(
+      `Escrow contract balance ${await eschrow
+        .connect(owner)
+        .balanceOf(eschrow.address)}`
+    );
   });
 });

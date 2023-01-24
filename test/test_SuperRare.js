@@ -227,14 +227,22 @@ describe("Creator creates SupeRare token: Tests", function () {
 
     expect(await supeRare.originalTokenOfUri("NewEditions_10")).to.equal("1");
   });
-  //   it("Check token transfer", async function () {
-  //     const { supeRare, owner, addr1, addr2 } = await loadFixture(
-  //       deployTokenFixture
-  //     );
-  //   });
-  //   it("Verify tokenURI", async function () {
-  //     const { supeRare, owner, addr1, addr2 } = await loadFixture(
-  //       deployTokenFixture
-  //     );
-  //   });
+
+  it("AddNewTokenEdition: Transfer Ownership of a token", async function () {
+    const { supeRare, owner, addr1, creator } = await loadFixture(
+      deployTokenFixture
+    );
+
+    const tokensOfOwner = await supeRare.tokensOf(creator.address);
+    tokensOfOwner.forEach((v, i) => expect(v).to.be.equal(i + 1));
+
+    await supeRare.connect(creator).transfer(addr1.address, 6);
+    expect(await supeRare.ownerOf(6).to.be.equal(addr1.address));
+  });
+});
+
+describe("Transfer Function Tests", function () {
+  it("Approvals: Set and check approvals", async function () {});
+
+  it("SafeTransfer From", async function () {});
 });

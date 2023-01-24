@@ -172,6 +172,8 @@ contract ERC721Token is Context ,ERC165, IERC721 {
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public virtual override {
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
         _safeTransfer(from, to, tokenId, _data);
+        clearApprovalAndTransfer(from, to, tokenId);
+
     }
 
 

@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/ERC721Token.sol": {
-      "lastModificationDate": 1674517177289,
-      "contentHash": "48323729073a7b29ae0d6a3733a461db",
+      "lastModificationDate": 1674535118787,
+      "contentHash": "6fdc57616bff39d81173845b0815e66e",
       "sourceName": "contracts/ERC721Token.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -293,8 +293,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SupeRare.sol": {
-      "lastModificationDate": 1674532769890,
-      "contentHash": "bad034b5aff929b8abaf64df97c7f6f5",
+      "lastModificationDate": 1674535876119,
+      "contentHash": "ef5c291be39d8cd9e38c3de2b385e17d",
       "sourceName": "contracts/SupeRare.sol",
       "solcConfig": {
         "version": "0.7.6",

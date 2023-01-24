@@ -79,16 +79,25 @@ import "hardhat/console.sol";
     }
 
 
-    /**
-     * @dev Transfers the ownership of a given token ID to another address.
-     * Sets the token to be on its second sale.
-     * @param _to address to receive the ownership of the given token ID
-     * @param _tokenId uint256 ID of the token to be transferred
-     */
-    function transfer(address _to, uint256 _tokenId) public onlyOwnerOf(_tokenId) {
-        tokenSold[_tokenId] = true;
-        tokenSalePrice[_tokenId] = 0;
-        clearApprovalAndTransfer(msg.sender, _to, _tokenId);
+    // /**
+    //  * @dev Transfers the ownership of a given token ID to another address.
+    //  * Sets the token to be on its second sale.
+    //  * @param _to address to receive the ownership of the given token ID
+    //  * @param _tokenId uint256 ID of the token to be transferred
+    // //  */
+    // function transfer(address _to, uint256 _tokenId) public onlyOwnerOf(_tokenId) {
+
+
+    //     tokenSold[_tokenId] = true;
+    //     tokenSalePrice[_tokenId] = 0;
+    //     clearApprovalAndTransfer(msg.sender, _to, _tokenId);
+    // }
+
+    function safeTransferFrom(address from, address to, uint256 tokenId) public virtual override {
+        ERC721Token.safeTransferFrom(from, to, tokenId, "");
+        tokenSold[tokenId] = true;
+        tokenSalePrice[tokenId] = 0;
+        clearApprovalAndTransfer(from, to, tokenId);
     }
 
     /**

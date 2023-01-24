@@ -438,8 +438,7 @@ describe("Safe Transfer Function Tests", function () {
     await supeRareWrapper.safeTransferFrom(
       supeRareWrapper.address,
       eschrow.address,
-      2,
-      ""
+      BigNumber.from(2)
     );
   });
 });

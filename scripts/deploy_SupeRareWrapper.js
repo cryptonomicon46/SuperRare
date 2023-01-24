@@ -2,8 +2,6 @@ const { parse } = require("dotenv");
 const { parseEther } = require("ethers/lib/utils");
 const { ethers } = require("hardhat");
 
-const { console } = require("console");
-
 async function main() {
   const [deployer, addr1, addr2, addr3, addr4] = await ethers.getSigners();
 
@@ -16,7 +14,7 @@ async function main() {
   const SupeRare = await ethers.getContractFactory("SupeRare");
   const supeRare = await SupeRare.deploy();
   //   await supeRare.deployed();
-  console.log("supeRare contract depoloyed at ", supeRare);
+  console.log("SupeRare contract depoloyed at ", supeRare.address);
   //   console.log("\n");
 
   //Deploy SupeRareWrapper
@@ -26,6 +24,10 @@ async function main() {
     "SupeRareWrapper contract depoloyed at ",
     supeRareWrapper.address
   );
+
+  const Eschrow = await ethers.getContractFactory("Eschrow");
+  const eschrow = await Eschrow.deploy();
+  console.log("Eschrow contract depoloyed at ", eschrow.address);
   console.log("\n");
 }
 

@@ -4,6 +4,7 @@ pragma solidity =0.7.6;
 import "./IERC721Metadata.sol";
 import "./ERC721Token.sol";
 import "./Ownable.sol";
+import "hardhat/console.sol";
 
     contract SupeRare is ERC721Token, Ownable, IERC721Metadata {
     using SafeMath for uint256;
@@ -97,6 +98,8 @@ import "./Ownable.sol";
     function addNewToken(string memory _uri) public uniqueURI(_uri) onlyCreator {
         uint256 newId = createToken(_uri, msg.sender);
         uriOriginalToken[_uri] = newId;
+        console.log("Test:", _uri, newId);
+
     }
 
     /**
@@ -106,9 +109,10 @@ import "./Ownable.sol";
      * @param _salePrice uint256 wei price of editions.
      */
     function addNewTokenWithEditions(string memory _uri, uint256 _editions, uint256 _salePrice) public uniqueURI(_uri) onlyCreator {
+    console.log("Initial TotalSupply should be zero", totalSupply());
+
       uint256 originalId = createToken(_uri, msg.sender);
       uriOriginalToken[_uri] = originalId;
-
       for (uint256 i=0; i<_editions; i++){
         uint256 newId = createToken(_uri, msg.sender);
         tokenSalePrice[newId] = _salePrice;
@@ -359,7 +363,9 @@ import "./Ownable.sol";
      * @dev Internal function creating a new token.
      * @param _uri string metadata uri associated with the token
      */
-    function createToken(string memory _uri, address _creator) private  returns (uint256){
+    function createToken(string memory _uri, address _creator) private returns (uint256){
+      console.log("TS:",totalSupply() );
+
       uint256 newId = totalSupply() + 1;
       _mint(_creator, newId);
       tokenCreator[newId] = _creator;

@@ -15,7 +15,7 @@ const SYMBOL = "SUPR";
 // We connect to the Contract using a Provider, so we will only
 // have read-only access to the Contract
 
-describe("SupeRare Test Suit: ERC721 Compatible Contract", function () {
+describe("SupeRare Test Suit: Basics", function () {
   async function deployTokenFixture() {
     [owner, addr1, addr2] = await ethers.getSigners();
 
@@ -58,12 +58,28 @@ describe("SupeRare Test Suit: ERC721 Compatible Contract", function () {
       .withArgs(addr2.address);
   });
 
+  it("IsWhiteListed: Check if an account is whitelisted", async function () {
+    const { supeRare, owner, addr1, addr2 } = await loadFixture(
+      deployTokenFixture
+    );
+
+    await expect(supeRare.connect(owner).whitelistCreator(addr2.address))
+      .to.emit(supeRare, "WhitelistCreator")
+      .withArgs(addr2.address);
+
+    let whiteListAddr = await supeRare.isWhitelisted(addr2.address);
+    expect(whiteListAddr).to.be.true;
+
+    whiteListAddr = await supeRare.isWhitelisted(addr1.address);
+    expect(whiteListAddr).to.be.false;
+  });
+
   it("MaintainerPercentage: Check default value and change it.", async function () {
     const { supeRare, owner, addr1, addr2 } = await loadFixture(
       deployTokenFixture
     );
     let maintainer_per = await supeRare.maintainerPercentage();
-    console.log(maintainer_per);
+    // console.log(maintainer_per);
 
     expect(maintainer_per).to.equal(30);
 
@@ -84,7 +100,7 @@ describe("SupeRare Test Suit: ERC721 Compatible Contract", function () {
       deployTokenFixture
     );
     let creator_per = await supeRare.creatorPercentage();
-    console.log(creator_per);
+    // console.log(creator_per);
 
     expect(creator_per).to.equal(100);
 
@@ -99,88 +115,69 @@ describe("SupeRare Test Suit: ERC721 Compatible Contract", function () {
     creator_per = await supeRare.creatorPercentage();
     expect(creator_per).to.equal(20);
   });
+});
 
-  //   it("Intial balance: check owner's initial balance", async function () {
-  //     const { weth_token, owner } = await loadFixture(deployTokenFixture);
+describe("Creator creates SupeRare token: Tests", function () {
+  async function deployTokenFixture() {
+    [owner, addr1, creator] = await ethers.getSigners();
 
-  //     const owner_initialBal = await weth_token.balanceOf(owner.address);
-  //     console.log(owner_initialBal);
-  //     expect(owner_initialBal).to.equal("0");
-  //   });
+    const SupeRare = await ethers.getContractFactory("SupeRare");
+    console.log("Deploying SupeRare ...\n");
+    const supeRare = await SupeRare.deploy();
+    await supeRare.deployed();
+    console.log("SupeRare contract deployed at:", supeRare.address);
+    console.log("Deployer Address", owner.address);
 
-  //   it("Check Decimal: Check the decimal places for the Fusion token.", async function () {
-  //     const { weth_token } = await loadFixture(deployTokenFixture);
-  //     const decimal = await weth_token.decimal();
-  //     console.log(decimal);
-  //     expect(decimal).to.be.equal(DECIMAL);
-  //   });
+    return { supeRare, owner, addr1, creator };
+  }
 
-  //   it("Check owner address: Confirm the contract owner address.", async function () {
-  //     const { weth_token, owner } = await loadFixture(deployTokenFixture);
-  //     expect(await weth_token.owner()).to.be.equal(owner.address);
-  //   });
+  it("AddNewTokenEdition: Only creator can add a new token", async function () {
+    const { supeRare, owner, addr1, creator } = await loadFixture(
+      deployTokenFixture
+    );
 
-  //   it("Deposit ETH: Sender deposits ETH to be wrapped into WETH", async function () {
-  //     const { weth_token, owner, addr1, addr2 } = await loadFixture(
+    // await expect(supeRare.connect(addr1.address).addNewToken("TestURI")).to.be
+    //   .reverted;
+    await expect(supeRare.connect(owner).whitelistCreator(creator.address))
+      .to.emit(supeRare, "WhitelistCreator")
+      .withArgs(creator.address);
+
+    await expect(
+      supeRare
+        .connect(creator)
+        .addNewTokenWithEditions("NewEditions_10", 10, parseEther("1"))
+    ).to.emit(supeRare, "SalePriceSet");
+
+    let totalSupply = await supeRare.totalSupply();
+    expect(totalSupply).to.equal(11);
+    let tokenURI;
+    for (let i = 1; i <= 11; i++) {
+      expect(await supeRare.tokenURI(i)).to.be.equal("NewEditions_10");
+      expect(await supeRare.ownerOf(i)).to.be.equal(creator.address);
+      expect(await supeRare.creatorOfToken(i)).to.be.equal(creator.address);
+
+      i == 1
+        ? expect(await supeRare.salePriceOfToken(i)).to.be.equal(0)
+        : expect(await supeRare.salePriceOfToken(i)).to.be.equal(
+            parseEther("1")
+          );
+    }
+
+    const tokensOfOwner = await supeRare.tokensOf(creator.address);
+    tokensOfOwner.forEach((v, i) => expect(v).to.be.equal(i + 1));
+
+    expect(await supeRare.originalTokenOfUri("NewEditions_10")).to.equal("1");
+
+    expect(await supeRare.balanceOf(creator.address)).to.equal(11);
+  });
+  //   it("Check token transfer", async function () {
+  //     const { supeRare, owner, addr1, addr2 } = await loadFixture(
   //       deployTokenFixture
   //     );
-
-  //     const owner_initialBal = await weth_token.balanceOf(owner.address);
-  //     expect(owner_initialBal).to.equal("0");
-
-  //     await expect(weth_token.deposit({ value: parseEther("1.0") })).to.emit(
-  //       weth_token,
-  //       "Deposit"
-  //     );
-
-  //     const owner_NewBal = await weth_token.balanceOf(owner.address);
-  //     expect(ethers.utils.formatUnits(owner_NewBal, 18)).to.equal("1.0");
   //   });
-
-  //   it("Withdraw Fail: Initially no WETH should be available to withdraw", async function () {
-  //     const { weth_token, owner, addr1, addr2 } = await loadFixture(
+  //   it("Verify tokenURI", async function () {
+  //     const { supeRare, owner, addr1, addr2 } = await loadFixture(
   //       deployTokenFixture
   //     );
-
-  //     const owner_initialBal = await weth_token.balanceOf(owner.address);
-  //     expect(owner_initialBal).to.equal("0");
-
-  //     await expect(weth_token.withdraw(1)).to.be.revertedWith(
-  //       "NOTHING_TO_WITHDRAW"
-  //     );
-
-  //     await expect(weth_token.deposit({ value: parseEther("1.0") })).to.emit(
-  //       weth_token,
-  //       "Deposit"
-  //     );
-  //   });
-
-  //   it("Withdraw Success: Deposit some ETH->WETH and then withdraw", async function () {
-  //     const { weth_token, owner, addr1, addr2 } = await loadFixture(
-  //       deployTokenFixture
-  //     );
-
-  //     const owner_initialBal = await weth_token.balanceOf(owner.address);
-  //     expect(owner_initialBal).to.equal("0");
-
-  //     await expect(weth_token.withdraw(1)).to.be.revertedWith(
-  //       "NOTHING_TO_WITHDRAW"
-  //     );
-
-  //     await expect(weth_token.deposit({ value: parseEther("1.0") })).to.emit(
-  //       weth_token,
-  //       "Deposit"
-  //     );
-
-  //     const owner_NewBal = await weth_token.balanceOf(owner.address);
-  //     expect(ethers.utils.formatUnits(owner_NewBal, 18)).to.equal("1.0");
-
-  //     await expect(weth_token.withdraw(parseEther("1.0"))).to.emit(
-  //       weth_token,
-  //       "Withdraw"
-  //     );
-
-  //     const owner_NewBal2 = await weth_token.balanceOf(owner.address);
-  //     expect(ethers.utils.formatUnits(owner_NewBal2, 18)).to.equal("0.0");
   //   });
 });

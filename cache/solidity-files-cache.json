@@ -2,7 +2,7 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/ERC721Token.sol": {
-      "lastModificationDate": 1674516083755,
+      "lastModificationDate": 1674517177289,
       "contentHash": "48323729073a7b29ae0d6a3733a461db",
       "sourceName": "contracts/ERC721Token.sol",
       "solcConfig": {
@@ -78,6 +78,43 @@
         "IERC721Receiver"
       ]
     },
+    "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": {
+      "lastModificationDate": 1674489014135,
+      "contentHash": "1607fe9cc333c6de30f5098d45061a0b",
+      "sourceName": "@openzeppelin/contracts/token/ERC721/IERC721.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../../introspection/IERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.7.0"
+      ],
+      "artifacts": [
+        "IERC721"
+      ]
+    },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/node_modules/@openzeppelin/contracts/utils/Context.sol": {
       "lastModificationDate": 1674489010916,
       "contentHash": "2adbd82f6d055a4751566d4671512b03",
@@ -111,41 +148,6 @@
       ],
       "artifacts": [
         "Context"
-      ]
-    },
-    "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/node_modules/@openzeppelin/contracts/math/SafeMath.sol": {
-      "lastModificationDate": 1674489010889,
-      "contentHash": "871a094d6b6b4c3714946e86329f2fa2",
-      "sourceName": "@openzeppelin/contracts/math/SafeMath.sol",
-      "solcConfig": {
-        "version": "0.7.6",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.7.0"
-      ],
-      "artifacts": [
-        "SafeMath"
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/node_modules/@openzeppelin/contracts/introspection/ERC165.sol": {
@@ -185,6 +187,41 @@
         "ERC165"
       ]
     },
+    "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/node_modules/@openzeppelin/contracts/math/SafeMath.sol": {
+      "lastModificationDate": 1674489010889,
+      "contentHash": "871a094d6b6b4c3714946e86329f2fa2",
+      "sourceName": "@openzeppelin/contracts/math/SafeMath.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.7.0"
+      ],
+      "artifacts": [
+        "SafeMath"
+      ]
+    },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/node_modules/@openzeppelin/contracts/utils/Address.sol": {
       "lastModificationDate": 1674489010915,
       "contentHash": "fc7c67d7b17cde979a685143a26b2bc8",
@@ -220,43 +257,6 @@
         "Address"
       ]
     },
-    "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": {
-      "lastModificationDate": 1674489014135,
-      "contentHash": "1607fe9cc333c6de30f5098d45061a0b",
-      "sourceName": "@openzeppelin/contracts/token/ERC721/IERC721.sol",
-      "solcConfig": {
-        "version": "0.7.6",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "../../introspection/IERC165.sol"
-      ],
-      "versionPragmas": [
-        "^0.7.0"
-      ],
-      "artifacts": [
-        "IERC721"
-      ]
-    },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/node_modules/@openzeppelin/contracts/introspection/IERC165.sol": {
       "lastModificationDate": 1674489010912,
       "contentHash": "253edeb099cfd6a3b0501d2620312e3e",
@@ -290,6 +290,46 @@
       ],
       "artifacts": [
         "IERC165"
+      ]
+    },
+    "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SupeRare.sol": {
+      "lastModificationDate": 1674525474316,
+      "contentHash": "9db91d842674c768fa5bcba8bfe3e0f7",
+      "sourceName": "contracts/SupeRare.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IERC721Metadata.sol",
+        "./ERC721Token.sol",
+        "./Ownable.sol",
+        "hardhat/console.sol"
+      ],
+      "versionPragmas": [
+        "=0.7.6"
+      ],
+      "artifacts": [
+        "SupeRare"
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/IERC721Metadata.sol": {
@@ -362,10 +402,10 @@
         "Ownable"
       ]
     },
-    "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SupeRare.sol": {
-      "lastModificationDate": 1674517645358,
-      "contentHash": "d7c2f00c646f6ddaea988d5052299d55",
-      "sourceName": "contracts/SupeRare.sol",
+    "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/node_modules/hardhat/console.sol": {
+      "lastModificationDate": 1674489009371,
+      "contentHash": "4ff3cd2f6272c9a6516e9ee4f2b967d3",
+      "sourceName": "hardhat/console.sol",
       "solcConfig": {
         "version": "0.7.6",
         "settings": {
@@ -389,16 +429,12 @@
           }
         }
       },
-      "imports": [
-        "./IERC721Metadata.sol",
-        "./ERC721Token.sol",
-        "./Ownable.sol"
-      ],
+      "imports": [],
       "versionPragmas": [
-        "=0.7.6"
+        ">= 0.4.22 <0.9.0"
       ],
       "artifacts": [
-        "SupeRare"
+        "console"
       ]
     }
   }

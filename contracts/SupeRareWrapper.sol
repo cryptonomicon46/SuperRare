@@ -1,13 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.7.6;
-
 import "@openzeppelin/contracts/access/Ownable.sol";
-
+import "@openzeppelin/contracts/utils/Address.sol";
 import "./IERC721Receiver.sol";
 
-contract SupeRareWrapper is Ownable  {   
-    address public immutable SupeOriginalAddr;
 
+interface ISupeRare {
+    function approvedFor(uint256 _tokenId) external view returns (address);
+    function ownerOf(uint256 tokenId) external view returns (address owner);
+
+    function approve(address _to, uint256 _tokenId) external ; 
+    function transfer(address _to, uint256 _tokenId) external ;
+
+}
+contract SupeRareWrapper is Ownable  {   
+     using Address for address;
+    address private  OriginalSupeRareAddr;
+    ISupeRare private supe;
         // Mapping from owner to operator approvals
     mapping (address => mapping (address => bool)) private _operatorApprovals;
 
@@ -21,39 +30,21 @@ contract SupeRareWrapper is Ownable  {
     // which can be also obtained as `IERC721Receiver(0).onERC721Received.selector`
     bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
 
-    constructor (address _SupeOriginalAddr) {
-        SupeOriginalAddr = _SupeOriginalAddr;
-
+    constructor (address OriginalSupeRareAddr_) {
+        OriginalSupeRareAddr = OriginalSupeRareAddr_;
+        supe = ISupeRare(OriginalSupeRareAddr);
     }   
 
 
 
-  /// @notice safeTransferFrom checks approval for this contract to use the asset before doing an ERC721 transfer
-    /// @param from
-    ///  emits a SwapCompleted event
-    ///
-    function safeTransferFrom(address from, address to, uint256 tokenId) public virtual override {
-       
-    
-        safeTransferFrom(from, to, tokenId, "");
-    }
 
 
-    function ApproveThisContract(uint tokenId) external view {
-        require(SupeOriginalAddr.approvedFor(tokenId)!=address(0),"ERC721: operator query for nonexistent token");
-        require(SupeOriginalAddr.ownerOf(tokenId)== msg.sender ||SupeOriginalAddr.approvedFor(tokenId)== msg.sender ,"NOT_OWNER_OR_APPROVED");
-        SupeOriginalAddr.approve(address(this),tokenId);
+    function ApproveThisContract(uint tokenId) external  {
+        require(supe.approvedFor(tokenId)!=address(0),"ERC721: operator query for nonexistent token");
+        require(supe.ownerOf(tokenId)== msg.sender ||supe.approvedFor(tokenId)== msg.sender ,"NOT_OWNER_OR_APPROVED");
+        supe.approve(address(this),tokenId);
         emit ApprovedThisContract(tokenId);
     
-    }
-
-    /**
-     * @dev See {IERC721-safeTransferFrom}.
-     */
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public virtual override {
-        require(_isApprovedOrOwner(address(this), tokenId), "ERC721: transfer caller is not owner nor approved");
-        _safeTransfer(from, to, tokenId, _data);
-
     }
 
 
@@ -64,20 +55,20 @@ contract SupeRareWrapper is Ownable  {
    */
   function getApproved(uint256 _tokenId) public view  returns (address) {
     // return tokenApprovals[_tokenId];
-    return SupeOriginalAddr.approvedFor(_tokenId);
+    return supe.approvedFor(_tokenId);
   }
 
 /**
      * @dev See {IERC721-safeTransferFrom}.
      */
-    function safeTransferFrom(address from, address to, uint256 tokenId) public virtual override {
+    function safeTransferFrom(address from, address to, uint256 tokenId) public  {
         safeTransferFrom(from, to, tokenId, "");
     }
 
     /**
      * @dev See {IERC721-safeTransferFrom}.
      */
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public virtual override {
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public  {
         require(_isApprovedOrOwner(msg.sender, tokenId), "ERC721: transfer caller is not owner nor approved");
         _safeTransfer(from, to, tokenId, _data);
     }
@@ -94,9 +85,9 @@ contract SupeRareWrapper is Ownable  {
      */
     function _isApprovedOrOwner(address spender, uint256 tokenId) internal view virtual returns (bool) {
         // require(_exists(tokenId), "ERC721: operator query for nonexistent token");
-        require(SupeOriginalAddr.approvedFor(tokenId) != address(0),"ERC721: operator query for nonexistent token!" );
+        require(supe.approvedFor(tokenId) != address(0),"ERC721: operator query for nonexistent token!" );
 
-        address owner = SupeOriginalAddr.ownerOf(tokenId);
+        address owner = supe.ownerOf(tokenId);
         // return (spender == owner || getApproved(tokenId) == spender || ERC721.isApprovedForAll(owner, spender));
         return (spender == owner || getApproved(tokenId) == spender);
 
@@ -143,7 +134,7 @@ contract SupeRareWrapper is Ownable  {
         require(to != address(0), "ERC721: transfer to the zero address");
 
         // _beforeTokenTransfer(from, to, tokenId);
-        SupeOriginalAddr.transfer(to,tokenId);
+        supe.transfer(to,tokenId);
         // Clear approvals from the previous owner
         // _approve(address(0), tokenId);
 

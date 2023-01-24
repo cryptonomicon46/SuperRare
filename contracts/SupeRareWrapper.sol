@@ -1,31 +1,32 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.7.6;
-import "@openzeppelin/contracts/access/Ownable.sol";
+// pragma solidity ^0.4.18;
 import "@openzeppelin/contracts/utils/Address.sol";
 import "./IERC721Receiver.sol";
+import "./ISupeRare.sol";
 
 
-interface ISupeRare {
-    function approvedFor(uint256 _tokenId) external view returns (address);
-    function ownerOf(uint256 tokenId) external view returns (address owner);
-
-    function approve(address _to, uint256 _tokenId) external ; 
-    function transfer(address _to, uint256 _tokenId) external ;
-
-}
-contract SupeRareWrapper is Ownable  {   
-     using Address for address;
+contract SupeRareWrapper   {   
+    using Address for address;
     address private  OriginalSupeRareAddr;
     ISupeRare private supe;
-        // Mapping from owner to operator approvals
-    mapping (address => mapping (address => bool)) private _operatorApprovals;
+    address private owner_;
 
+    /**
+     * @dev Emitted when this contract is approved for a certian `tokenId`
+     */
     event ApprovedThisContract(uint256 tokenId);
+
+    /**
+     * @dev Emitted when ownership is transfered from `previousOwner` to `newOwner`
+     */
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     /**
      * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
      */
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+
     // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
     // which can be also obtained as `IERC721Receiver(0).onERC721Received.selector`
     bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
@@ -33,12 +34,15 @@ contract SupeRareWrapper is Ownable  {
     constructor (address OriginalSupeRareAddr_) {
         OriginalSupeRareAddr = OriginalSupeRareAddr_;
         supe = ISupeRare(OriginalSupeRareAddr);
+        owner_ = msg.sender;
     }   
-
-
-
-
-
+   
+   
+    /**
+     * @notice ApproveThisContract, approves this contract to handle a `tokenId`
+     * @param tokenId  the token that'll be approved by this contract
+     * @dev Emits a `ApprovedThisContract` event with the `tokenId`
+     */     
     function ApproveThisContract(uint tokenId) external  {
         require(supe.approvedFor(tokenId)!=address(0),"ERC721: operator query for nonexistent token");
         require(supe.ownerOf(tokenId)== msg.sender ||supe.approvedFor(tokenId)== msg.sender ,"NOT_OWNER_OR_APPROVED");
@@ -49,7 +53,7 @@ contract SupeRareWrapper is Ownable  {
 
 
   /**
-   * @dev Gets the approved address to take ownership of a given token ID
+   * @dev getApproved Gets the approved address to take ownership of a given token ID
    * @param _tokenId uint256 ID of the token to query the approval of
    * @return address currently approved to take ownership of the given token ID
    */
@@ -58,15 +62,22 @@ contract SupeRareWrapper is Ownable  {
     return supe.approvedFor(_tokenId);
   }
 
-/**
-     * @dev See {IERC721-safeTransferFrom}.
+    /**
+     * @dev See {IERC721-safeTransferFrom} https://eips.ethereum.org/EIPS/eip-721
+     * @param from is the address that's approved or owner of the `tokenId`
+     * @param to is either an EOA or an ERC721 compliant contract implementing onERC721Received
+     * @param tokenId the underlying NFT asset to be transferred
      */
     function safeTransferFrom(address from, address to, uint256 tokenId) public  {
         safeTransferFrom(from, to, tokenId, "");
     }
 
     /**
-     * @dev See {IERC721-safeTransferFrom}.
+     * @dev See {IERC721-safeTransferFrom} https://eips.ethereum.org/EIPS/eip-721
+     * @param from is the address that's approved or owner of the `tokenId`
+     * @param to is either an EOA or an ERC721 compliant contract implementing onERC721Received
+     * @param tokenId the underlying NFT asset to be transferred 
+     * @param _data  Additional data with no specified format, sent in call to `_to`
      */
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public  {
         require(_isApprovedOrOwner(msg.sender, tokenId), "ERC721: transfer caller is not owner nor approved");
@@ -75,13 +86,11 @@ contract SupeRareWrapper is Ownable  {
 
 
 
-
     /**
-     * @dev Returns whether `spender` is allowed to manage `tokenId`.
-     *
-     * Requirements:
-     *
-     * - `tokenId` must exist.
+     * @dev _isApprovedOrOwner returns if the `spender` is approved/owner of the NFT asset
+     * @param spender the EOA that is approved or owner of the NFT asset
+     * @param tokenId the underlying NFT asset to be transferred 
+     * @notice the `tokenId` must exist 
      */
     function _isApprovedOrOwner(address spender, uint256 tokenId) internal view virtual returns (bool) {
         // require(_exists(tokenId), "ERC721: operator query for nonexistent token");
@@ -96,53 +105,35 @@ contract SupeRareWrapper is Ownable  {
 
 
     /**
-     * @dev Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients
-     * are aware of the ERC721 protocol to prevent tokens from being forever locked.
-     *
-     * `_data` is additional data, it has no specified format and it is sent in call to `to`.
-     *
-     * This internal function is equivalent to {safeTransferFrom}, and can be used to e.g.
-     * implement alternative mechanisms to perform token transfer, such as signature-based.
-     *
-     * Requirements:
-     *
-     * - `from` cannot be the zero address.
-     * - `to` cannot be the zero address.
-     * - `tokenId` token must exist and be owned by `from`.
-     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
-     *
-     * Emits a {Transfer} event.
+     * @notice Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients are aware of the ERC721 protocol to prevent tokens from being forever locked.
+     * @param from cannot be the zero address.
+     * @param to cannot be the zero address.
+     * @param tokenId token must exist and be owned by `from`.
+    * @param _data` is additional data, it has no specified format and it is sent in call to `to`.
+     * @dev If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
+     * @dev Emits a {Transfer} event.
      */
+
     function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) internal virtual {
         _transfer(from, to, tokenId);
         require(_checkOnERC721Received(from, to, tokenId, _data), "ERC721: transfer to non ERC721Receiver implementer");
     }
 
-        /**
-     * @dev Transfers `tokenId` from `from` to `to`.
+    /**
+     * @notice _transfer Transfers `tokenId` from `from` to `to`
      *  As opposed to {transferFrom}, this imposes no restrictions on msg.sender.
      *
      * Requirements:
-     *
-     * - `to` cannot be the zero address.
-     * - `tokenId` token must be owned by `from`.
-     *
-     * Emits a {Transfer} event.
+     * @param from the owner of approved address for the NFT asset
+     * @param to `to` cannot be the zero address.
+     * @param tokenId `tokenId` token must be owned by `from` 
+     * @dev Emits a {Transfer} event.
      */
     function _transfer(address from, address to, uint256 tokenId) internal virtual {
         // require(SupeOriginalAddr.ownerOf(tokenId) == from, "ERC721: transfer of token that is not own"); // internal owner
         require(to != address(0), "ERC721: transfer to the zero address");
 
-        // _beforeTokenTransfer(from, to, tokenId);
         supe.transfer(to,tokenId);
-        // Clear approvals from the previous owner
-        // _approve(address(0), tokenId);
-
-        // _holderTokens[from].remove(tokenId);
-        // _holderTokens[to].add(tokenId);
-
-        // _tokenOwners.set(tokenId, to);
-
         emit Transfer(from, to, tokenId);
     }
 
@@ -166,7 +157,7 @@ contract SupeRareWrapper is Ownable  {
         }
         bytes memory returndata = to.functionCall(abi.encodeWithSelector(
             IERC721Receiver(to).onERC721Received.selector,
-            _msgSender(),
+            msg.sender,
             from,
             tokenId,
             _data
@@ -177,4 +168,23 @@ contract SupeRareWrapper is Ownable  {
 
 
 
+    /**
+     * @dev Throws if called by any account other than the owner.
+     */
+    modifier onlyOwner() {
+        require(msg.sender == owner_);
+        _;
+    }
+
+
+    /**
+     * @notice Allows the current owner to transfer control of the contract to a newOwner.
+     * @param newOwner The address to transfer ownership to.
+     * @dev emits a `OwnershipTransferred` event 
+     */
+    function transferOwnership(address newOwner) public onlyOwner {
+        require(newOwner != address(0));
+        emit OwnershipTransferred(owner_, newOwner);
+        owner_ = newOwner;
+    }
 }

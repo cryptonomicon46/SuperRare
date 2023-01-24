@@ -2,23 +2,35 @@
  *Submitted for verification at Etherscan.io on 2019-05-13
 */
 
-pragma solidity ^0.4.18;
+// pragma solidity ^0.4.18;
+pragma solidity =0.7.6;
 
-
+interface IERC721Receiver {
+    /**
+     * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}
+     * by `operator` from `from`, this function is called.
+     *
+     * It must return its Solidity selector to confirm the token transfer.
+     * If any other value is returned or the interface is not implemented by the recipient, the transfer will be reverted.
+     *
+     * The selector can be obtained in Solidity with `IERC721.onERC721Received.selector`.
+     */
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external returns (bytes4);
+}
 
 /**
  * @title ERC721 interface
  * @dev see https://github.com/ethereum/eips/issues/721
  */
-contract ERC721 {
+interface ERC721 {
   event Transfer(address indexed _from, address indexed _to, uint256 _tokenId);
   event Approval(address indexed _owner, address indexed _approved, uint256 _tokenId);
 
-  function balanceOf(address _owner) public view returns (uint256 _balance);
-  function ownerOf(uint256 _tokenId) public view returns (address _owner);
-  function transfer(address _to, uint256 _tokenId) public;
-  function approve(address _to, uint256 _tokenId) public;
-  function takeOwnership(uint256 _tokenId) public;
+  function balanceOf(address _owner) external view returns (uint256 _balance);
+  function ownerOf(uint256 _tokenId) external view returns (address _owner);
+  function transfer(address _to, uint256 _tokenId) external;
+  function approve(address _to, uint256 _tokenId) external;
+  function takeOwnership(uint256 _tokenId) external;
 }
 
 /**
@@ -112,7 +124,7 @@ contract ERC721Token is ERC721 {
   * @param _owner address to query the balance of
   * @return uint256 representing the amount owned by the passed address
   */
-  function balanceOf(address _owner) public view returns (uint256) {
+  function balanceOf(address _owner) public view  virtual override returns (uint256) {
     return ownedTokens[_owner].length;
   }
 
@@ -121,7 +133,7 @@ contract ERC721Token is ERC721 {
   * @param _owner address to query the tokens of
   * @return uint256[] representing the list of tokens owned by the passed address
   */
-  function tokensOf(address _owner) public view returns (uint256[]) {
+  function tokensOf(address _owner) public view returns (uint256[] memory) {
     return ownedTokens[_owner];
   }
 
@@ -130,7 +142,7 @@ contract ERC721Token is ERC721 {
   * @param _tokenId uint256 ID of the token to query the owner of
   * @return owner address currently marked as the owner of the given token ID
   */
-  function ownerOf(uint256 _tokenId) public view returns (address) {
+  function ownerOf(uint256 _tokenId) public view virtual override returns (address) {
     address owner = tokenOwner[_tokenId];
     require(owner != address(0));
     return owner;
@@ -150,7 +162,7 @@ contract ERC721Token is ERC721 {
   * @param _to address to receive the ownership of the given token ID
   * @param _tokenId uint256 ID of the token to be transferred
   */
-  function transfer(address _to, uint256 _tokenId) public onlyOwnerOf(_tokenId) {
+  function transfer(address _to, uint256 _tokenId) public virtual override onlyOwnerOf(_tokenId) {
     clearApprovalAndTransfer(msg.sender, _to, _tokenId);
   }
 
@@ -159,12 +171,12 @@ contract ERC721Token is ERC721 {
   * @param _to address to be approved for the given token ID
   * @param _tokenId uint256 ID of the token to be approved
   */
-  function approve(address _to, uint256 _tokenId) public onlyOwnerOf(_tokenId) {
+  function approve(address _to, uint256 _tokenId) public virtual override onlyOwnerOf(_tokenId) {
     address owner = ownerOf(_tokenId);
     require(_to != owner);
-    if (approvedFor(_tokenId) != 0 || _to != 0) {
+    if (approvedFor(_tokenId) != address(0) || _to != address(0)) {
       tokenApprovals[_tokenId] = _to;
-      Approval(owner, _to, _tokenId);
+      emit Approval(owner, _to, _tokenId);
     }
   }
 
@@ -172,7 +184,7 @@ contract ERC721Token is ERC721 {
   * @dev Claims the ownership of a given token ID
   * @param _tokenId uint256 ID of the token being claimed by the msg.sender
   */
-  function takeOwnership(uint256 _tokenId) public {
+  function takeOwnership(uint256 _tokenId) public virtual override  {
     require(isApprovedFor(msg.sender, _tokenId));
     clearApprovalAndTransfer(ownerOf(_tokenId), msg.sender, _tokenId);
   }
@@ -185,7 +197,7 @@ contract ERC721Token is ERC721 {
   function _mint(address _to, uint256 _tokenId) internal {
     require(_to != address(0));
     addToken(_to, _tokenId);
-    Transfer(0x0, _to, _tokenId);
+    emit Transfer(address(0), _to, _tokenId);
   }
 
   /**
@@ -193,11 +205,11 @@ contract ERC721Token is ERC721 {
   * @param _tokenId uint256 ID of the token being burned by the msg.sender
   */
   function _burn(uint256 _tokenId) onlyOwnerOf(_tokenId) internal {
-    if (approvedFor(_tokenId) != 0) {
+    if (approvedFor(_tokenId) != address(0)) {
       clearApproval(msg.sender, _tokenId);
     }
     removeToken(msg.sender, _tokenId);
-    Transfer(msg.sender, 0x0, _tokenId);
+    Transfer(msg.sender, address(0), _tokenId);
   }
 
   /**
@@ -225,7 +237,7 @@ contract ERC721Token is ERC721 {
     clearApproval(_from, _tokenId);
     removeToken(_from, _tokenId);
     addToken(_to, _tokenId);
-    Transfer(_from, _to, _tokenId);
+    emit Transfer(_from, _to, _tokenId);
   }
 
   /**
@@ -234,8 +246,8 @@ contract ERC721Token is ERC721 {
   */
   function clearApproval(address _owner, uint256 _tokenId) private {
     require(ownerOf(_tokenId) == _owner);
-    tokenApprovals[_tokenId] = 0;
-    Approval(_owner, 0, _tokenId);
+    tokenApprovals[_tokenId] = address(0);
+    emit Approval(_owner, address(0), _tokenId);
   }
 
   /**
@@ -264,14 +276,14 @@ contract ERC721Token is ERC721 {
     uint256 lastTokenIndex = balanceOf(_from).sub(1);
     uint256 lastToken = ownedTokens[_from][lastTokenIndex];
 
-    tokenOwner[_tokenId] = 0;
+    tokenOwner[_tokenId] = address(0);
     ownedTokens[_from][tokenIndex] = lastToken;
     ownedTokens[_from][lastTokenIndex] = 0;
     // Note that this will handle single-element arrays. In that case, both tokenIndex and lastTokenIndex are going to
     // be zero. Then we can make sure that we will remove _tokenId from the ownedTokens list since we are first swapping
     // the lastToken to the first position, and then dropping the element placed in the last position of the list
 
-    ownedTokens[_from].length--;
+    // ownedTokens[_from].length--;
     ownedTokensIndex[_tokenId] = 0;
     ownedTokensIndex[lastToken] = tokenIndex;
     totalTokens = totalTokens.sub(1);
@@ -296,7 +308,7 @@ contract Ownable {
    * @dev The Ownable constructor sets the original `owner` of the contract to the sender
    * account.
    */
-  function Ownable() public {
+  constructor ()  {
     owner = msg.sender;
   }
 
@@ -325,16 +337,16 @@ contract Ownable {
 ///  Note: the ERC-165 identifier for this interface is 0x5b5e139f
 interface ERC721Metadata /* is ERC721 */ {
   /// @notice A descriptive name for a collection of NFTs in this contract
-  function name() external pure returns (string _name);
+  function name() external pure returns (string memory _name);
 
   /// @notice An abbreviated name for NFTs in this contract
-  function symbol() external pure returns (string _symbol);
+  function symbol() external pure returns (string memory _symbol);
 
   /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
   /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
   ///  3986. The URI may point to a JSON file that conforms to the "ERC721
   ///  Metadata JSON Schema".
-  function tokenURI(uint256 _tokenId) external view returns (string);
+  function tokenURI(uint256 _tokenId) external view returns (string memory);
 }
 
 
@@ -383,7 +395,7 @@ contract SupeRare is ERC721Token, Ownable, ERC721Metadata {
      * @dev Guarantees _uri has not been used with a token already
      * @param _uri string of the metadata uri associated with the token
      */
-    modifier uniqueURI(string _uri) {
+    modifier uniqueURI(string memory _uri) {
         require(uriOriginalToken[_uri] == 0);
         _;
     }
@@ -411,7 +423,7 @@ contract SupeRare is ERC721Token, Ownable, ERC721Metadata {
      * @param _to address to receive the ownership of the given token ID
      * @param _tokenId uint256 ID of the token to be transferred
      */
-    function transfer(address _to, uint256 _tokenId) public onlyOwnerOf(_tokenId) {
+    function transfer(address _to, uint256 _tokenId) public virtual override onlyOwnerOf(_tokenId) {
         tokenSold[_tokenId] = true;
         tokenSalePrice[_tokenId] = 0;
         clearApprovalAndTransfer(msg.sender, _to, _tokenId);
@@ -421,7 +433,7 @@ contract SupeRare is ERC721Token, Ownable, ERC721Metadata {
      * @dev Adds a new unique token to the supply
      * @param _uri string metadata uri associated with the token
      */
-    function addNewToken(string _uri) public uniqueURI(_uri) onlyCreator {
+    function addNewToken(string memory _uri) public uniqueURI(_uri) onlyCreator {
         uint256 newId = createToken(_uri, msg.sender);
         uriOriginalToken[_uri] = newId;
     }
@@ -432,7 +444,7 @@ contract SupeRare is ERC721Token, Ownable, ERC721Metadata {
      * @param _editions uint256 number of editions to create.
      * @param _salePrice uint256 wei price of editions.
      */
-    function addNewTokenWithEditions(string _uri, uint256 _editions, uint256 _salePrice) public uniqueURI(_uri) onlyCreator {
+    function addNewTokenWithEditions(string memory _uri, uint256 _editions, uint256 _salePrice) public uniqueURI(_uri) onlyCreator {
       uint256 originalId = createToken(_uri, msg.sender);
       uriOriginalToken[_uri] = originalId;
 
@@ -543,21 +555,21 @@ contract SupeRare is ERC721Token, Ownable, ERC721Metadata {
     /**
      * @notice A descriptive name for a collection of NFTs in this contract
      */
-    function name() external pure returns (string _name) {
+    function name() external pure virtual override returns (string memory _name) {
         return 'SupeRare';
     }
 
     /**
      * @notice An abbreviated name for NFTs in this contract
      */
-    function symbol() external pure returns (string _symbol) {
+    function symbol() external pure virtual override returns (string memory _symbol) {
         return 'SUPR';
     }
 
     /**
      * @notice approve is not a supported function for this contract
      */
-    function approve(address _to, uint256 _tokenId) public {
+    function approve(address _to, uint256 _tokenId) public virtual override{
         revert();
     }
 
@@ -576,7 +588,7 @@ contract SupeRare is ERC721Token, Ownable, ERC721Metadata {
      * 3986. The URI may point to a JSON file that conforms to the "ERC721
      * Metadata JSON Schema".
      */
-    function tokenURI(uint256 _tokenId) external view returns (string) {
+    function tokenURI(uint256 _tokenId) external view virtual override returns (string memory) {
         ownerOf(_tokenId);
         return tokenToURI[_tokenId];
     }
@@ -588,7 +600,7 @@ contract SupeRare is ERC721Token, Ownable, ERC721Metadata {
     * @param _uri string uri of metadata
     * @return uint256 token ID
     */
-    function originalTokenOfUri(string _uri) public view returns (uint256) {
+    function originalTokenOfUri(string memory _uri) public view returns (uint256) {
         uint256 tokenId = uriOriginalToken[_uri];
         ownerOf(tokenId);
         return tokenId;
@@ -629,7 +641,7 @@ contract SupeRare is ERC721Token, Ownable, ERC721Metadata {
         uint256 currentBid = tokenCurrentBid[_tokenId];
         address currentBidder = tokenBidder[_tokenId];
         if(currentBidder != address(0)) {
-            currentBidder.transfer(currentBid);
+            payable(currentBidder).transfer(currentBid);
         }
     }
     
@@ -671,9 +683,9 @@ contract SupeRare is ERC721Token, Ownable, ERC721Metadata {
             ownerPayment = 0;
             tokenSold[_tokenId] = true;
         }
-        _maintainer.transfer(maintainerPayment);
-        _creator.transfer(creatorPayment);
-        _tokenOwner.transfer(ownerPayment);
+        payable(_maintainer).transfer(maintainerPayment);
+        payable(_creator).transfer(creatorPayment);
+        payable(_tokenOwner).transfer(ownerPayment);
       
     }
 
@@ -681,7 +693,7 @@ contract SupeRare is ERC721Token, Ownable, ERC721Metadata {
      * @dev Internal function creating a new token.
      * @param _uri string metadata uri associated with the token
      */
-    function createToken(string _uri, address _creator) private  returns (uint256){
+    function createToken(string memory _uri, address _creator) private  returns (uint256){
       uint256 newId = totalSupply() + 1;
       _mint(_creator, newId);
       tokenCreator[newId] = _creator;

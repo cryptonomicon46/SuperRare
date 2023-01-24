@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "IERC721Metadata",
-  "sourceName": "contracts/IERC721Metadata.sol",
+  "contractName": "ERC721Metadata",
+  "sourceName": "contracts/SupeRare.sol",
   "abi": [
     {
       "inputs": [],
@@ -13,7 +13,7 @@
           "type": "string"
         }
       ],
-      "stateMutability": "view",
+      "stateMutability": "pure",
       "type": "function"
     },
     {
@@ -26,7 +26,7 @@
           "type": "string"
         }
       ],
-      "stateMutability": "view",
+      "stateMutability": "pure",
       "type": "function"
     },
     {

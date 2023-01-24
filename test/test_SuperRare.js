@@ -58,7 +58,7 @@ describe("SupeRare Test Suit: ERC721 Compatible Contract", function () {
       .withArgs(addr2.address);
   });
 
-  it("Read maintainer %, but only owner can change the value", async function () {
+  it("MaintainerPercentage: Check default value and change it.", async function () {
     const { supeRare, owner, addr1, addr2 } = await loadFixture(
       deployTokenFixture
     );
@@ -70,12 +70,34 @@ describe("SupeRare Test Suit: ERC721 Compatible Contract", function () {
     await expect(supeRare.connect(addr2.address).setMaintainerPercentage(5)).to
       .be.reverted;
 
-    expect(await supeRare.maintainerPercentage).to.equal(30);
+    maintainer_per = await supeRare.maintainerPercentage();
+    expect(maintainer_per).to.equal(30);
 
-    await supeRare.connect(owner).setMaintainerPercentage(30);
+    await supeRare.connect(owner).setMaintainerPercentage(5);
 
-    await supeRare.connect(owner.address).setMaintainerPercentage(5);
-    expect(await supeRare.maintainerPercentage).to.equal(5);
+    maintainer_per = await supeRare.maintainerPercentage();
+    expect(maintainer_per).to.equal(5);
+  });
+
+  it("CreatorPercentage: Check default value and change it.", async function () {
+    const { supeRare, owner, addr1, addr2 } = await loadFixture(
+      deployTokenFixture
+    );
+    let creator_per = await supeRare.creatorPercentage();
+    console.log(creator_per);
+
+    expect(creator_per).to.equal(100);
+
+    await expect(supeRare.connect(addr2.address).setCreatorPercentage(5)).to.be
+      .reverted;
+
+    creator_per = await supeRare.creatorPercentage();
+    expect(creator_per).to.equal(100);
+
+    await supeRare.connect(owner).setCreatorPercentage(20);
+
+    creator_per = await supeRare.creatorPercentage();
+    expect(creator_per).to.equal(20);
   });
 
   //   it("Intial balance: check owner's initial balance", async function () {

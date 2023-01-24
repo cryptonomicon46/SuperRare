@@ -40,7 +40,6 @@ task(
  */
 module.exports = {
   solidity: "0.7.6",
-  //   solidity: "0.4.18",
   settings: {
     evmVersion: "istanbul",
     optimizer: {

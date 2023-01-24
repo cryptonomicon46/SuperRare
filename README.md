@@ -29,20 +29,23 @@ To run all the tests
 npx hardhat test
 
 To test a specific test file
-npx hardhat test ./test/test_SwapETH2DAI.js --network localhost
+npx hardhat test ./test/test_SupeRareWrapper.js --network localhost
+
+npx hardhat run scripts/deploy.js --network hardhat
 
 To test a specific "IT" in a selected test file
-npx hardhat test ./test/test_SwapETH2DAI2USDC.js --grep "Contract Deployed" --network localhost
-npx hardhat test ./test/test_SwapETH2DAI2USDC.js --grep "USDC amountOut" --network localhost
+npx hardhat test ./test/test_SupeRareWrapper.js --grep "Contract Deployed" --network localhost
 
-npx hardhat test ./test/test_FusionToken.js --network localhost
-npx hardhat run scripts/deploy.js --network goerli
+npx hardhat test ./test/test_SupeRareWrapper.js --network localhost
+npx hardhat run scripts/deploy_SupeRareWrapper.js --network hardhat
+
+npx hardhat run scripts/deploy_SupeRareWrapper.js --network goerli
 npx hardhat verify "" --network goerli
 
-npx hardhat run scripts/deploy.js --network mainnet
+npx hardhat run scripts/1_deploy_SupeRareWrapper.js --network mainnet
 npx hardhat verify "" --network mainnet
 
 Test coverage
 yarn add solidity-coverage --dev
 
-npx hardhat coverage --testfiles "test/test_SwapContract.js"
+npx hardhat coverage --testfiles "test/test_SupeRareWrapper.js"

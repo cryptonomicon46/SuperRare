@@ -491,7 +491,7 @@ contract SupeRare is ERC721Token, Ownable, ERC721Metadata {
         address bidder = tokenBidder[_tokenId];
         require(msg.sender == bidder);
         uint256 bidAmount = tokenCurrentBid[_tokenId];
-        msg.sender.transfer(bidAmount);
+        payable(msg.sender).transfer(bidAmount);
         clearBid(_tokenId);
         CancelBid(bidder, bidAmount, _tokenId);
     }

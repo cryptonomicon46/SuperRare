@@ -55,17 +55,17 @@ contract SupeRareWrapper   {
     }   
    
 
-    /**
-     * @dev See {IERC721-safeTransferFrom} https://eips.ethereum.org/EIPS/eip-721
-     * @param from is the address that's approved or owner of the `tokenId`
-     * @param to is either an EOA or an ERC721 compliant contract implementing onERC721Received
-     * @param tokenId the underlying NFT asset to be transferred
-     * @dev only the owner of this contract can invoke the safe transfer
+    // /**
+    //  * @dev See {IERC721-safeTransferFrom} https://eips.ethereum.org/EIPS/eip-721
+    //  * @param from is the address that's approved or owner of the `tokenId`
+    //  * @param to is either an EOA or an ERC721 compliant contract implementing onERC721Received
+    //  * @param tokenId the underlying NFT asset to be transferred
+    //  * @dev only the owner of this contract can invoke the safe transfer
 
-     */
-    function safeTransferFrom(address from, address to, uint256 tokenId) public onlyOwner {
-        safeTransferFrom(from, to, tokenId, "");
-    }
+    //  */
+    // function safeTransferFrom(address from, address to, uint256 tokenId) public onlyOwner {
+    //     safeTransferFrom(from, to, tokenId, "");
+    // }
 
     /**
      * @dev See {IERC721-safeTransferFrom} https://eips.ethereum.org/EIPS/eip-721
@@ -75,16 +75,12 @@ contract SupeRareWrapper   {
      * @param _data  Additional data with no specified format, sent in call to `_to`
      * @dev only the owner of this contract can invoke the safe transfer
      */ 
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public onlyOwner  {
+    function safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) public onlyOwner  {
         // require(supe.approvedFor(tokenId) != address(0),"INVALID_TOKENID" );
         require(from == supe.ownerOf(tokenId),"NOT_NFT_OWNER" );
         
         _safeTransfer(from, to, tokenId, _data);
     }
-
-
-
-
 
     /**
      * @notice Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients are aware of the ERC721 protocol to prevent tokens from being forever locked.

@@ -435,10 +435,13 @@ describe("Safe Transfer Function Tests", function () {
       `Original SupeRare Contract:${await supeRareWrapper.getSupeRareAddress()}`
     );
 
-    await supeRareWrapper.safeTransferFrom(
-      supeRareWrapper.address,
-      eschrow.address,
-      BigNumber.from(2)
-    );
+    await supeRareWrapper
+      .connect(owner)
+      .safeTransfer(
+        supeRareWrapper.address,
+        eschrow.address,
+        BigNumber.from(2),
+        "0x00"
+      );
   });
 });

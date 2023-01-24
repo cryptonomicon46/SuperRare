@@ -428,19 +428,18 @@ describe("Safe Transfer Function Tests", function () {
     let tokenId = await supeRare.tokensOf(supeRareWrapper.address);
     expect(tokenId[0]).to.equal(BigNumber.from(2));
 
-    await supeRareWrapper.safeTransferFrom(
-      supeRareWrapper.address,
-      eschrow.address,
-      2
-    );
-
     // let tokenIdEschrow = await supeRare.tokensOf(eschrow.address);
     // expect(tokenIdEschrow[0]).to.equal(BigNumber.from(2));
     console.log(`Owner of WrapperContract:${await supeRareWrapper.getOwner()}`);
     console.log(
       `Original SupeRare Contract:${await supeRareWrapper.getSupeRareAddress()}`
     );
-  });
 
-  it("SafeTransfer From", async function () {});
+    await supeRareWrapper.safeTransferFrom(
+      supeRareWrapper.address,
+      eschrow.address,
+      2,
+      ""
+    );
+  });
 });

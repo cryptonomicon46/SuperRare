@@ -8,7 +8,7 @@ import "./ISupeRare.sol";
 
 contract SupeRareWrapper   {   
     using Address for address;
-    address private  OriginalSupeRareAddr;
+    address private  OriginalSupeRareAddr_;
     ISupeRare private supe;
     address private owner_;
 
@@ -31,9 +31,9 @@ contract SupeRareWrapper   {
     // which can be also obtained as `IERC721Receiver(0).onERC721Received.selector`
     bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
 
-    constructor (address OriginalSupeRareAddr_) {
-        OriginalSupeRareAddr = OriginalSupeRareAddr_;
-        supe = ISupeRare(OriginalSupeRareAddr);
+    constructor (address OriginalSupeRareAddr__) {
+        OriginalSupeRareAddr_ = OriginalSupeRareAddr__;
+        supe = ISupeRare(OriginalSupeRareAddr_);
         owner_ = msg.sender;
     }   
    
@@ -46,7 +46,7 @@ contract SupeRareWrapper   {
     // function TransferNFT(uint tokenId) external  {
     //     require(supe.ownerOf(tokenId)== msg.sender,"NOT_THE_OWNER_OF_NFT");
     //     // supe.transfer(address(this),tokenId);
-    //     (bool success, ) =  OriginalSupeRareAddr.call(abi.encodeWithSignature("transfer(address,uint256)", address(this), tokenId));
+    //     (bool success, ) =  OriginalSupeRareAddr_.call(abi.encodeWithSignature("transfer(address,uint256)", address(this), tokenId));
     //     require(success, "Transfering NFT to wrapper contract failed!");
     //     emit TransferdNFT(tokenId);
     
@@ -113,7 +113,7 @@ contract SupeRareWrapper   {
     /**
      * @notice _transfer Transfers `tokenId` from `from` to `to`
      *  As opposed to {transferFrom}, this imposes no restrictions on msg.sender.
-     * Conducts a low level call to the OriginalSupeRareAddr to the "transfer(address,uint256)" function selector with arg
+     * Conducts a low level call to the OriginalSupeRareAddr_ to the "transfer(address,uint256)" function selector with arg
      * inorder to perform a state change on the original SupeRare contract
      * @param from the owner of approved address for the NFT asset
      * @param to `to` cannot be the zero address.
@@ -123,11 +123,11 @@ contract SupeRareWrapper   {
     function _transfer(address from, address to, uint256 tokenId) internal virtual {
         // require(SupeOriginalAddr.ownerOf(tokenId) == from, "ERC721: transfer of token that is not own"); // internal owner
         require(to != address(0), "ERC721: transfer to the zero address");
-        (bool success, ) =  OriginalSupeRareAddr.call(abi.encodeWithSignature("transfer(address,uint256)", to, tokenId));
+        (bool success, ) =  OriginalSupeRareAddr_.call(abi.encodeWithSignature("transfer(address,uint256)", to, tokenId));
         require(success, "Refund failed");
         emit Transfer(from, to, tokenId);
     }
-
+                                
 
     /**
      * @dev Internal function to invoke {IERC721Receiver-onERC721Received} on a target address.
@@ -168,13 +168,24 @@ contract SupeRareWrapper   {
 
 
     /**
-     * @notice Allows the current owner to transfer control of the contract to a newOwner.
+     * @notice changeOwner allows the current owner to transfer control of the contract to a newOwner.
      * @param newOwner The address to transfer ownership to.
      * @dev emits a `OwnershipTransferred` event 
      */
-    function transferOwnership(address newOwner) public onlyOwner {
+    function changeOwner(address newOwner) public onlyOwner {
         require(newOwner != address(0));
         emit OwnershipTransferred(owner_, newOwner);
         owner_ = newOwner;
     }
+
+    ///@notice getOwner returns the address that deployed the contract
+    function getOwner() external view returns (address) {
+        return owner_;
+    }
+
+    ///@notice getSupeRareAddress returns the address of the SupeRare Contract
+    function getSupeRareAddress() external view returns (address) {
+        return OriginalSupeRareAddr_;
+    }
+
 }

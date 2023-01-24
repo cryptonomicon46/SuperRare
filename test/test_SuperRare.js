@@ -23,8 +23,8 @@ describe("SupeRare Test Suit: Basics", function () {
     console.log("Deploying SupeRare ...\n");
     const supeRare = await SupeRare.deploy();
     await supeRare.deployed();
-    console.log("SupeRare contract deployed at:", supeRare.address);
-    console.log("Deployer Address", owner.address);
+    // console.log("SupeRare contract deployed at:", supeRare.address);
+    // console.log("Deployer Address", owner.address);
 
     return { supeRare, owner, addr1, addr2 };
   }
@@ -115,6 +115,21 @@ describe("SupeRare Test Suit: Basics", function () {
     creator_per = await supeRare.creatorPercentage();
     expect(creator_per).to.equal(20);
   });
+
+  it("AddNewToken: Check the TotalSupply, tokenId and URI", async function () {
+    const { supeRare, owner, addr1 } = await loadFixture(deployTokenFixture);
+
+    await expect(supeRare.connect(owner).whitelistCreator(addr1.address))
+      .to.emit(supeRare, "WhitelistCreator")
+      .withArgs(addr1.address);
+
+    await supeRare.connect(addr1).addNewToken("NewEditions_10");
+    expect(await supeRare.totalSupply()).to.equal(1);
+    const tokenId = await supeRare.tokensOf(addr1.address);
+    console.log(ethers.BigNumber.from(1), tokenId[0]);
+    expect(tokenId[0]).to.be.equal(ethers.BigNumber.from("1"));
+    expect(await supeRare.tokenURI(tokenId[0])).to.equal("NewEditions_10");
+  });
 });
 
 describe("Creator creates SupeRare token: Tests", function () {
@@ -125,19 +140,8 @@ describe("Creator creates SupeRare token: Tests", function () {
     console.log("Deploying SupeRare ...\n");
     const supeRare = await SupeRare.deploy();
     await supeRare.deployed();
-    console.log("SupeRare contract deployed at:", supeRare.address);
-    console.log("Deployer Address", owner.address);
-
-    return { supeRare, owner, addr1, creator };
-  }
-
-  it("AddNewTokenEdition: Only creator can add a new token", async function () {
-    const { supeRare, owner, addr1, creator } = await loadFixture(
-      deployTokenFixture
-    );
-
-    // await expect(supeRare.connect(addr1.address).addNewToken("TestURI")).to.be
-    //   .reverted;
+    // console.log("SupeRare contract deployed at:", supeRare.address);
+    // console.log("Deployer Address", owner.address);
     await expect(supeRare.connect(owner).whitelistCreator(creator.address))
       .to.emit(supeRare, "WhitelistCreator")
       .withArgs(creator.address);
@@ -148,27 +152,80 @@ describe("Creator creates SupeRare token: Tests", function () {
         .addNewTokenWithEditions("NewEditions_10", 10, parseEther("1"))
     ).to.emit(supeRare, "SalePriceSet");
 
+    return { supeRare, owner, addr1, creator };
+  }
+
+  it("AddNewTokenEdition: Create new tokens and check totalSupply", async function () {
+    const { supeRare, owner, addr1, creator } = await loadFixture(
+      deployTokenFixture
+    );
+
     let totalSupply = await supeRare.totalSupply();
     expect(totalSupply).to.equal(11);
+  });
+
+  it("AddNewTokenEdition: Check TokenURIs", async function () {
+    const { supeRare, owner, addr1, creator } = await loadFixture(
+      deployTokenFixture
+    );
+
     let tokenURI;
     for (let i = 1; i <= 11; i++) {
       expect(await supeRare.tokenURI(i)).to.be.equal("NewEditions_10");
-      expect(await supeRare.ownerOf(i)).to.be.equal(creator.address);
-      expect(await supeRare.creatorOfToken(i)).to.be.equal(creator.address);
+    }
+  });
 
+  it("AddNewTokenEdition: Check SalePriceOfTokens", async function () {
+    const { supeRare, owner, addr1, creator } = await loadFixture(
+      deployTokenFixture
+    );
+
+    for (let i = 1; i <= 11; i++) {
       i == 1
         ? expect(await supeRare.salePriceOfToken(i)).to.be.equal(0)
         : expect(await supeRare.salePriceOfToken(i)).to.be.equal(
             parseEther("1")
           );
     }
+  });
+
+  it("AddNewTokenEdition: Check OwnerOf and CreatorOf tokenIds", async function () {
+    const { supeRare, owner, addr1, creator } = await loadFixture(
+      deployTokenFixture
+    );
+
+    let tokenURI;
+    for (let i = 1; i <= 11; i++) {
+      expect(await supeRare.ownerOf(i)).to.be.equal(creator.address);
+      expect(await supeRare.creatorOfToken(i)).to.be.equal(creator.address);
+    }
+  });
+
+  it("AddNewTokenEdition: Check all tokens belonging to the owner", async function () {
+    const { supeRare, owner, addr1, creator } = await loadFixture(
+      deployTokenFixture
+    );
+    const tokensOfOwner = await supeRare.tokensOf(creator.address);
+    tokensOfOwner.forEach((v, i) => expect(v).to.be.equal(i + 1));
+  });
+
+  it("AddNewTokenEdition: Check balance of Owner", async function () {
+    const { supeRare, owner, addr1, creator } = await loadFixture(
+      deployTokenFixture
+    );
+
+    expect(await supeRare.balanceOf(creator.address)).to.equal(11);
+  });
+
+  it("AddNewTokenEdition: Check Original token URI", async function () {
+    const { supeRare, owner, addr1, creator } = await loadFixture(
+      deployTokenFixture
+    );
 
     const tokensOfOwner = await supeRare.tokensOf(creator.address);
     tokensOfOwner.forEach((v, i) => expect(v).to.be.equal(i + 1));
 
     expect(await supeRare.originalTokenOfUri("NewEditions_10")).to.equal("1");
-
-    expect(await supeRare.balanceOf(creator.address)).to.equal(11);
   });
   //   it("Check token transfer", async function () {
   //     const { supeRare, owner, addr1, addr2 } = await loadFixture(

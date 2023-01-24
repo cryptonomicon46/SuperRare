@@ -98,7 +98,7 @@ import "hardhat/console.sol";
     function addNewToken(string memory _uri) public uniqueURI(_uri) onlyCreator {
         uint256 newId = createToken(_uri, msg.sender);
         uriOriginalToken[_uri] = newId;
-        console.log("Test:", _uri, newId);
+        // console.log("Test:", _uri, newId);
 
     }
 

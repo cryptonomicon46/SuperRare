@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.7.6;
-// pragma solidity ^0.4.18;
 import "@openzeppelin/contracts/utils/Address.sol";
 import "./IERC721Receiver.sol";
 import "./ISupeRare.sol";
@@ -11,11 +10,6 @@ contract SupeRareWrapper   {
     address private  OriginalSupeRareAddr_;
     ISupeRare private supe;
     address private owner_;
-
-    /**
-     * @dev Emitted when this contract received an NFT `tokenId` from SupeRare initiated by the owner of the `tokenId`
-     */
-    // event TransferdNFT(uint256 tokenId);
 
     /**
      * @dev Emitted when ownership is transfered from `previousOwner` to `newOwner`
@@ -37,22 +31,6 @@ contract SupeRareWrapper   {
         owner_ = msg.sender;
     }   
    
-   
-    // /**
-    //  * @notice TransferNFT, transfers owner's NFT into this contract
-    //  * @param tokenId  the token that'll be approved by this contract
-    //  * @dev Emits a `ApprovedThisContract` event with the `tokenId`
-    //  */     
-    // function TransferNFT(uint tokenId) external  {
-    //     require(supe.ownerOf(tokenId)== msg.sender,"NOT_THE_OWNER_OF_NFT");
-    //     // supe.transfer(address(this),tokenId);
-    //     (bool success, ) =  OriginalSupeRareAddr_.call(abi.encodeWithSignature("transfer(address,uint256)", address(this), tokenId));
-    //     require(success, "Transfering NFT to wrapper contract failed!");
-    //     emit TransferdNFT(tokenId);
-    
-    // }
-
-
 
     /**
      * @dev See {IERC721-safeTransferFrom} https://eips.ethereum.org/EIPS/eip-721
@@ -62,7 +40,7 @@ contract SupeRareWrapper   {
      * @dev only the owner of this contract can invoke the safe transfer
 
      */
-    function safeTransferFrom(address from, address to, uint256 tokenId) public onlyOwner{
+    function safeTransferFrom(address from, address to, uint256 tokenId) public onlyOwner {
         safeTransferFrom(from, to, tokenId, "");
     }
 
@@ -74,8 +52,7 @@ contract SupeRareWrapper   {
      * @param _data  Additional data with no specified format, sent in call to `_to`
      * @dev only the owner of this contract can invoke the safe transfer
      */ 
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public onlyOwner {
-        // require(_isApprovedOrOwner(msg.sender, tokenId), "ERC721: transfer caller is not owner nor approved");
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public onlyOwner  {
         require(supe.approvedFor(tokenId) != address(0),"INVALID_TOKENID" );
         require(from == supe.ownerOf(tokenId),"NOT_NFT_OWNER" );
         

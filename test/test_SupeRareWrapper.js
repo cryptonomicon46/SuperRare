@@ -427,16 +427,12 @@ describe("Safe Transfer Function Tests", function () {
     );
     let tokenId = await supeRare.tokensOf(supeRareWrapper.address);
     expect(tokenId[0]).to.equal(BigNumber.from(2));
-    await expect(
-      supeRareWrapper
-        .connect(addr1)
-        .safeTransferFrom(supeRareWrapper.address, eschrow.address, 2)
-    ).to.be.reverted;
-    // await supeRareWrapper.safeTransferFrom(
-    //   supeRareWrapper.address,
-    //   eschrow.address,
-    //   2
-    // );
+
+    await supeRareWrapper.safeTransferFrom(
+      supeRareWrapper.address,
+      eschrow.address,
+      2
+    );
 
     // let tokenIdEschrow = await supeRare.tokensOf(eschrow.address);
     // expect(tokenIdEschrow[0]).to.equal(BigNumber.from(2));

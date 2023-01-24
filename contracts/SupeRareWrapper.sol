@@ -13,9 +13,9 @@ contract SupeRareWrapper   {
     address private owner_;
 
     /**
-     * @dev Emitted when this contract is approved for a certian `tokenId`
+     * @dev Emitted when this contract received an NFT `tokenId` from SupeRare initiated by the owner of the `tokenId`
      */
-    event ApprovedThisContract(uint256 tokenId);
+    // event TransferdNFT(uint256 tokenId);
 
     /**
      * @dev Emitted when ownership is transfered from `previousOwner` to `newOwner`
@@ -38,18 +38,19 @@ contract SupeRareWrapper   {
     }   
    
    
-    /**
-     * @notice ApproveThisContract, approves this contract to handle a `tokenId`
-     * @param tokenId  the token that'll be approved by this contract
-     * @dev Emits a `ApprovedThisContract` event with the `tokenId`
-     */     
-    function ApproveThisContract(uint tokenId) external  {
-        require(supe.approvedFor(tokenId)!=address(0),"ERC721: operator query for nonexistent token");
-        require(supe.ownerOf(tokenId)== msg.sender ||supe.approvedFor(tokenId)== msg.sender ,"NOT_OWNER_OR_APPROVED");
-        supe.approve(address(this),tokenId);
-        emit ApprovedThisContract(tokenId);
+    // /**
+    //  * @notice TransferNFT, transfers owner's NFT into this contract
+    //  * @param tokenId  the token that'll be approved by this contract
+    //  * @dev Emits a `ApprovedThisContract` event with the `tokenId`
+    //  */     
+    // function TransferNFT(uint tokenId) external  {
+    //     require(supe.ownerOf(tokenId)== msg.sender,"NOT_THE_OWNER_OF_NFT");
+    //     // supe.transfer(address(this),tokenId);
+    //     (bool success, ) =  OriginalSupeRareAddr.call(abi.encodeWithSignature("transfer(address,uint256)", address(this), tokenId));
+    //     require(success, "Transfering NFT to wrapper contract failed!");
+    //     emit TransferdNFT(tokenId);
     
-    }
+    // }
 
 
   /**
@@ -67,8 +68,10 @@ contract SupeRareWrapper   {
      * @param from is the address that's approved or owner of the `tokenId`
      * @param to is either an EOA or an ERC721 compliant contract implementing onERC721Received
      * @param tokenId the underlying NFT asset to be transferred
+     * @dev only the owner of this contract can invoke the safe transfer
+
      */
-    function safeTransferFrom(address from, address to, uint256 tokenId) public  {
+    function safeTransferFrom(address from, address to, uint256 tokenId) public onlyOwner{
         safeTransferFrom(from, to, tokenId, "");
     }
 
@@ -78,29 +81,17 @@ contract SupeRareWrapper   {
      * @param to is either an EOA or an ERC721 compliant contract implementing onERC721Received
      * @param tokenId the underlying NFT asset to be transferred 
      * @param _data  Additional data with no specified format, sent in call to `_to`
-     */
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public  {
-        require(_isApprovedOrOwner(msg.sender, tokenId), "ERC721: transfer caller is not owner nor approved");
+     * @dev only the owner of this contract can invoke the safe transfer
+     */ 
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public onlyOwner {
+        // require(_isApprovedOrOwner(msg.sender, tokenId), "ERC721: transfer caller is not owner nor approved");
+        require(supe.approvedFor(tokenId) != address(0),"INVALID_TOKENID" );
+        require(from == supe.ownerOf(tokenId),"NOT_NFT_OWNER" );
+        
         _safeTransfer(from, to, tokenId, _data);
     }
 
 
-
-    /**
-     * @dev _isApprovedOrOwner returns if the `spender` is approved/owner of the NFT asset
-     * @param spender the EOA that is approved or owner of the NFT asset
-     * @param tokenId the underlying NFT asset to be transferred 
-     * @notice the `tokenId` must exist 
-     */
-    function _isApprovedOrOwner(address spender, uint256 tokenId) internal view virtual returns (bool) {
-        // require(_exists(tokenId), "ERC721: operator query for nonexistent token");
-        require(supe.approvedFor(tokenId) != address(0),"ERC721: operator query for nonexistent token!" );
-
-        address owner = supe.ownerOf(tokenId);
-        // return (spender == owner || getApproved(tokenId) == spender || ERC721.isApprovedForAll(owner, spender));
-        return (spender == owner || getApproved(tokenId) == spender);
-
-    }
 
 
 
@@ -122,8 +113,8 @@ contract SupeRareWrapper   {
     /**
      * @notice _transfer Transfers `tokenId` from `from` to `to`
      *  As opposed to {transferFrom}, this imposes no restrictions on msg.sender.
-     *
-     * Requirements:
+     * Conducts a low level call to the OriginalSupeRareAddr to the "transfer(address,uint256)" function selector with arg
+     * inorder to perform a state change on the original SupeRare contract
      * @param from the owner of approved address for the NFT asset
      * @param to `to` cannot be the zero address.
      * @param tokenId `tokenId` token must be owned by `from` 
@@ -132,11 +123,10 @@ contract SupeRareWrapper   {
     function _transfer(address from, address to, uint256 tokenId) internal virtual {
         // require(SupeOriginalAddr.ownerOf(tokenId) == from, "ERC721: transfer of token that is not own"); // internal owner
         require(to != address(0), "ERC721: transfer to the zero address");
-
-        supe.transfer(to,tokenId);
+        (bool success, ) =  OriginalSupeRareAddr.call(abi.encodeWithSignature("transfer(address,uint256)", to, tokenId));
+        require(success, "Refund failed");
         emit Transfer(from, to, tokenId);
     }
-
 
 
     /**
@@ -172,7 +162,7 @@ contract SupeRareWrapper   {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-        require(msg.sender == owner_);
+        require(msg.sender == owner_,"ONLY_OWNER");
         _;
     }
 

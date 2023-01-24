@@ -44,6 +44,40 @@ describe("SupeRare Test Suit: ERC721 Compatible Contract", function () {
     expect(await supeRare.symbol()).to.be.equal(SYMBOL);
   });
 
+  it("Only owner can create the Whitelist", async function () {
+    const { supeRare, owner, addr1, addr2 } = await loadFixture(
+      deployTokenFixture
+    );
+
+    await expect(
+      supeRare.connect(addr2.address).whitelistCreator(addr1.address)
+    ).to.be.reverted;
+
+    await expect(supeRare.connect(owner).whitelistCreator(addr2.address))
+      .to.emit(supeRare, "WhitelistCreator")
+      .withArgs(addr2.address);
+  });
+
+  it("Read maintainer %, but only owner can change the value", async function () {
+    const { supeRare, owner, addr1, addr2 } = await loadFixture(
+      deployTokenFixture
+    );
+    let maintainer_per = await supeRare.maintainerPercentage();
+    console.log(maintainer_per);
+
+    expect(maintainer_per).to.equal(30);
+
+    await expect(supeRare.connect(addr2.address).setMaintainerPercentage(5)).to
+      .be.reverted;
+
+    expect(await supeRare.maintainerPercentage).to.equal(30);
+
+    await supeRare.connect(owner).setMaintainerPercentage(30);
+
+    await supeRare.connect(owner.address).setMaintainerPercentage(5);
+    expect(await supeRare.maintainerPercentage).to.equal(5);
+  });
+
   //   it("Intial balance: check owner's initial balance", async function () {
   //     const { weth_token, owner } = await loadFixture(deployTokenFixture);
 

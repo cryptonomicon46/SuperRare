@@ -5,7 +5,7 @@ import "./IERC721Receiver.sol";
 import "./ISupeRare.sol";
 
 
-contract SupeRareWrapper   {   
+contract SupeRareWrapper is IERC721Receiver  {   
     using Address for address;
     address private  OriginalSupeRareAddr_;
     ISupeRare private supe;
@@ -141,4 +141,9 @@ contract SupeRareWrapper   {
         return OriginalSupeRareAddr_;
     }
 
+
+    ///@notice onERC721Received returns the ERC721 onReceived function selector of '0x150b7a02'
+function onERC721Received( address , address , uint256 , bytes calldata  ) public pure override returns (bytes4) {
+    return this.onERC721Received.selector;
+}
 }

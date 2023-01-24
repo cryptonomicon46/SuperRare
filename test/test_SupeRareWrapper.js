@@ -429,10 +429,21 @@ describe("Safe Transfer Function Tests", function () {
       2,
       "0x00"
     );
-
-    expect(onReceivedEschrow).to.be.equal("0x150b7a02");
   });
 
+  it("Wrapper Contract onReceived: Check onERC721Received function selector", async function () {
+    const { supeRare, supeRareWrapper, eschrow, owner, addr1, creator } =
+      await loadFixture(deployTokenFixture);
+
+    const onReceivedWrapper = await supeRareWrapper.onERC721Received(
+      supeRareWrapper.address,
+      eschrow.address,
+      2,
+      "0x00"
+    );
+
+    expect(onReceivedWrapper).to.be.equal("0x150b7a02");
+  });
   it("WrapperContract ST to Eschrow: Wrapper contract invokes safeTransfer into Eschrow contract", async function () {
     const { supeRare, supeRareWrapper, eschrow, owner, addr1, creator } =
       await loadFixture(deployTokenFixture);

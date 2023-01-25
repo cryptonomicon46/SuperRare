@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Code coverage report for contracts/Eschrow.sol</title>
+    <title>Code coverage report for contracts/EschrowERC721.sol</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../prettify.css" />
     <link rel="stylesheet" href="../base.css" />
@@ -16,13 +16,13 @@
 <div class='wrapper'>
   <div class='pad1'>
     <h1>
-      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> Eschrow.sol
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> EschrowERC721.sol
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">0% </span>
+        <span class="strong">33.33% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>0/2</span>
+        <span class='fraction'>1/3</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -30,14 +30,14 @@
         <span class='fraction'>0/0</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">0% </span>
+        <span class="strong">50% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>0/2</span>
+        <span class='fraction'>2/4</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">0% </span>
+        <span class="strong">33.33% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>0/2</span>
+        <span class='fraction'>1/3</span>
       </div>
     </div>
   </div>
@@ -69,7 +69,17 @@
 24
 25
 26
-27</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -78,6 +88,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -98,26 +118,36 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
 pragma solidity =0.7.6;
 &nbsp;
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+&nbsp;
 import "@openzeppelin/contracts/access/Ownable.sol";
 &nbsp;
-contract Eschrow {
+contract EschrowERC721 is  Ownable, ERC721, IERC721Receiver{
 &nbsp;
+string private _name = "Eschrow_ERC721";
+string private _symbol = "ESH_721";
 &nbsp;
+constructor() ERC721 (_name,_symbol) {
+&nbsp;
+}
+&nbsp;
+function onERC721Received( address , address , uint256 , bytes calldata  ) public pure override returns (bytes4) {
+    return this.onERC721Received.selector;
+}
 &nbsp;
     /**
      * @dev See {IERC721Metadata-name}.
      */
-<span class="fstat-no" title="function not covered" >    function name() public pure  returns (string memory) {</span>
-<span class="cstat-no" title="statement not covered" >        return "Eschrow";</span>
+<span class="fstat-no" title="function not covered" >    function name() public view virtual override returns (string memory) {</span>
+<span class="cstat-no" title="statement not covered" >        return _name;</span>
     }
 &nbsp;
     /**
      * @dev See {IERC721Metadata-symbol}.
      */
-<span class="fstat-no" title="function not covered" >    function symbol() public pure returns (string memory) {</span>
-<span class="cstat-no" title="statement not covered" >        return "ESH";</span>
+<span class="fstat-no" title="function not covered" >    function symbol() public view virtual override returns (string memory) {</span>
+<span class="cstat-no" title="statement not covered" >        return _symbol;</span>
     }
 &nbsp;
 &nbsp;

@@ -5,14 +5,11 @@ const { ethers } = require("hardhat");
 async function main() {
   const [deployer, addr1, addr2, addr3, addr4] = await ethers.getSigners();
 
-  const SupeRareAddress = "0x41a322b28d0ff354040e2cbc676f0320d8c8850d";
-  //Deploy SupeRareWrapper
-  const SupeRareWrapper = await ethers.getContractFactory("SupeRareWrapper");
-  const supeRareWrapper = await SupeRareWrapper.deploy(SupeRareAddress);
-  console.log(
-    "SupeRareWrapper contract depoloyed at ",
-    supeRareWrapper.address
-  );
+  const SupeRareV1 = "0x41a322b28d0ff354040e2cbc676f0320d8c8850d"; //mainnet contract address
+  //Deploy SupeRareV2
+  const SupeRareV2 = await ethers.getContractFactory("SupeRareV2");
+  const supeRareV2 = await SupeRareV2.deploy(SupeRareV1);
+  console.log("SupeRareV2 contract depoloyed at ", supeRareV2.address);
 }
 
 main()

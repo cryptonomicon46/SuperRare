@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Code coverage report for contracts/IERC721Receiver.sol</title>
+    <title>Code coverage report for contracts/ISupeRareV2.sol</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../prettify.css" />
     <link rel="stylesheet" href="../base.css" />
@@ -16,7 +16,7 @@
 <div class='wrapper'>
   <div class='pad1'>
     <h1>
-      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> IERC721Receiver.sol
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> ISupeRareV2.sol
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
@@ -59,7 +59,20 @@
 14
 15
 16
-17</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -75,22 +88,48 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&nbsp;
+// SPDX-License-Identifier: MIT
 pragma solidity =0.7.6;
 // pragma solidity ^0.4.18;
 &nbsp;
+interface ISupeRareV2 {
 &nbsp;
-interface IERC721Receiver {
+&nbsp;
+      /**
+   * @notice deposit_V1 allows the owner of SupeRareV1 to deposit an NFT and get a minted representation in SupeRareV2
+   * @param _tokenId uint256 ID of the SupeRareV1 or original tokenId being deposited by owner
+   * @return Returns the V2 balance of the owner in the contract
+   * @dev emits a mint event
+   */
+    function deposit_V1(uint256 _tokenId) external returns (uint256);
+&nbsp;
+&nbsp;
+&nbsp;
     /**
-     * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}
-     * by `operator` from `from`, this function is called.
-     *
-     * It must return its Solidity selector to confirm the token transfer.
-     * If any other value is returned or the interface is not implemented by the recipient, the transfer will be reverted.
-     *
-     * The selector can be obtained in Solidity with `IERC721.onERC721Received.selector`.
-     */
-    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external returns (bytes4);
+   * @notice Withdraw_V1 allows the owner of SupeRareV1 to withdraw the deposited V1 SupeRare NFT 
+   * @param _tokenId uint256 ID of the SupeRareV1 which will be mapped to find the corresponding V2 NFT TokenID
+   * @return Returns the V2 balance of the owner in the contract
+   * @dev emits a burn event
+   */
+    function Withdraw_V1(uint256 _tokenId) external returns (uint256);
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
 }</pre></td></tr>
 </table></pre>
 <div class='push'></div><!-- for sticky footer -->

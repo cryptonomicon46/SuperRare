@@ -15,47 +15,32 @@ const SYMBOL = "SUPR";
 // We connect to the Contract using a Provider, so we will only
 // have read-only access to the Contract
 
-describe("SupeRareWrapper Test Suit: Basics", function () {
+describe("SupeRareV1 Test Suite#1: Basics", function () {
   async function deployTokenFixture() {
     [owner, addr1, addr2] = await ethers.getSigners();
 
     const SupeRare = await ethers.getContractFactory("SupeRare");
-    console.log("Deploying SupeRare ...\n");
+    //console.log("Deploying SupeRare ...\n");
     const supeRare = await SupeRare.deploy();
     await supeRare.deployed();
 
-    const SupeRareWrapper = await ethers.getContractFactory("SupeRareWrapper");
-    console.log("Deploying SupeRareWrapper ...\n");
-    const supeRareWrapper = await SupeRareWrapper.deploy(supeRare.address);
-    await supeRareWrapper.deployed();
+    const SupeRareV2 = await ethers.getContractFactory("SupeRareV2");
+    //console.log("Deploying SupeRareV2 ...\n");
+    const supeRareV2 = await SupeRareV2.deploy(supeRare.address);
+    await supeRareV2.deployed();
 
-    // console.log("SupeRare contract deployed at:", supeRare.address);
-    // console.log("Deployer Address", owner.address);
+    ////console.log("SupeRare contract deployed at:", supeRare.address);
+    ////console.log("Deployer Address", owner.address);
 
-    return { supeRare, supeRareWrapper, owner, addr1, addr2 };
+    return { supeRare, supeRareV2, owner, addr1, addr2 };
   }
 
-  it("SupeRare Deployed: check contract address to be a proper address", async function () {
+  it("SupeRareV1 Deployed: check contract address to be a proper address", async function () {
     const { supeRare } = await loadFixture(deployTokenFixture);
     expect(supeRare.address).to.be.a.properAddress;
   });
 
-  it("SupeRareWrapper Deployed: check contract address to be a proper address", async function () {
-    const { supeRareWrapper } = await loadFixture(deployTokenFixture);
-    expect(supeRareWrapper.address).to.be.a.properAddress;
-  });
-
-  it("Name: check the name of the token", async function () {
-    const { supeRare } = await loadFixture(deployTokenFixture);
-    expect(await supeRare.name()).to.be.equal(NAME);
-  });
-
-  it("Symbol: check the symbol of the token", async function () {
-    const { supeRare } = await loadFixture(deployTokenFixture);
-    expect(await supeRare.symbol()).to.be.equal(SYMBOL);
-  });
-
-  it("Only owner can create the Whitelist", async function () {
+  it("SupeRareV1: Only owner can create the Whitelist", async function () {
     const { supeRare, owner, addr1, addr2 } = await loadFixture(
       deployTokenFixture
     );
@@ -69,7 +54,7 @@ describe("SupeRareWrapper Test Suit: Basics", function () {
       .withArgs(addr2.address);
   });
 
-  it("IsWhiteListed: Check if an account is whitelisted", async function () {
+  it("SupeRareV1 IsWhiteListed: Check if an account is whitelisted", async function () {
     const { supeRare, owner, addr1, addr2 } = await loadFixture(
       deployTokenFixture
     );
@@ -85,12 +70,12 @@ describe("SupeRareWrapper Test Suit: Basics", function () {
     expect(whiteListAddr).to.be.false;
   });
 
-  it("MaintainerPercentage: Check default value and change it.", async function () {
+  it("SupeRareV1 MaintainerPercentage: Check default value and change it.", async function () {
     const { supeRare, owner, addr1, addr2 } = await loadFixture(
       deployTokenFixture
     );
     let maintainer_per = await supeRare.maintainerPercentage();
-    // console.log(maintainer_per);
+    ////console.log(maintainer_per);
 
     expect(maintainer_per).to.equal(30);
 
@@ -106,12 +91,12 @@ describe("SupeRareWrapper Test Suit: Basics", function () {
     expect(maintainer_per).to.equal(5);
   });
 
-  it("CreatorPercentage: Check default value and change it.", async function () {
+  it("SupeRareV1 CreatorPercentage: Check default value and change it.", async function () {
     const { supeRare, owner, addr1, addr2 } = await loadFixture(
       deployTokenFixture
     );
     let creator_per = await supeRare.creatorPercentage();
-    // console.log(creator_per);
+    ////console.log(creator_per);
 
     expect(creator_per).to.equal(100);
 
@@ -127,7 +112,7 @@ describe("SupeRareWrapper Test Suit: Basics", function () {
     expect(creator_per).to.equal(20);
   });
 
-  it("AddNewToken: Check the TotalSupply, tokenId and URI", async function () {
+  it("SupeRareV1 AddNewToken: Check the TotalSupply, tokenId and URI", async function () {
     const { supeRare, owner, addr1 } = await loadFixture(deployTokenFixture);
 
     await expect(supeRare.connect(owner).whitelistCreator(addr1.address))
@@ -137,22 +122,22 @@ describe("SupeRareWrapper Test Suit: Basics", function () {
     await supeRare.connect(addr1).addNewToken("NewEditions_10");
     expect(await supeRare.totalSupply()).to.equal(1);
     const tokenId = await supeRare.tokensOf(addr1.address);
-    console.log(ethers.BigNumber.from(1), tokenId[0]);
+    //console.log(ethers.BigNumber.from(1), tokenId[0]);
     expect(tokenId[0]).to.be.equal(ethers.BigNumber.from("1"));
     expect(await supeRare.tokenURI(tokenId[0])).to.equal("NewEditions_10");
   });
 });
 
-describe("Creator creates SupeRare token: Tests", function () {
+describe("SupeRareV1 Test Suite#2: Creator creates SupeRare token: Tests", function () {
   async function deployTokenFixture() {
     [owner, addr1, creator] = await ethers.getSigners();
 
     const SupeRare = await ethers.getContractFactory("SupeRare");
-    console.log("Deploying SupeRare ...\n");
+    //console.log("Deploying SupeRare ...\n");
     const supeRare = await SupeRare.deploy();
     await supeRare.deployed();
-    // console.log("SupeRare contract deployed at:", supeRare.address);
-    // console.log("Deployer Address", owner.address);
+    ////console.log("SupeRare contract deployed at:", supeRare.address);
+    ////console.log("Deployer Address", owner.address);
     await expect(supeRare.connect(owner).whitelistCreator(creator.address))
       .to.emit(supeRare, "WhitelistCreator")
       .withArgs(creator.address);
@@ -238,18 +223,6 @@ describe("Creator creates SupeRare token: Tests", function () {
 
     expect(await supeRare.originalTokenOfUri("NewEditions_10")).to.equal("1");
   });
-
-  //   it("AddNewTokenEdition: Transfer Ownership of a token", async function () {
-  //     const { supeRare, owner, addr1, creator } = await loadFixture(
-  //       deployTokenFixture
-  //     );
-
-  //     const tokensOfOwner = await supeRare.tokensOf(creator.address);
-  //     tokensOfOwner.forEach((v, i) => expect(v).to.be.equal(i + 1));
-
-  //     await supeRare.connect(creator).transfer(addr1.address, 6);
-  //     expect(await supeRare.ownerOf(6).to.be.equal(addr1.address));
-  //   });
 });
 
 describe("Creator creates SupeRare token: Tests", function () {
@@ -257,11 +230,11 @@ describe("Creator creates SupeRare token: Tests", function () {
     [owner, addr1, creator] = await ethers.getSigners();
 
     const SupeRare = await ethers.getContractFactory("SupeRare");
-    console.log("Deploying SupeRare ...\n");
+    //console.log("Deploying SupeRare ...\n");
     const supeRare = await SupeRare.deploy();
     await supeRare.deployed();
-    // console.log("SupeRare contract deployed at:", supeRare.address);
-    // console.log("Deployer Address", owner.address);
+    ////console.log("SupeRare contract deployed at:", supeRare.address);
+    ////console.log("Deployer Address", owner.address);
     await expect(supeRare.connect(owner).whitelistCreator(creator.address))
       .to.emit(supeRare, "WhitelistCreator")
       .withArgs(creator.address);
@@ -346,137 +319,5 @@ describe("Creator creates SupeRare token: Tests", function () {
     tokensOfOwner.forEach((v, i) => expect(v).to.be.equal(i + 1));
 
     expect(await supeRare.originalTokenOfUri("NewEditions_10")).to.equal("1");
-  });
-
-  //   it("AddNewTokenEdition: Transfer Ownership of a token", async function () {
-  //     const { supeRare, owner, addr1, creator } = await loadFixture(
-  //       deployTokenFixture
-  //     );
-
-  //     const tokensOfOwner = await supeRare.tokensOf(creator.address);
-  //     tokensOfOwner.forEach((v, i) => expect(v).to.be.equal(i + 1));
-
-  //     await supeRare.connect(creator).transfer(addr1.address, 6);
-  //     expect(await supeRare.ownerOf(6).to.be.equal(addr1.address));
-  //   });
-});
-
-describe("Safe Transfer Function Tests", function () {
-  async function deployTokenFixture() {
-    [owner, addr1, creator] = await ethers.getSigners();
-
-    const SupeRare = await ethers.getContractFactory("SupeRare");
-    console.log("Deploying SupeRare ...\n");
-    const supeRare = await SupeRare.deploy();
-    await supeRare.deployed();
-
-    const SupeRareWrapper = await ethers.getContractFactory("SupeRareWrapper");
-    console.log("Deploying SupeRareWrapper ...\n");
-    const supeRareWrapper = await SupeRareWrapper.deploy(supeRare.address);
-    await supeRareWrapper.deployed();
-    console.log(
-      `supeRareWrapper contract deployed at ${supeRareWrapper.address}`
-    );
-
-    const Eschrow = await ethers.getContractFactory("Eschrow");
-    console.log("Deploying Eschrow contract...");
-    const eschrow = await Eschrow.deploy();
-    await eschrow.deployed();
-    console.log(`Eschrow contract deployed at ${eschrow.address}`);
-
-    await expect(supeRare.connect(owner).whitelistCreator(creator.address))
-      .to.emit(supeRare, "WhitelistCreator")
-      .withArgs(creator.address);
-
-    await expect(
-      supeRare
-        .connect(creator)
-        .addNewTokenWithEditions("NewEditions_10", 1, parseEther("1"))
-    ).to.emit(supeRare, "SalePriceSet");
-
-    return { supeRare, supeRareWrapper, eschrow, owner, addr1, creator };
-  }
-  it("SafeTransfer: Check if Eschrow contract is a valid address", async function () {
-    const { eschrow } = await loadFixture(deployTokenFixture);
-    expect(eschrow.address).to.be.a.properAddress;
-  });
-
-  it("Transfer NFT to WrapperContract : Creator transfers NFT, check WrapperContract's balance", async function () {
-    const { supeRare, supeRareWrapper, owner, addr1, creator } =
-      await loadFixture(deployTokenFixture);
-
-    await supeRare.connect(creator).transfer(supeRareWrapper.address, 2);
-    console.log(
-      `Tokens of supeRareWrapper:${await supeRare.tokensOf(
-        supeRareWrapper.address
-      )}`
-    );
-    const tokenId = await supeRare.tokensOf(supeRareWrapper.address);
-    expect(tokenId[0]).to.equal(BigNumber.from(2));
-  });
-
-  it("Escrow Contract: Check Name, Symbol and onERC721Received function selector", async function () {
-    const { supeRare, supeRareWrapper, eschrow, owner, addr1, creator } =
-      await loadFixture(deployTokenFixture);
-
-    expect(await eschrow.name()).to.be.equal("Eschrow");
-
-    expect(await eschrow.symbol()).to.be.equal("ESH");
-
-    const onReceivedEschrow = await eschrow.onERC721Received(
-      supeRareWrapper.address,
-      eschrow.address,
-      2,
-      "0x00"
-    );
-  });
-
-  it("Wrapper Contract onReceived: Check onERC721Received function selector", async function () {
-    const { supeRare, supeRareWrapper, eschrow, owner, addr1, creator } =
-      await loadFixture(deployTokenFixture);
-
-    const onReceivedWrapper = await supeRareWrapper.onERC721Received(
-      supeRareWrapper.address,
-      eschrow.address,
-      2,
-      "0x00"
-    );
-
-    expect(onReceivedWrapper).to.be.equal("0x150b7a02");
-  });
-  it("WrapperContract ST to Eschrow: Wrapper contract invokes safeTransfer into Eschrow contract", async function () {
-    const { supeRare, supeRareWrapper, eschrow, owner, addr1, creator } =
-      await loadFixture(deployTokenFixture);
-
-    await supeRare.connect(creator).transfer(supeRareWrapper.address, 2);
-    console.log(
-      `Tokens of supeRareWrapper:${await supeRare.tokensOf(
-        supeRareWrapper.address
-      )}`
-    );
-    let tokenId = await supeRare.tokensOf(supeRareWrapper.address);
-    expect(tokenId[0]).to.equal(BigNumber.from(2));
-
-    // let tokenIdEschrow = await supeRare.tokensOf(eschrow.address);
-    // expect(tokenIdEschrow[0]).to.equal(BigNumber.from(2));
-    console.log(`Owner of WrapperContract:${await supeRareWrapper.getOwner()}`);
-    console.log(
-      `Original SupeRare Contract:${await supeRareWrapper.getSupeRareAddress()}`
-    );
-
-    await supeRareWrapper
-      .connect(owner)
-      .safeTransferFrom(supeRareWrapper.address, eschrow.address, 2, "0x00");
-    console.log(
-      `Escrow contract balance ${await eschrow
-        .connect(owner)
-        .balanceOf(eschrow.address)}`
-    );
-
-    console.log(
-      `Escrow contract balance ${await eschrow
-        .connect(owner)
-        .balanceOf(eschrow.address)}`
-    );
   });
 });

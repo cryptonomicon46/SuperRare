@@ -6,6 +6,9 @@ They V2 tokens are burnt when the owner withraws his V1 tokens.
 Once deposited, the owner of the V1 tokenID can initiate a SafeTransfer to either an EOA or an ERC721 compliant Eschrow contract.
 The transaction gets reverted if the receiver is a contract and is not ERC721 compliant
 
+Schematic_SupeRareV2.jpg
+Shows the schematic of the V2 contract architecture and interactions
+
 Goerli Contracts
 npx hardhat run scripts/deploy_Goerli.js --network goerli
 

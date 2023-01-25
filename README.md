@@ -14,3 +14,9 @@ SupeRareWrapper.sol | 84.21 | 38.89 | 90 | 83.33 | 99,129,130,131 |
 ----------------------|----------|----------|----------|----------|----------------|
 All files | 50.34 | 25.96 | 66.15 | 53.13 | |
 ----------------------|----------|----------|----------|----------|----------------|
+
+Script lines
+npx hardhat run scripts/deploy_SupeRareWrapper.js --network localhost
+npx hardhat verify "" --network goerli
+
+npx hardhat coverage --testfiles "test/test\_\*.js"

@@ -1,4 +1,4 @@
-SupeRare.sol: SupeRare V1 contract deploed at 0x41a322b28d0ff354040e2cbc676f0320d8c8850d on mainnet. Which isn't ERC721 compliant, so it needs a wrapper function to do the same.
+SupeRare.sol: SupeRare V1 contract deployed at 0x41a322b28d0ff354040e2cbc676f0320d8c8850d on mainnet. Which isn't ERC721 compliant, so it needs a wrapper function to do the same.
 
 SupeRareWrapper.sol: Implements ERC721OnReceived and performs SafeTransfer of SupeRare assets to EOA or an Eschrow contract.
 
@@ -16,8 +16,8 @@ All files | 50.34 | 25.96 | 66.15 | 53.13 | |
 ----------------------|----------|----------|----------|----------|----------------|
 
 Script lines
-npx hardhat run scripts/deploy_SupeRareWrapper.js --network localhost
-npx hardhat verify "0x0b0aCaF0995839AA43A1CBab00DB9766AaAfF8a9","0xD45A5fa52019E108EA09833793329A9531F9CA55" --network goerli
+npx hardhat run scripts/deploy_Goerli.js --network localhost
+npx hardhat verify "0x0b0aCaF0995839AA43A1CBab00DB9766AaAfF8a9" "0xD45A5fa52019E108EA09833793329A9531F9CA55" --network goerli
 
 npx hardhat coverage --testfiles "test/test\_\*.js"
 
@@ -25,3 +25,6 @@ Goerli Contracts
 SupeRare contract depoloyed at 0xD45A5fa52019E108EA09833793329A9531F9CA55
 SupeRareWrapper contract depoloyed at 0x0b0aCaF0995839AA43A1CBab00DB9766AaAfF8a9
 Eschrow contract depoloyed at 0x992A3DDd53511F0194265cc338530638cAba2ede
+
+npx hardhat run scripts/deploy_Mainnet.js --network mainnet
+npx hardhat verify "" "0x41a322b28d0ff354040e2cbc676f0320d8c8850d" --network goerli

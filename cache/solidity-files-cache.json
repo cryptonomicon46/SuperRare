@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/Eschrow.sol": {
-      "lastModificationDate": 1674602091999,
-      "contentHash": "a5f73f104eabdd45cdeb2642fb3ca4d2",
+      "lastModificationDate": 1674664881864,
+      "contentHash": "a2ec6120b65962acc3084af82314c210",
       "sourceName": "contracts/Eschrow.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -664,8 +664,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SupeRareV2.sol": {
-      "lastModificationDate": 1674663787425,
-      "contentHash": "6aa6f2145cce435295caf66b7d4abaad",
+      "lastModificationDate": 1674667586369,
+      "contentHash": "20a271d4217dd454fcf1fc319a8c5581",
       "sourceName": "contracts/SupeRareV2.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -736,6 +736,45 @@
       ],
       "artifacts": [
         "ISupeRareV2"
+      ]
+    },
+    "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/EschrowERC721.sol": {
+      "lastModificationDate": 1674666449509,
+      "contentHash": "e3c77159f6e35d7b64a4c2719edf115d",
+      "sourceName": "contracts/EschrowERC721.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+        "@openzeppelin/contracts/access/Ownable.sol"
+      ],
+      "versionPragmas": [
+        "=0.7.6"
+      ],
+      "artifacts": [
+        "EschrowERC721"
       ]
     }
   }

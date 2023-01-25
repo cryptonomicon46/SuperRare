@@ -83,6 +83,28 @@ contract SupeRareV2 is Ownable, ERC721, ISupeRareV2  {
 
     }
 
+
+
+     /**
+   * @notice safeTransferToEschrow allows the owner of SupeRareV1 to safe transfer to an eschrow
+   * @param from owner of the NFT Token
+   * @param to EOA or ERC721 compilant contract 
+   * @param tokenId of the NFT token to be transferred
+   * @param _data any data to be sent along with the transfer
+   * @dev emits Approval and transfer events
+   */
+    function safeTransferToEschrow(address from, address to, uint256 tokenId, bytes memory _data) external {
+          address origOwner = ERC721.ownerOf(tokenId);
+        require(to != origOwner, "ERC721: approval to current owner");
+
+        require(_msgSender() == origOwner || ERC721.isApprovedForAll(origOwner, _msgSender()),
+            "ERC721: approve caller is not owner nor approved for all"
+        );
+
+        _approve(to, tokenId);
+        _safeTransfer(from, to, tokenId, _data);
+
+    }
     ///@notice contract_status, check if deposits are halted 
     ///@dev returns true= stopped || false == active
     function contract_status() external view returns (bool) {

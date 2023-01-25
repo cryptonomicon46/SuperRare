@@ -197,10 +197,54 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
       .withArgs(BigNumber.from(0), creator.address, 20);
 
     expect(await supeRareV2.tokenURI(20)).to.be.equal("NewEditions_20");
+    expect(await supeRareV2.balanceOf(creator.address)).to.be.equal(1);
   });
 });
 
-describe("SupeRareV2 Withdraw: Tests related to withdrawing an NFT", function () {});
+describe("SupeRareV2 Withdraw: Tests related to withdrawing an NFT", function () {
+  async function deployTokenFixture() {
+    [owner, addr1, creator] = await ethers.getSigners();
+
+    const SupeRare = await ethers.getContractFactory("SupeRare");
+    console.log("Deploying SupeRare ...\n");
+    const supeRare = await SupeRare.deploy();
+    await supeRare.deployed();
+
+    const SupeRareV2 = await ethers.getContractFactory("SupeRareV2");
+    console.log("Deploying SupeRareV2 ...\n");
+    const supeRareV2 = await SupeRareV2.deploy(supeRare.address);
+    await supeRareV2.deployed();
+    console.log(`supeRareV2 contract deployed at ${supeRareV2.address}`);
+
+    await expect(supeRare.connect(owner).whitelistCreator(creator.address))
+      .to.emit(supeRare, "WhitelistCreator")
+      .withArgs(creator.address);
+
+    await expect(
+      supeRare
+        .connect(creator)
+        .addNewTokenWithEditions("NewEditions_20", 20, parseEther("1"))
+    ).to.emit(supeRare, "SalePriceSet");
+
+    return { supeRare, supeRareV2, owner, addr1, creator };
+  }
+
+  it("SupeRareV2 Withdraw", async function () {
+    const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
+      deployTokenFixture
+    );
+    for (let i = 1; i <= 21; i++) {
+      await expect(supeRareV2.connect(creator).deposit_V1(i))
+        .to.emit(supeRareV2, "Transfer")
+        .withArgs(BigNumber.from(0), creator.address, i);
+    }
+    for (let i = 1; i <= 21; i++) {
+      await expect(supeRareV2.connect(creator).Withdraw_V1(i))
+        .to.emit(supeRareV2, "Transfer")
+        .withArgs(creator.address, BigNumber.from(0), i);
+    }
+  });
+});
 
 describe("SupeRareV1 Test Suite#1: Basics", function () {
   async function deployTokenFixture() {
@@ -409,5 +453,108 @@ describe("SupeRareV1 Test Suite#2: Creator creates SupeRare token: Tests", funct
     tokensOfOwner.forEach((v, i) => expect(v).to.be.equal(i + 1));
 
     expect(await supeRare.originalTokenOfUri("NewEditions_10")).to.equal("1");
+  });
+});
+
+describe("SupeRareV2 SafeTransfer Tests", function () {
+  async function deployTokenFixture() {
+    [owner, addr1, creator] = await ethers.getSigners();
+
+    const SupeRare = await ethers.getContractFactory("SupeRare");
+    console.log("Deploying SupeRare ...\n");
+    const supeRare = await SupeRare.deploy();
+    await supeRare.deployed();
+
+    const Eschrow = await ethers.getContractFactory("Eschrow");
+    console.log("Deploying Eschrow ...\n");
+    const eschrow = await Eschrow.deploy();
+    await eschrow.deployed();
+
+    const EschrowERC721 = await ethers.getContractFactory("EschrowERC721");
+    console.log("Deploying EschrowERC721 ...\n");
+    const eschrowERC721 = await EschrowERC721.deploy();
+    await eschrowERC721.deployed();
+
+    const SupeRareV2 = await ethers.getContractFactory("SupeRareV2");
+    console.log("Deploying SupeRareV2 ...\n");
+    const supeRareV2 = await SupeRareV2.deploy(supeRare.address);
+    await supeRareV2.deployed();
+    console.log(`supeRareV2 contract deployed at ${supeRareV2.address}`);
+
+    await expect(supeRare.connect(owner).whitelistCreator(creator.address))
+      .to.emit(supeRare, "WhitelistCreator")
+      .withArgs(creator.address);
+
+    await expect(
+      supeRare
+        .connect(creator)
+        .addNewTokenWithEditions("NewEditions_20", 20, parseEther("1"))
+    ).to.emit(supeRare, "SalePriceSet");
+
+    return {
+      supeRare,
+      supeRareV2,
+      owner,
+      addr1,
+      creator,
+      eschrow,
+      eschrowERC721,
+    };
+  }
+
+  it("SupeRareV2 SafeTransfer Success: Creator initiates safeTransfer to an ERC721 compliant Eschrow contract", async function () {
+    const {
+      supeRare,
+      supeRareV2,
+      owner,
+      addr1,
+      creator,
+      eschrow,
+      eschrowERC721,
+    } = await loadFixture(deployTokenFixture);
+    for (let i = 1; i <= 21; i++) {
+      await expect(supeRareV2.connect(creator).deposit_V1(i))
+        .to.emit(supeRareV2, "Transfer")
+        .withArgs(BigNumber.from(0), creator.address, i);
+    }
+
+    for (let i = 1; i <= 21; i++) {
+      await expect(
+        supeRareV2
+          .connect(creator)
+          .safeTransferToEschrow(
+            creator.address,
+            eschrowERC721.address,
+            i,
+            "0x00"
+          )
+      )
+        .to.emit(supeRareV2, "Transfer")
+        .withArgs(creator.address, eschrowERC721.address, i);
+    }
+
+    expect(await supeRareV2.balanceOf(eschrowERC721.address)).to.be.equal(21);
+  });
+
+  it("SupeRareV2 SafeTransfer Fail: Creator initiates safeTransfer to an NON-ERC721 compliant Eschrow contract", async function () {
+    const {
+      supeRare,
+      supeRareV2,
+      owner,
+      addr1,
+      creator,
+      eschrow,
+      eschrowERC721,
+    } = await loadFixture(deployTokenFixture);
+
+    await expect(supeRareV2.connect(creator).deposit_V1(10))
+      .to.emit(supeRareV2, "Transfer")
+      .withArgs(BigNumber.from(0), creator.address, 10);
+
+    await expect(
+      supeRareV2
+        .connect(creator)
+        .safeTransferToEschrow(creator.address, eschrow.address, 10, "0x00")
+    ).to.be.revertedWith("ERC721: transfer to non ERC721Receiver implementer");
   });
 });

@@ -34,6 +34,31 @@
         {
           "indexed": true,
           "internalType": "address",
+          "name": "OrigV1Owner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "NewV1Owner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "v1TokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "OwnershipUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
           "name": "_from",
           "type": "address"
         },

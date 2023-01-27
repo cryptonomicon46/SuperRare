@@ -623,8 +623,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SupeRare.sol": {
-      "lastModificationDate": 1674592280656,
-      "contentHash": "04c4820d9c69f8f074c156bc5273deec",
+      "lastModificationDate": 1674786627840,
+      "contentHash": "6157c21483cd28ef0f54b3e1af4f5a88",
       "sourceName": "contracts/SupeRare.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -664,8 +664,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SupeRareV2.sol": {
-      "lastModificationDate": 1674711081047,
-      "contentHash": "a3f77316d4bcded35c8fdd804e6f749b",
+      "lastModificationDate": 1674789029046,
+      "contentHash": "72654ae641d2adfe4c7ec15a6557f458",
       "sourceName": "contracts/SupeRareV2.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -704,8 +704,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/ISupeRareV2.sol": {
-      "lastModificationDate": 1674708923262,
-      "contentHash": "37c5a358d4aa2b9c60b0da5a3be7251f",
+      "lastModificationDate": 1674788920566,
+      "contentHash": "8bd9bac2d80689775859dbe114c83431",
       "sourceName": "contracts/ISupeRareV2.sol",
       "solcConfig": {
         "version": "0.7.6",

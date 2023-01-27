@@ -4,7 +4,7 @@
 
 // pragma solidity ^0.4.18;
 pragma solidity =0.7.6;
-
+import "hardhat/console.sol";
 interface IERC721Receiver {
     /**
      * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}

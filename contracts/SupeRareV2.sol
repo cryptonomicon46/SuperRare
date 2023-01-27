@@ -6,7 +6,7 @@ import "./ISupeRare.sol";
 import "./ISupeRareV2.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-
+import "hardhat/console.sol";
 contract SupeRareV2 is Ownable, ERC721, ISupeRareV2  {   
     using Address for address;  
     address private  OriginalSupeRareAddr_;
@@ -79,6 +79,7 @@ contract SupeRareV2 is Ownable, ERC721, ISupeRareV2  {
         require(v1_v2_tokenId[v1tokenId] ==0 ,"SupeRare V2: Duplicate Deposit");
 
         _mint(_msgSender(), (v2tokenId = _nextId++));
+        console.log(v2tokenId);
         V1Position[v2tokenId] = Position(_msgSender(),v1tokenId, block.timestamp);
         v1_v2_tokenId[v1tokenId] = v2tokenId;
 
@@ -99,6 +100,10 @@ contract SupeRareV2 is Ownable, ERC721, ISupeRareV2  {
              address _origV1Owner =  V1Position[v2TokenId].v1Owner;
              if( _origV1Owner != _msgSender()) {
                     V1Position[v2TokenId].v1Owner = _msgSender();
+                    _burn(v2TokenId);
+
+                    _mint(_msgSender(), v2TokenId);
+
                     emit  OwnershipUpdated(_origV1Owner,_msgSender(),v1tokenId);
              }
         return true;

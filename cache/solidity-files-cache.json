@@ -623,8 +623,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SupeRare.sol": {
-      "lastModificationDate": 1674786627840,
-      "contentHash": "6157c21483cd28ef0f54b3e1af4f5a88",
+      "lastModificationDate": 1674830771082,
+      "contentHash": "0d3f1b33b0eb3940f8acc3722ab224da",
       "sourceName": "contracts/SupeRare.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -649,7 +649,9 @@
           }
         }
       },
-      "imports": [],
+      "imports": [
+        "hardhat/console.sol"
+      ],
       "versionPragmas": [
         "=0.7.6"
       ],
@@ -664,8 +666,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SupeRareV2.sol": {
-      "lastModificationDate": 1674789435947,
-      "contentHash": "e6e6d15abef781dc6b7046e846d3e908",
+      "lastModificationDate": 1674832711968,
+      "contentHash": "456aa4505724ec29747101edb0f99aab",
       "sourceName": "contracts/SupeRareV2.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -694,7 +696,8 @@
         "./ISupeRare.sol",
         "./ISupeRareV2.sol",
         "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        "@openzeppelin/contracts/access/Ownable.sol"
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "hardhat/console.sol"
       ],
       "versionPragmas": [
         "=0.7.6"
@@ -775,6 +778,41 @@
       ],
       "artifacts": [
         "EschrowERC721"
+      ]
+    },
+    "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/node_modules/hardhat/console.sol": {
+      "lastModificationDate": 1674489009371,
+      "contentHash": "4ff3cd2f6272c9a6516e9ee4f2b967d3",
+      "sourceName": "hardhat/console.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">= 0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "console"
       ]
     }
   }

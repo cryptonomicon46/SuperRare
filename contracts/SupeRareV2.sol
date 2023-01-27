@@ -92,7 +92,7 @@ contract SupeRareV2 is Ownable, ERC721, ISupeRareV2  {
      * @return  true if the operation succeeds
      * @dev emits an OwnershipUpdated(address,address,uint256) event 
      */
-        function updateOwnership(uint v1tokenId) external virtual override  onlyOwnerOfV1(v1tokenId) returns (bool) {
+        function updateOwnership(uint v1tokenId) external virtual override onlyOwnerOfV1(v1tokenId) returns (bool) {
             uint256 v2TokenId = v1_v2_tokenId[v1tokenId];
 
              address _origV1Owner =  V1Position[v2TokenId].v1Owner;

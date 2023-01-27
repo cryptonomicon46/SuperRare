@@ -76,6 +76,7 @@ contract SupeRareV2 is Ownable, ERC721, ISupeRareV2  {
    * @dev emits a PositionCreated event
    */
     function deposit(uint256 v1tokenId) external StopDeposits virtual override onlyOwnerOfV1(v1tokenId) returns (uint256 v2tokenId) {
+        require(v1_v2_tokenId[v1tokenId] ==0 ,"SupeRare V2: Duplicate Deposit");
 
         _mint(_msgSender(), (v2tokenId = _nextId++));
         V1Position[v2tokenId] = Position(_msgSender(),v1tokenId, block.timestamp);

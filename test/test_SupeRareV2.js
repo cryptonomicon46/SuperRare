@@ -14,7 +14,7 @@ const SYMBOL_V2 = "SUPRV2";
 const NAME = "SupeRare";
 const SYMBOL = "SUPR";
 
-describe("SupeRareV2 Test Suit: Basics", function () {
+describe("SupeRareV2 Test Suit: The Basics", function () {
   async function deployTokenFixture() {
     [owner, addr1, addr2] = await ethers.getSigners();
 
@@ -138,6 +138,7 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
 
     return { supeRare, supeRareV2, owner, addr1, creator };
   }
+
   it("SupeRareV2 Deposit: Owner of an V1 NFT cannot deposit it, if contract's stopped due to an issue.", async function () {
     const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
       deployTokenFixture
@@ -160,11 +161,52 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
     );
 
     await expect(supeRareV2.connect(creator).deposit(10))
-      .to.emit(supeRareV2, "Transfer")
-      .withArgs(BigNumber.from(0), creator.address, 10);
+      .to.emit(supeRareV2, "PositionCreated")
+      .withArgs(creator.address, 1, 10);
 
     expect(await supeRareV2.balanceOf(creator.address)).to.be.equal(1);
     expect(await supeRareV2.totalSupply()).to.be.equal(1);
+  });
+
+  it("SupeRareV2 SetTokenURI: Owner sets the tokwnURI of the V2TokenID", async function () {
+    const { supeRare, supeRareV2, owner, addr1, addr2 } = await loadFixture(
+      deployTokenFixture
+    );
+
+    await expect(supeRareV2.connect(creator).deposit(10))
+      .to.emit(supeRareV2, "PositionCreated")
+      .withArgs(creator.address, 1, 10);
+
+    expect(await supeRareV2.balanceOf(creator.address)).to.be.equal(1);
+
+    await expect(
+      supeRareV2.connect(addr1).setTokenURI(10, "V2EditionTokenURI.json")
+    ).to.be.revertedWith("Ownable: caller is not the owner");
+
+    await expect(
+      supeRareV2.connect(owner).setTokenURI(1, "V2EditionTokenURI.json")
+    )
+      .to.emit(supeRareV2, "TokenURISet")
+      .withArgs(1, "V2EditionTokenURI.json");
+  });
+  it("SupeRareV2 SetBaseURI: Owner sets the BaseURI of the V2TokenID", async function () {
+    const { supeRare, supeRareV2, owner, addr1, addr2 } = await loadFixture(
+      deployTokenFixture
+    );
+
+    await expect(supeRareV2.connect(creator).deposit(10))
+      .to.emit(supeRareV2, "PositionCreated")
+      .withArgs(creator.address, 1, 10);
+
+    expect(await supeRareV2.balanceOf(creator.address)).to.be.equal(1);
+
+    await expect(
+      supeRareV2.connect(addr1).setBaseURI("V2BASE_URI")
+    ).to.be.revertedWith("Ownable: caller is not the owner");
+
+    await expect(supeRareV2.connect(owner).setBaseURI("V2BASE_URI"))
+      .to.emit(supeRareV2, "BaseURISet")
+      .withArgs("V2BASE_URI");
   });
 
   it("SupeRareV2 Deposit 1 NFT: Owner of an V1 NFT  tried to deposit the same V1 token again", async function () {

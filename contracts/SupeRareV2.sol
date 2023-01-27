@@ -46,7 +46,18 @@ contract SupeRareV2 is Ownable, ERC721, ISupeRareV2  {
      * @dev Triggered when a V2 token is burned to withdraw position
      **/
     event PositionDeleted(address indexed OrigOwner, uint256 indexed v2TokenID, uint256 indexed v1TokenID);
+      
+       /**
+     * @dev Triggered when a the v2tokenId's tokenURI is set
+     **/
+    event TokenURISet(uint256 v2tokenId,string _tokenURI);
+
+       /**
+     * @dev Triggered when a the v2tokenId's tokenURI is set
+     **/
+      event  BaseURISet(string _baseURI);
   /**
+   * 
      * @dev Maintain a mapping of the original owner address to V1 TokenID to minted V2 TokenID
      **/
     mapping(address => mapping (uint256=>uint256)) public ownerAddrToV1toV2TokenId; 
@@ -149,6 +160,31 @@ contract SupeRareV2 is Ownable, ERC721, ISupeRareV2  {
    */
     function getOwnerPosition(uint256 v2TokenId) external view virtual override returns (Position memory) {
         return V1Position[v2TokenId];
+    }
+
+
+      
+    /**
+   * @notice setTokenURI   //ERC721: Change the tokenURI if needed on a per token basis by only by the owner of this contract
+   * @param v2tokenId Owner's current V2 TokenID
+   * @return bool returns true of the operation succeeds
+   */
+    function setTokenURI(uint256 v2tokenId,string calldata _tokenURI) external virtual override onlyOwner returns (bool) {
+         _setTokenURI(v2tokenId, _tokenURI);
+        emit TokenURISet(v2tokenId,_tokenURI);
+        return true;
+    }
+
+
+    /**
+   * @notice setBaseURI   //ERC721: Change the tokenURI if needed on a per token basis only by the owner of this contract
+   * @param baseURI Owner's current V2 TokenID
+   * @return bool returns true of the operation succeeds
+   */
+    function setBaseURI(string calldata baseURI) external virtual override onlyOwner returns (bool) {
+        _setBaseURI(baseURI);
+        emit BaseURISet(baseURI);
+        return true;
     }
 
 }

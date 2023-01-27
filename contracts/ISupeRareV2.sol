@@ -42,12 +42,27 @@ interface ISupeRareV2 {
     function getOwnerPosition(uint256 v2TokenId) external returns (Position memory);
 
 
-        /**
+    /**
      * @notice updateOwnership updates the ownership if the original V1 token was sold via bit/sale/transfer to a newOwner
      * @param v1TokenId the original V1TokenId
      * @return  true if the operation succeeds
      * @dev emits an OwnershipUpdated(address,address,uint256) event 
      */
     function updateOwnership(uint v1TokenId) external returns (bool);
+
+    /**
+   * @notice setTokenURI   //ERC721: Change the tokenURI if needed on a per token basis by only by the owner of this contract
+   * @param v2tokenId Owner's current V2 TokenID
+   * @return bool returns true of the operation succeeds
+   */
+    function setTokenURI(uint256 v2tokenId,string calldata _tokenURI) external returns (bool);
+
+
+    /**
+   * @notice setBaseURI   //ERC721: Change the tokenURI if needed on a per token basis only by the owner of this contract
+   * @param _baseURI Owner's current V2 TokenID
+   * @return bool returns true of the operation succeeds
+   */
+    function setBaseURI(string calldata _baseURI) external returns (bool);
 
 }

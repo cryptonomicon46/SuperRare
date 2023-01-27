@@ -76,8 +76,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": {
-      "lastModificationDate": 1674669257898,
-      "contentHash": "adc8080fe7c3265f2f3a6187b9d6d5bd",
+      "lastModificationDate": 1674839022322,
+      "contentHash": "3501ffd7a47c598c9846bdd9cbdb2984",
       "sourceName": "@openzeppelin/contracts/token/ERC721/ERC721.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -666,8 +666,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SupeRareV2.sol": {
-      "lastModificationDate": 1674832711968,
-      "contentHash": "456aa4505724ec29747101edb0f99aab",
+      "lastModificationDate": 1674838982268,
+      "contentHash": "4e6e97ffbbc21dca642ca7d421912de6",
       "sourceName": "contracts/SupeRareV2.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -707,8 +707,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/ISupeRareV2.sol": {
-      "lastModificationDate": 1674788920566,
-      "contentHash": "8bd9bac2d80689775859dbe114c83431",
+      "lastModificationDate": 1674838876928,
+      "contentHash": "e439120dc3c1c59cd4c0d103ce472e1b",
       "sourceName": "contracts/ISupeRareV2.sol",
       "solcConfig": {
         "version": "0.7.6",

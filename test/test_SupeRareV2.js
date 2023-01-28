@@ -139,7 +139,7 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
     return { supeRare, supeRareV2, owner, addr1, creator };
   }
 
-  it("SupeRareV2 Deposit: Owner of an V1 NFT cannot deposit it, if contract's stopped due to an issue.", async function () {
+  it("SupeRareV2 Deposit: Owner of an V1 NFT cannot deposit token, if contract's stopped due to an issue.", async function () {
     const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
       deployTokenFixture
     );
@@ -155,27 +155,45 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
     );
   });
 
-  it("SupeRareV2 Deposit: Owner of an V1 NFT allowed to deposit an NFT and mints a V2 Token", async function () {
+  it("SupeRareV2 Deposit NFT: Owner of an V1 NFT allowed to deposit an NFT and mints a token on the v2 contract", async function () {
     const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
       deployTokenFixture
     );
 
     await expect(supeRareV2.connect(creator).deposit(10))
       .to.emit(supeRareV2, "PositionCreated")
-      .withArgs(creator.address, 1, 10);
+      .withArgs(creator.address, 10, "NewEditions_20");
 
     expect(await supeRareV2.balanceOf(creator.address)).to.be.equal(1);
     expect(await supeRareV2.totalSupply()).to.be.equal(1);
+    const Position = await supeRareV2.getOwnerPosition(10);
+    expect(Position[0]).to.be.equal(creator.address);
+    expect(Position[1]).to.be.equal(10);
+    expect(Position[2]).to.be.equal("NewEditions_20");
   });
 
-  it("SupeRareV2 SetTokenURI: Owner sets the tokwnURI of the V2TokenID", async function () {
+  it("SupeRareV2 Deposit Duplicate NFT: Owner of tries to deposit the same token again.", async function () {
+    const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
+      deployTokenFixture
+    );
+
+    await expect(supeRareV2.connect(creator).deposit(10))
+      .to.emit(supeRareV2, "PositionCreated")
+      .withArgs(creator.address, 10, "NewEditions_20");
+
+    await expect(supeRareV2.connect(creator).deposit(10)).to.be.revertedWith(
+      "ERC721: token already minted"
+    );
+  });
+
+  it("SupeRareV2 SetTokenURI: Owner sets the tokwnURI on the v2 contract", async function () {
     const { supeRare, supeRareV2, owner, addr1, addr2 } = await loadFixture(
       deployTokenFixture
     );
 
     await expect(supeRareV2.connect(creator).deposit(10))
       .to.emit(supeRareV2, "PositionCreated")
-      .withArgs(creator.address, 1, 10);
+      .withArgs(creator.address, 10, "NewEditions_20");
 
     expect(await supeRareV2.balanceOf(creator.address)).to.be.equal(1);
 
@@ -185,18 +203,22 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
 
     await expect(
       supeRareV2.connect(owner).setTokenURI(1, "V2EditionTokenURI.json")
+    ).to.be.revertedWith("ERC721Metadata: URI set of nonexistent token");
+
+    await expect(
+      supeRareV2.connect(owner).setTokenURI(10, "V2EditionTokenURI.json")
     )
       .to.emit(supeRareV2, "TokenURISet")
-      .withArgs(1, "V2EditionTokenURI.json");
+      .withArgs(10, "V2EditionTokenURI.json");
   });
-  it("SupeRareV2 SetBaseURI: Owner sets the BaseURI of the V2TokenID", async function () {
+  it("SupeRareV2 SetBaseURI: Owner sets the BaseURI on the v2 contract", async function () {
     const { supeRare, supeRareV2, owner, addr1, addr2 } = await loadFixture(
       deployTokenFixture
     );
 
     await expect(supeRareV2.connect(creator).deposit(10))
       .to.emit(supeRareV2, "PositionCreated")
-      .withArgs(creator.address, 1, 10);
+      .withArgs(creator.address, 10, "NewEditions_20");
 
     expect(await supeRareV2.balanceOf(creator.address)).to.be.equal(1);
 
@@ -207,48 +229,6 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
     await expect(supeRareV2.connect(owner).setBaseURI("V2BASE_URI"))
       .to.emit(supeRareV2, "BaseURISet")
       .withArgs("V2BASE_URI");
-  });
-
-  it("SupeRareV2 Deposit 1 NFT: Owner of an V1 NFT  tried to deposit the same V1 token again", async function () {
-    const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
-      deployTokenFixture
-    );
-
-    await expect(supeRareV2.connect(creator).deposit(10))
-      .to.emit(supeRareV2, "PositionCreated")
-      .withArgs(creator.address, 1, 10);
-
-    expect(await supeRareV2.balanceOf(creator.address)).to.be.equal(1);
-    expect(await supeRareV2.totalSupply()).to.be.equal(1);
-    const Position = await supeRareV2.getOwnerPosition(1);
-    expect(Position[0]).to.be.equal(creator.address);
-    expect(Position[1]).to.be.equal(10);
-  });
-
-  it("SupeRareV2 UpdateOwnership V1: New owner of v1 token tries to update ownership", async function () {
-    const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
-      deployTokenFixture
-    );
-
-    await expect(supeRareV2.connect(creator).deposit(10))
-      .to.emit(supeRareV2, "PositionCreated")
-      .withArgs(creator.address, 1, 10);
-
-    await expect(supeRare.connect(creator).transfer(addr1.address, 10))
-      .to.emit(supeRare, "Transfer")
-      .withArgs(creator.address, addr1.address, 10);
-
-    await expect(supeRareV2.connect(addr1).updateOwnership(10))
-      .to.emit(supeRareV2, "OwnershipUpdated")
-      .withArgs(creator.address, addr1.address, 10);
-
-    expect(await supeRareV2.balanceOf(addr1.address)).to.be.equal(1);
-    expect(await supeRareV2.balanceOf(creator.address)).to.be.equal(0);
-
-    expect(await supeRareV2.totalSupply()).to.be.equal(1);
-    const Position = await supeRareV2.getOwnerPosition(1);
-    expect(Position[0]).to.be.equal(addr1.address);
-    expect(Position[1]).to.be.equal(10);
   });
 
   describe("SupeRareV2 Withdraw: Tests related to withdrawing an NFT", function () {
@@ -286,11 +266,11 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
 
       await expect(supeRareV2.connect(creator).deposit(10))
         .to.emit(supeRareV2, "PositionCreated")
-        .withArgs(creator.address, 1, 10);
+        .withArgs(creator.address, 10, "NewEditions_20");
 
       await expect(supeRareV2.connect(creator).withdraw(10))
         .to.emit(supeRareV2, "PositionDeleted")
-        .withArgs(creator.address, 1, 10);
+        .withArgs(creator.address, 10);
     });
 
     it("SupeRareV2 Withdraw after V1 Transfer: Owner deposits V1 token and new owner of V1 tries to withdraw it", async function () {
@@ -300,7 +280,7 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
 
       await expect(supeRareV2.connect(creator).deposit(10))
         .to.emit(supeRareV2, "PositionCreated")
-        .withArgs(creator.address, 1, 10);
+        .withArgs(creator.address, 10, "NewEditions_20");
 
       await expect(supeRare.connect(creator).transfer(addr1.address, 10))
         .to.emit(supeRare, "Transfer")
@@ -308,7 +288,7 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
 
       await expect(supeRareV2.connect(addr1).withdraw(10))
         .to.emit(supeRareV2, "PositionDeleted")
-        .withArgs(addr1.address, 1, 10);
+        .withArgs(addr1.address, 10);
     });
   });
 });

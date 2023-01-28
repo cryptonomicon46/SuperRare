@@ -10,19 +10,20 @@ interface ISupeRareV2 {
      * @dev This captures the Depositer's V1 Position 
      */
     struct  Position {
-        address v1Owner;
-        uint256 v1TokenID;
+        address tokenOwner;
+        uint256 tokenID;
+        string tokenURI;
         uint256 timeStamp;   
     } 
 
 
-      /**
-   * @notice deposit allows the owner of SupeRareV1 to deposit an NFT and get a minted representation in SupeRareV2
+    /**
+   * @notice deposit allows the owner of SupeRareV1 to deposit an NFT and get a minted representation  SupeRareV2 with the same tokenID
    * @param _tokenId uint256 ID of the SupeRareV1 or original tokenId being deposited by owner
-   * @return  minted v2 TokenID
-   * @dev emits a mint event
+   * @return bool returns true if the operation succeeds
+   * @dev emits a PositionCreated event
    */
-    function deposit(uint256 _tokenId) external returns (uint256);
+    function deposit(uint256 _tokenId) external returns (bool);
 
 
 
@@ -41,14 +42,6 @@ interface ISupeRareV2 {
    */
     function getOwnerPosition(uint256 v2TokenId) external returns (Position memory);
 
-
-    /**
-     * @notice updateOwnership updates the ownership if the original V1 token was sold via bit/sale/transfer to a newOwner
-     * @param v1TokenId the original V1TokenId
-     * @return  true if the operation succeeds
-     * @dev emits an OwnershipUpdated(address,address,uint256) event 
-     */
-    function updateOwnership(uint v1TokenId) external returns (bool);
 
     /**
    * @notice setTokenURI   //ERC721: Change the tokenURI if needed on a per token basis by only by the owner of this contract

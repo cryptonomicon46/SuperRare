@@ -17,7 +17,7 @@ import "hardhat/console.sol";
 
 
 
- contract SupeRareWrapper is Ownable, IERC721Metadata, IERC721 , ERC165{  
+ contract SupeRareWrapper is Ownable, IERC721Metadata, IERC721 , ERC165, IERC721Receiver{  
     using SafeMath for uint256;
     using Address for address;
     address private  OriginalSupeRareAddr_;
@@ -272,5 +272,13 @@ import "hardhat/console.sol";
         emit Transfer(from, to, tokenId);
 
     }
+
+
+    /// @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
+    function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
+        // return this.onERC721Received.selector;
+        return _ERC721_RECEIVED;
+    }
+
 
  }

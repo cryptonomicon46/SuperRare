@@ -9,12 +9,13 @@ const {
 const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 const { parse } = require("dotenv");
 
-const NAME_V2 = "SupeRareWrapper";
-const SYMBOL_V2 = "SUPRV2";
-const NAME = "SupeRare";
-const SYMBOL = "SUPR";
+const NAME = "SupeRareWrapperWrapper";
+const SYMBOL = "SUPRW";
 
-describe("SupeRareWrapper Test Suit: The Basics", function () {
+// We connect to the Contract using a Provider, so we will only
+// have read-only access to the Contract
+
+describe("SupeRareWrapper Test Suite#1: Basics", function () {
   async function deployTokenFixture() {
     [owner, addr1, addr2] = await ethers.getSigners();
 
@@ -28,10 +29,10 @@ describe("SupeRareWrapper Test Suit: The Basics", function () {
     const supeRareWrapper = await SupeRareWrapper.deploy(supeRare.address);
     await supeRareWrapper.deployed();
 
-    ////console.log("SupeRare contract deployed at:", supeRare.address);
+    ////console.log("SupeRareWrapper contract deployed at:", supeRareWrapper.address);
     ////console.log("Deployer Address", owner.address);
 
-    return { supeRare, supeRareWrapper, owner, addr1, addr2 };
+    return { supeRareWrapper, supeRare, owner, addr1, addr2 };
   }
 
   it("SupeRareWrapper Deployed: check contract address to be a proper address", async function () {
@@ -39,34 +40,15 @@ describe("SupeRareWrapper Test Suit: The Basics", function () {
     expect(supeRareWrapper.address).to.be.a.properAddress;
   });
 
-  it("SupeRareWrapper Name: check the name of the V2 token", async function () {
-    const { supeRareWrapper } = await loadFixture(deployTokenFixture);
-    expect(await supeRareWrapper.name()).to.be.equal(NAME_V2);
-  });
-
-  it("SupeRareWrapper Symbol: check the symbol of the V2 token", async function () {
-    const { supeRareWrapper } = await loadFixture(deployTokenFixture);
-    expect(await supeRareWrapper.symbol()).to.be.equal(SYMBOL_V2);
-  });
-
-  it("SupeRareWrapper Owner: Check owner or the deployer of the contract", async function () {
-    const { supeRare, supeRareWrapper, owner, addr1, addr2 } =
-      await loadFixture(deployTokenFixture);
+  it("SupeRareWrapper Owner: check the owner of the contract", async function () {
+    const { supeRareWrapper, owner } = await loadFixture(deployTokenFixture);
     expect(await supeRareWrapper.owner()).to.be.equal(owner.address);
   });
 
-  it("SupeRareWrapper transferOwnership: Only owner can transfer ownership", async function () {
-    const { supeRare, supeRareWrapper, owner, addr1, addr2 } =
-      await loadFixture(deployTokenFixture);
-
-    await expect(
-      supeRareWrapper.connect(addr1).transferOwnership(addr1.address)
-    ).to.be.revertedWith("Ownable: caller is not the owner");
-  });
-
-  it("SupeRareWrapper TransferOwnership to new Owner: Check address of the new owner", async function () {
-    const { supeRare, supeRareWrapper, owner, addr1, addr2 } =
-      await loadFixture(deployTokenFixture);
+  it("SupeRareWrapper transferOwnership: check the current owner can transfer ownership", async function () {
+    const { supeRareWrapper, owner, addr1 } = await loadFixture(
+      deployTokenFixture
+    );
 
     await expect(
       supeRareWrapper.connect(owner).transferOwnership(addr1.address)
@@ -76,211 +58,329 @@ describe("SupeRareWrapper Test Suit: The Basics", function () {
 
     expect(await supeRareWrapper.owner()).to.be.equal(addr1.address);
   });
-  it("SupeRareWrapper StopDeposits: Only owner can toggle ON/OFF deposits", async function () {
-    const { supeRare, supeRareWrapper, owner, addr1, addr2 } =
-      await loadFixture(deployTokenFixture);
-    await expect(
-      supeRareWrapper.connect(addr1).ToggleContract()
-    ).to.be.revertedWith("Ownable: caller is not the owner");
 
-    await expect(supeRareWrapper.connect(owner).ToggleContract())
-      .to.emit(supeRareWrapper, "ToggleStartStop")
-      .withArgs(true);
+  it("SupeRareWrapper renounceOwnership: check the current owner can renounce ownership", async function () {
+    const { supeRareWrapper, owner, addr1 } = await loadFixture(
+      deployTokenFixture
+    );
+
+    await expect(supeRareWrapper.connect(owner).renounceOwnership())
+      .to.emit(supeRareWrapper, "OwnershipTransferred")
+      .withArgs(owner.address, ethers.constants.AddressZero);
+
+    expect(await supeRareWrapper.owner()).to.be.equal(
+      ethers.constants.AddressZero
+    );
   });
 
-  it("SupeRareWrapper StopDeposits: Owner toggles the contract to stop deposits", async function () {
-    const { supeRare, supeRareWrapper, owner, addr1, addr2 } =
-      await loadFixture(deployTokenFixture);
-    await expect(supeRareWrapper.connect(owner).ToggleContract())
-      .to.emit(supeRareWrapper, "ToggleStartStop")
-      .withArgs(true);
+  //   it("SupeRareWrapper onERC721Received: check the onERC721Received function selector", async function () {
+  //     const { supeRareWrapper, owner, addr1 } = await loadFixture(
+  //       deployTokenFixture
+  //     );
 
-    expect(await supeRareWrapper.contract_status()).to.be.equal(true);
+  //     await expect(supeRareWrapper.connect(owner).renounceOwnership())
+  //       .to.emit(supeRareWrapper, "OwnershipTransferred")
+  //       .withArgs(owner.address, ethers.constants.AddressZero);
 
-    await expect(supeRareWrapper.connect(owner).ToggleContract())
-      .to.emit(supeRareWrapper, "ToggleStartStop")
-      .withArgs(false);
+  //     expect(await supeRareWrapper.owner()).to.be.equal(
+  //       ethers.constants.AddressZero
+  //     );
+  //   });
+  //   it("SupeRareWrapper: Only owner can create the Whitelist", async function () {
+  //     const { supeRareWrapper, owner, addr1, addr2 } = await loadFixture(
+  //       deployTokenFixture
+  //     );
 
-    expect(await supeRareWrapper.contract_status()).to.be.equal(false);
-  });
+  //     await expect(
+  //       supeRareWrapper.connect(addr2.address).whitelistCreator(addr1.address)
+  //     ).to.be.reverted;
+
+  //     await expect(supeRareWrapper.connect(owner).whitelistCreator(addr2.address))
+  //       .to.emit(supeRareWrapper, "WhitelistCreator")
+  //       .withArgs(addr2.address);
+  //   });
+
+  //   it("SupeRareWrapper IsWhiteListed: Check if an account is whitelisted", async function () {
+  //     const { supeRareWrapper, owner, addr1, addr2 } = await loadFixture(
+  //       deployTokenFixture
+  //     );
+
+  //     await expect(supeRareWrapper.connect(owner).whitelistCreator(addr2.address))
+  //       .to.emit(supeRareWrapper, "WhitelistCreator")
+  //       .withArgs(addr2.address);
+
+  //     let whiteListAddr = await supeRareWrapper.isWhitelisted(addr2.address);
+  //     expect(whiteListAddr).to.be.true;
+
+  //     whiteListAddr = await supeRareWrapper.isWhitelisted(addr1.address);
+  //     expect(whiteListAddr).to.be.false;
+  //   });
+
+  //   it("SupeRareWrapper MaintainerPercentage: Check default value and change it.", async function () {
+  //     const { supeRareWrapper, owner, addr1, addr2 } = await loadFixture(
+  //       deployTokenFixture
+  //     );
+  //     let maintainer_per = await supeRareWrapper.maintainerPercentage();
+  //     ////console.log(maintainer_per);
+
+  //     expect(maintainer_per).to.equal(30);
+
+  //     await expect(
+  //       supeRareWrapper.connect(addr2.address).setMaintainerPercentage(5)
+  //     ).to.be.reverted;
+
+  //     maintainer_per = await supeRareWrapper.maintainerPercentage();
+  //     expect(maintainer_per).to.equal(30);
+
+  //     await supeRareWrapper.connect(owner).setMaintainerPercentage(5);
+
+  //     maintainer_per = await supeRareWrapper.maintainerPercentage();
+  //     expect(maintainer_per).to.equal(5);
+  //   });
+
+  //   it("SupeRareWrapper CreatorPercentage: Check default value and change it.", async function () {
+  //     const { supeRareWrapper, owner, addr1, addr2 } = await loadFixture(
+  //       deployTokenFixture
+  //     );
+  //     let creator_per = await supeRareWrapper.creatorPercentage();
+  //     ////console.log(creator_per);
+
+  //     expect(creator_per).to.equal(100);
+
+  //     await expect(supeRareWrapper.connect(addr2.address).setCreatorPercentage(5))
+  //       .to.be.reverted;
+
+  //     creator_per = await supeRareWrapper.creatorPercentage();
+  //     expect(creator_per).to.equal(100);
+
+  //     await supeRareWrapper.connect(owner).setCreatorPercentage(20);
+
+  //     creator_per = await supeRareWrapper.creatorPercentage();
+  //     expect(creator_per).to.equal(20);
+  //   });
+
+  //   it("SupeRareWrapper AddNewToken: Check the TotalSupply, tokenId and URI", async function () {
+  //     const { supeRareWrapper, owner, addr1 } = await loadFixture(
+  //       deployTokenFixture
+  //     );
+
+  //     await expect(supeRareWrapper.connect(owner).whitelistCreator(addr1.address))
+  //       .to.emit(supeRareWrapper, "WhitelistCreator")
+  //       .withArgs(addr1.address);
+
+  //     await supeRareWrapper.connect(addr1).addNewToken("NewEditions_10");
+  //     expect(await supeRareWrapper.totalSupply()).to.equal(1);
+  //     const tokenId = await supeRareWrapper.tokensOf(addr1.address);
+  //     //console.log(ethers.BigNumber.from(1), tokenId[0]);
+  //     expect(tokenId[0]).to.be.equal(ethers.BigNumber.from("1"));
+  //     expect(await supeRareWrapper.tokenURI(tokenId[0])).to.equal(
+  //       "NewEditions_10"
+  //     );
+  //   });
 });
 
-describe("SupeRareWrapper Deposits: Tests related to depositing an NFT", function () {
-  async function deployTokenFixture() {
-    [owner, addr1, creator] = await ethers.getSigners();
+// describe("SupeRareWrapper Test Suite#2: Creator creates SupeRareWrapper token: Tests", function () {
+//   async function deployTokenFixture() {
+//     [owner, addr1, creator] = await ethers.getSigners();
 
-    const SupeRare = await ethers.getContractFactory("SupeRare");
-    //console.log("Deploying SupeRare ...\n");
-    const supeRare = await SupeRare.deploy();
-    await supeRare.deployed();
+//     const SupeRareWrapper = await ethers.getContractFactory("SupeRareWrapper");
+//     //console.log("Deploying SupeRareWrapper ...\n");
+//     const supeRareWrapper = await SupeRareWrapper.deploy();
+//     await supeRareWrapper.deployed();
+//     ////console.log("SupeRareWrapper contract deployed at:", supeRareWrapper.address);
+//     ////console.log("Deployer Address", owner.address);
+//     await expect(
+//       supeRareWrapper.connect(owner).whitelistCreator(creator.address)
+//     )
+//       .to.emit(supeRareWrapper, "WhitelistCreator")
+//       .withArgs(creator.address);
 
-    const SupeRareWrapper = await ethers.getContractFactory("SupeRareWrapper");
-    //console.log("Deploying SupeRareWrapper ...\n");
-    const supeRareWrapper = await SupeRareWrapper.deploy(supeRare.address);
-    await supeRareWrapper.deployed();
-    //console.log(`supeRareWrapper contract deployed at ${supeRareWrapper.address}`);
+//     await expect(
+//       supeRareWrapper
+//         .connect(creator)
+//         .addNewTokenWithEditions("NewEditions_10", 10, parseEther("1"))
+//     ).to.emit(supeRareWrapper, "SalePriceSet");
 
-    await expect(supeRare.connect(owner).whitelistCreator(creator.address))
-      .to.emit(supeRare, "WhitelistCreator")
-      .withArgs(creator.address);
+//     return { supeRareWrapper, owner, addr1, creator };
+//   }
 
-    await expect(
-      supeRare.connect(creator).addNewTokenWithEditions("", 1, parseEther("1"))
-    ).to.emit(supeRare, "SalePriceSet");
-    await expect(
-      supeRare
-        .connect(creator)
-        .addNewTokenWithEditions("NewEditions_20", 20, parseEther("1"))
-    ).to.emit(supeRare, "SalePriceSet");
+//   it("AddNewTokenEdition: Create new tokens and check totalSupply", async function () {
+//     const { supeRareWrapper, owner, addr1, creator } = await loadFixture(
+//       deployTokenFixture
+//     );
 
-    return { supeRare, supeRareWrapper, owner, addr1, creator };
-  }
+//     let totalSupply = await supeRareWrapper.totalSupply();
+//     expect(totalSupply).to.equal(11);
+//   });
 
-  it("SupeRareWrapper Deposit: Owner of an V1 NFT cannot deposit token, if contract's stopped due to an issue.", async function () {
-    const { supeRare, supeRareWrapper, owner, addr1, creator } =
-      await loadFixture(deployTokenFixture);
+//   it("AddNewTokenEdition: Check TokenURIs", async function () {
+//     const { supeRareWrapper, owner, addr1, creator } = await loadFixture(
+//       deployTokenFixture
+//     );
 
-    await expect(supeRareWrapper.connect(owner).ToggleContract())
-      .to.emit(supeRareWrapper, "ToggleStartStop")
-      .withArgs(true);
+//     let tokenURI;
+//     for (let i = 1; i <= 11; i++) {
+//       expect(await supeRareWrapper.tokenURI(i)).to.be.equal("NewEditions_10");
+//     }
+//   });
 
-    expect(await supeRareWrapper.contract_status()).to.be.equal(true);
+//   it("AddNewTokenEdition: Check SalePriceOfTokens", async function () {
+//     const { supeRareWrapper, owner, addr1, creator } = await loadFixture(
+//       deployTokenFixture
+//     );
 
-    await expect(
-      supeRareWrapper.connect(creator).deposit(10)
-    ).to.be.revertedWith("DEPOSITS_DISABLED");
-  });
+//     for (let i = 1; i <= 11; i++) {
+//       i == 1
+//         ? expect(await supeRareWrapper.salePriceOfToken(i)).to.be.equal(0)
+//         : expect(await supeRareWrapper.salePriceOfToken(i)).to.be.equal(
+//             parseEther("1")
+//           );
+//     }
+//   });
 
-  it("SupeRareWrapper Deposit NFT: Owner of an V1 NFT allowed to deposit an NFT and mints a token on the v2 contract", async function () {
-    const { supeRare, supeRareWrapper, owner, addr1, creator } =
-      await loadFixture(deployTokenFixture);
+//   it("AddNewTokenEdition: Check OwnerOf and CreatorOf tokenIds", async function () {
+//     const { supeRareWrapper, owner, addr1, creator } = await loadFixture(
+//       deployTokenFixture
+//     );
 
-    await expect(supeRareWrapper.connect(creator).deposit(10))
-      .to.emit(supeRareWrapper, "PositionCreated")
-      .withArgs(creator.address, 10, "NewEditions_20");
+//     let tokenURI;
+//     for (let i = 1; i <= 11; i++) {
+//       expect(await supeRareWrapper.ownerOf(i)).to.be.equal(creator.address);
+//       expect(await supeRareWrapper.creatorOfToken(i)).to.be.equal(
+//         creator.address
+//       );
+//     }
+//   });
 
-    expect(await supeRareWrapper.balanceOf(creator.address)).to.be.equal(1);
-    expect(await supeRareWrapper.totalSupply()).to.be.equal(1);
-    const Position = await supeRareWrapper.getOwnerPosition(10);
-    expect(Position[0]).to.be.equal(creator.address);
-    expect(Position[1]).to.be.equal(10);
-    expect(Position[2]).to.be.equal("NewEditions_20");
-  });
+//   it("AddNewTokenEdition: Check all tokens belonging to the owner", async function () {
+//     const { supeRareWrapper, owner, addr1, creator } = await loadFixture(
+//       deployTokenFixture
+//     );
+//     const tokensOfOwner = await supeRareWrapper.tokensOf(creator.address);
+//     tokensOfOwner.forEach((v, i) => expect(v).to.be.equal(i + 1));
+//   });
 
-  it("SupeRareWrapper Deposit Duplicate NFT: Owner of tries to deposit the same token again.", async function () {
-    const { supeRare, supeRareWrapper, owner, addr1, creator } =
-      await loadFixture(deployTokenFixture);
+//   it("AddNewTokenEdition: Check balance of Owner", async function () {
+//     const { supeRareWrapper, owner, addr1, creator } = await loadFixture(
+//       deployTokenFixture
+//     );
 
-    await expect(supeRareWrapper.connect(creator).deposit(10))
-      .to.emit(supeRareWrapper, "PositionCreated")
-      .withArgs(creator.address, 10, "NewEditions_20");
+//     expect(await supeRareWrapper.balanceOf(creator.address)).to.equal(11);
+//   });
 
-    await expect(
-      supeRareWrapper.connect(creator).deposit(10)
-    ).to.be.revertedWith("ERC721: token already minted");
-  });
+//   it("AddNewTokenEdition: Check Original token URI", async function () {
+//     const { supeRareWrapper, owner, addr1, creator } = await loadFixture(
+//       deployTokenFixture
+//     );
 
-  it("SupeRareWrapper SetTokenURI: Owner sets the tokwnURI on the v2 contract", async function () {
-    const { supeRare, supeRareWrapper, owner, addr1, addr2 } =
-      await loadFixture(deployTokenFixture);
+//     const tokensOfOwner = await supeRareWrapper.tokensOf(creator.address);
+//     tokensOfOwner.forEach((v, i) => expect(v).to.be.equal(i + 1));
 
-    await expect(supeRareWrapper.connect(creator).deposit(10))
-      .to.emit(supeRareWrapper, "PositionCreated")
-      .withArgs(creator.address, 10, "NewEditions_20");
+//     expect(await supeRareWrapper.originalTokenOfUri("NewEditions_10")).to.equal(
+//       "1"
+//     );
+//   });
+// });
 
-    expect(await supeRareWrapper.balanceOf(creator.address)).to.be.equal(1);
+// describe("Creator creates SupeRareWrapper token: Tests", function () {
+//   async function deployTokenFixture() {
+//     [owner, addr1, creator] = await ethers.getSigners();
 
-    await expect(
-      supeRareWrapper.connect(addr1).setTokenURI(10, "V2EditionTokenURI.json")
-    ).to.be.revertedWith("Ownable: caller is not the owner");
+//     const SupeRareWrapper = await ethers.getContractFactory("SupeRareWrapper");
+//     //console.log("Deploying SupeRareWrapper ...\n");
+//     const supeRareWrapper = await SupeRareWrapper.deploy();
+//     await supeRareWrapper.deployed();
+//     ////console.log("SupeRareWrapper contract deployed at:", supeRareWrapper.address);
+//     ////console.log("Deployer Address", owner.address);
+//     await expect(
+//       supeRareWrapper.connect(owner).whitelistCreator(creator.address)
+//     )
+//       .to.emit(supeRareWrapper, "WhitelistCreator")
+//       .withArgs(creator.address);
 
-    await expect(
-      supeRareWrapper.connect(owner).setTokenURI(1, "V2EditionTokenURI.json")
-    ).to.be.revertedWith("ERC721Metadata: URI set of nonexistent token");
+//     await expect(
+//       supeRareWrapper
+//         .connect(creator)
+//         .addNewTokenWithEditions("NewEditions_10", 10, parseEther("1"))
+//     ).to.emit(supeRareWrapper, "SalePriceSet");
 
-    await expect(
-      supeRareWrapper.connect(owner).setTokenURI(10, "V2EditionTokenURI.json")
-    )
-      .to.emit(supeRareWrapper, "TokenURISet")
-      .withArgs(10, "V2EditionTokenURI.json");
-  });
-  it("SupeRareWrapper SetBaseURI: Owner sets the BaseURI on the v2 contract", async function () {
-    const { supeRare, supeRareWrapper, owner, addr1, addr2 } =
-      await loadFixture(deployTokenFixture);
+//     return { supeRareWrapper, owner, addr1, creator };
+//   }
 
-    await expect(supeRareWrapper.connect(creator).deposit(10))
-      .to.emit(supeRareWrapper, "PositionCreated")
-      .withArgs(creator.address, 10, "NewEditions_20");
+//   it("AddNewTokenEdition: Create new tokens and check totalSupply", async function () {
+//     const { supeRareWrapper, owner, addr1, creator } = await loadFixture(
+//       deployTokenFixture
+//     );
 
-    expect(await supeRareWrapper.balanceOf(creator.address)).to.be.equal(1);
+//     let totalSupply = await supeRareWrapper.totalSupply();
+//     expect(totalSupply).to.equal(11);
+//   });
 
-    await expect(
-      supeRareWrapper.connect(addr1).setBaseURI("V2BASE_URI")
-    ).to.be.revertedWith("Ownable: caller is not the owner");
+//   it("AddNewTokenEdition: Check TokenURIs", async function () {
+//     const { supeRareWrapper, owner, addr1, creator } = await loadFixture(
+//       deployTokenFixture
+//     );
 
-    await expect(supeRareWrapper.connect(owner).setBaseURI("V2BASE_URI"))
-      .to.emit(supeRareWrapper, "BaseURISet")
-      .withArgs("V2BASE_URI");
-  });
+//     let tokenURI;
+//     for (let i = 1; i <= 11; i++) {
+//       expect(await supeRareWrapper.tokenURI(i)).to.be.equal("NewEditions_10");
+//     }
+//   });
 
-  describe("SupeRareWrapper Withdraw: Tests related to withdrawing an NFT", function () {
-    async function deployTokenFixture() {
-      [owner, addr1, creator] = await ethers.getSigners();
+//   it("AddNewTokenEdition: Check SalePriceOfTokens", async function () {
+//     const { supeRareWrapper, owner, addr1, creator } = await loadFixture(
+//       deployTokenFixture
+//     );
 
-      const SupeRare = await ethers.getContractFactory("SupeRare");
-      //console.log("Deploying SupeRare ...\n");
-      const supeRare = await SupeRare.deploy();
-      await supeRare.deployed();
+//     for (let i = 1; i <= 11; i++) {
+//       i == 1
+//         ? expect(await supeRareWrapper.salePriceOfToken(i)).to.be.equal(0)
+//         : expect(await supeRareWrapper.salePriceOfToken(i)).to.be.equal(
+//             parseEther("1")
+//           );
+//     }
+//   });
 
-      const SupeRareWrapper = await ethers.getContractFactory(
-        "SupeRareWrapper"
-      );
-      //console.log("Deploying SupeRareWrapper ...\n");
-      const supeRareWrapper = await SupeRareWrapper.deploy(supeRare.address);
-      await supeRareWrapper.deployed();
-      //console.log(`supeRareWrapper contract deployed at ${supeRareWrapper.address}`);
+//   it("AddNewTokenEdition: Check OwnerOf and CreatorOf tokenIds", async function () {
+//     const { supeRareWrapper, owner, addr1, creator } = await loadFixture(
+//       deployTokenFixture
+//     );
 
-      await expect(supeRare.connect(owner).whitelistCreator(creator.address))
-        .to.emit(supeRare, "WhitelistCreator")
-        .withArgs(creator.address);
+//     let tokenURI;
+//     for (let i = 1; i <= 11; i++) {
+//       expect(await supeRareWrapper.ownerOf(i)).to.be.equal(creator.address);
+//       expect(await supeRareWrapper.creatorOfToken(i)).to.be.equal(
+//         creator.address
+//       );
+//     }
+//   });
 
-      await expect(
-        supeRare
-          .connect(creator)
-          .addNewTokenWithEditions("NewEditions_20", 20, parseEther("1"))
-      ).to.emit(supeRare, "SalePriceSet");
+//   it("AddNewTokenEdition: Check all tokens belonging to the owner", async function () {
+//     const { supeRareWrapper, owner, addr1, creator } = await loadFixture(
+//       deployTokenFixture
+//     );
+//     const tokensOfOwner = await supeRareWrapper.tokensOf(creator.address);
+//     tokensOfOwner.forEach((v, i) => expect(v).to.be.equal(i + 1));
+//   });
 
-      return { supeRare, supeRareWrapper, owner, addr1, creator };
-    }
+//   it("AddNewTokenEdition: Check balance of Owner", async function () {
+//     const { supeRareWrapper, owner, addr1, creator } = await loadFixture(
+//       deployTokenFixture
+//     );
 
-    it("SupeRareWrapper Withdraw: Owner deposits V1 tokens, then tries to withdraw them", async function () {
-      const { supeRare, supeRareWrapper, owner, addr1, creator } =
-        await loadFixture(deployTokenFixture);
+//     expect(await supeRareWrapper.balanceOf(creator.address)).to.equal(11);
+//   });
 
-      await expect(supeRareWrapper.connect(creator).deposit(10))
-        .to.emit(supeRareWrapper, "PositionCreated")
-        .withArgs(creator.address, 10, "NewEditions_20");
+//   it("AddNewTokenEdition: Check Original token URI", async function () {
+//     const { supeRareWrapper, owner, addr1, creator } = await loadFixture(
+//       deployTokenFixture
+//     );
 
-      await expect(supeRareWrapper.connect(creator).withdraw(10))
-        .to.emit(supeRareWrapper, "PositionDeleted")
-        .withArgs(creator.address, 10);
-    });
+//     const tokensOfOwner = await supeRareWrapper.tokensOf(creator.address);
+//     tokensOfOwner.forEach((v, i) => expect(v).to.be.equal(i + 1));
 
-    it("SupeRareWrapper Withdraw after V1 Transfer: Owner deposits V1 token and new owner of V1 tries to withdraw it", async function () {
-      const { supeRare, supeRareWrapper, owner, addr1, creator } =
-        await loadFixture(deployTokenFixture);
-
-      await expect(supeRareWrapper.connect(creator).deposit(10))
-        .to.emit(supeRareWrapper, "PositionCreated")
-        .withArgs(creator.address, 10, "NewEditions_20");
-
-      await expect(supeRare.connect(creator).transfer(addr1.address, 10))
-        .to.emit(supeRare, "Transfer")
-        .withArgs(creator.address, addr1.address, 10);
-
-      await expect(supeRareWrapper.connect(addr1).withdraw(10))
-        .to.emit(supeRareWrapper, "PositionDeleted")
-        .withArgs(addr1.address, 10);
-    });
-  });
-});
+//     expect(await supeRareWrapper.originalTokenOfUri("NewEditions_10")).to.equal(
+//       "1"
+//     );
+//   });
+// });

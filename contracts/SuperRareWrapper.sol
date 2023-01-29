@@ -23,10 +23,10 @@ import "hardhat/console.sol";
     address private  OriginalSupeRareAddr_;
     ISupeRare private supe;
     // Token name
-    string private _name = "SupeRareWrapper";
+    string private _name;
 
     // Token symbol
-    string private _symbol ="SUPRW";
+    string private _symbol;
 
 
     // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`

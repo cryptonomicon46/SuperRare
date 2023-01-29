@@ -816,8 +816,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SuperRareWrapper.sol": {
-      "lastModificationDate": 1675023807071,
-      "contentHash": "001998d4799bac1e8651f5167469787c",
+      "lastModificationDate": 1675026779773,
+      "contentHash": "0019da86b85807a02043fa8fe053e41f",
       "sourceName": "contracts/SuperRareWrapper.sol",
       "solcConfig": {
         "version": "0.7.6",

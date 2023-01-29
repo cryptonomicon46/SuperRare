@@ -373,9 +373,10 @@ import "hardhat/console.sol";
      * @return bool 
      */
     function isWhitelisted(address _creator) external returns (bool) {
-        (bool success, bytes memory returndata) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("isWhitelisted(address)",_creator));
-         require(success,"SupeRareWrapper: isWhitelisted action failed!");    
-        return abi.decode(returndata, (bool));
+        // (bool success, bytes memory returndata) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("isWhitelisted(address)",_creator));
+        //  require(success,"SupeRareWrapper: isWhitelisted action failed!");    
+        // return abi.decode(returndata, (bool));
+        return supe.isWhitelisted(_creator);
          }
 
 
@@ -387,9 +388,10 @@ import "hardhat/console.sol";
     * @return uint256 token ID
     */
     function originalTokenOfUri(string memory _uri) external returns (uint256) {
-        (bool success, bytes memory returndata) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("originalTokenOfUri(string)",_uri));
-        require(success,"SupeRareWrapper: originalTokenOfUri action failed!");    
-        return abi.decode(returndata, (uint256));
+        // (bool success, bytes memory returndata) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("originalTokenOfUri(string)",_uri));
+        // require(success,"SupeRareWrapper: originalTokenOfUri action failed!");    
+        // return abi.decode(returndata, (uint256));
+        return supe.originalTokenOfUri(_uri);
     }
 
 
@@ -399,9 +401,10 @@ import "hardhat/console.sol";
     * @return bid amount and bidder address of token
     */
     function currentBidDetailsOfToken(uint256 _tokenId) external returns (uint256, address) {
-        (bool success, bytes memory returndata) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("currentBidDetailsOfToken(uint256)",_tokenId));
-        require(success,"SupeRareWrapper: currentBidDetailsOfToken action failed!");    
-        return abi.decode(returndata, (uint256,address));
+        // (bool success, bytes memory returndata) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("currentBidDetailsOfToken(uint256)",_tokenId));
+        // require(success,"SupeRareWrapper: currentBidDetailsOfToken action failed!");    
+        // return abi.decode(returndata, (uint256,address));
+        return supe.currentBidDetailsOfToken(_tokenId);
     }
 
     /**
@@ -410,9 +413,11 @@ import "hardhat/console.sol";
     * @return address of the creator
     */
     function creatorOfToken(uint256 _tokenId) external returns (address) {
-        (bool success, bytes memory returndata) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("creatorOfToken(uint256)",_tokenId));
-        require(success,"SupeRareWrapper: currentBidDetailsOfToken action failed!");    
-        return abi.decode(returndata, (address));
+        // (bool success, bytes memory returndata) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("creatorOfToken(uint256)",_tokenId));
+        // require(success,"SupeRareWrapper: currentBidDetailsOfToken action failed!");    
+        // return abi.decode(returndata, (address));
+        return supe.creatorOfToken(_tokenId);
+
     }
 
 
@@ -422,9 +427,10 @@ import "hardhat/console.sol";
     * @return sale price of the token
     */
     function salePriceOfToken(uint256 _tokenId) external returns (uint256) {
-        (bool success, bytes memory returndata) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("salePriceOfToken(uint256)",_tokenId));
-        require(success,"SupeRareWrapper: currentBidDetailsOfToken action failed!");    
-        return abi.decode(returndata, (uint256));
+        // (bool success, bytes memory returndata) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("salePriceOfToken(uint256)",_tokenId));
+        // require(success,"SupeRareWrapper: currentBidDetailsOfToken action failed!");    
+        // return abi.decode(returndata, (uint256));
+        return supe.salePriceOfToken(_tokenId);
     }
 
 

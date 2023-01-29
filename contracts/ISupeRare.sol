@@ -66,5 +66,104 @@ interface ISupeRare {
 
 
 
+    /**
+     * @dev Adds a new unique token to the supply
+     * @param _uri string metadata uri associated with the token
+     */
+    function addNewToken(string memory _uri) external;
 
+    /**
+     * @dev Adds a new unique token to the supply with N editions. The sale price is set for all editions
+     * @param _uri string metadata uri associated with the token.
+     * @param _editions uint256 number of editions to create.
+     * @param _salePrice uint256 wei price of editions.
+     */
+    function addNewTokenWithEditions(string memory _uri, uint256 _editions, uint256 _salePrice) external;
+
+    /**
+    * @dev Bids on the token, replacing the bid if the bid is higher than the current bid. You cannot bid on a token you already own.
+    * @param _tokenId uint256 ID of the token to bid on
+    */
+    function bid(uint256 _tokenId) external;
+
+    /**
+     * @dev Accept the bid on the token, transferring ownership to the current bidder and paying out the owner.
+     * @param _tokenId uint256 ID of the token with the standing bid
+     */
+    function acceptBid(uint256 _tokenId) external;
+ 
+     /**
+     * @dev Purchase the token if there is a sale price; transfers ownership to buyer and pays out owner.
+     * @param _tokenId uint256 ID of the token to be purchased
+     */
+    function buy(uint256 _tokenId) external;
+ 
+
+    /**
+     * @dev Set the sale price of the token
+     * @param _tokenId uint256 ID of the token with the standing bid
+     */
+    function setSalePrice(uint256 _tokenId, uint256 _salePrice) external;
+ 
+
+     /**
+     * @dev Adds the provided address to the whitelist of creators
+     * @param _creator address to be added to the whitelist
+     */
+    function whitelistCreator(address _creator) external;
+
+    /**
+     * @dev Set the maintainer Percentage. Needs to be 10 * target percentage
+     * @param _percentage uint256 percentage * 10.
+     */
+    function setMaintainerPercentage(uint256 _percentage) external;
+ 
+   /**
+     * @dev Set the creator Percentage. Needs to be 10 * target percentage
+     * @param _percentage uint256 percentage * 10.
+     */
+    function setCreatorPercentage(uint256 _percentage) external;
+ 
+    /** 
+     * @dev Returns whether the creator is whitelisted
+     * @param _creator address to check
+     * @return bool 
+     */
+    function isWhitelisted(address _creator) external returns (bool);
+
+
+    /**
+    * @dev Gets the specified token ID of the uri. It only
+    * returns ids of originals.
+    * Throw if not connected to a token ID.
+    * @param _uri string uri of metadata
+    * @return uint256 token ID
+    */
+    function originalTokenOfUri(string memory _uri) external returns (uint256);
+ 
+   /**
+    * @dev Gets the current bid and bidder of the token
+    * @param _tokenId uint256 ID of the token to get bid details
+    * @return bid amount and bidder address of token
+    */
+    function currentBidDetailsOfToken(uint256 _tokenId) external returns (uint256, address);
+  
+
+      /**
+    * @dev Gets the creator of the token
+    * @param _tokenId uint256 ID of the token
+    * @return address of the creator
+    */
+    function creatorOfToken(uint256 _tokenId) external returns (address);
+
+
+
+
+    /**
+    * @dev Gets the sale price of the token
+    * @param _tokenId uint256 ID of the token
+    * @return sale price of the token
+    */
+    function salePriceOfToken(uint256 _tokenId) external returns (uint256);
+ 
 }

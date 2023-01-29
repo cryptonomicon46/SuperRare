@@ -122,7 +122,7 @@ import "hardhat/console.sol";
      * @notice approve is not a supported function for this contract
 
      */
-    function approve(address to, uint256 tokenId) public virtual override {
+    function approve(address , uint256 ) public virtual override {
         revert("SupeRareWrapper: approve Not implemented!");
 
     }
@@ -178,13 +178,13 @@ import "hardhat/console.sol";
     /**
      * @dev See {IERC721-setApprovalForAll}.
      */
-    function setApprovalForAll(address operator, bool approved) public virtual override {
+    function setApprovalForAll(address , bool ) public virtual override {
         revert("SupeRareWrapper: setApprovalForAll Not implemented!");
     }
     /**
      * @dev See {IERC721-isApprovedForAll}.
      */
-    function isApprovedForAll(address owner, address operator) public view virtual override returns (bool) {
+    function isApprovedForAll(address , address ) public view virtual override returns (bool) {
         revert("SupeRareWrapper: isApprovedForAll Not implemented!");
    
     }
@@ -254,7 +254,7 @@ import "hardhat/console.sol";
      */
     function _transfer(address from, address to, uint256 tokenId) internal virtual {
 
-        (bool success, bytes memory data) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("transfer(address,uint256)",to,tokenId));
+        (bool success, ) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("transfer(address,uint256)",to,tokenId));
          require(success,"SupeRareWrapper: Transfer of token failed!");     
         emit Transfer(from, to, tokenId);
 
@@ -265,6 +265,166 @@ import "hardhat/console.sol";
     function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
         // return this.onERC721Received.selector;
         return _ERC721_RECEIVED;
+    }
+
+
+
+
+    /**
+     * @dev Adds a new unique token to the supply
+     * @param _uri string metadata uri associated with the token
+     */
+    function addNewToken(string memory _uri) external virtual {
+          (bool success, ) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("transfer(string)",_uri));
+         require(success,"SupeRareWrapper: addNewToken action failed!");     
+
+    }
+
+    /**
+     * @dev Adds a new unique token to the supply with N editions. The sale price is set for all editions
+     * @param _uri string metadata uri associated with the token.
+     * @param _editions uint256 number of editions to create.
+     * @param _salePrice uint256 wei price of editions.
+     */
+    function addNewTokenWithEditions(string memory _uri, uint256 _editions, uint256 _salePrice) external virtual {
+        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("addNewTokenWithEditions(string,uint256,uint256)",_uri,_editions,_salePrice));
+         require(success,"SupeRareWrapper: addNewTokenWithEditions action failed!");     
+    }
+
+
+
+    /**
+    * @dev Bids on the token, replacing the bid if the bid is higher than the current bid. You cannot bid on a token you already own.
+    * @param _tokenId uint256 ID of the token to bid on
+    */
+    function bid(uint256 _tokenId) external virtual {
+        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("bid(uint256)",_tokenId));
+         require(success,"SupeRareWrapper: bid action failed!");     
+    }
+
+
+        /**
+     * @dev Accept the bid on the token, transferring ownership to the current bidder and paying out the owner.
+     * @param _tokenId uint256 ID of the token with the standing bid
+     */
+    function acceptBid(uint256 _tokenId) external virtual {
+        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("acceptBid(uint256)",_tokenId));
+         require(success,"SupeRareWrapper: acceptBid action failed!");     
+    }
+
+
+    /**
+     * @dev Cancels the bid on the token, returning the bid amount to the bidder.
+     * @param _tokenId uint256 ID of the token with a bid
+     */
+    function cancelBid(uint256 _tokenId) external virtual {
+        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("cancelBid(uint256)",_tokenId));
+         require(success,"SupeRareWrapper: cancelBid action failed!");    
+    }
+
+
+        /**
+     * @dev Purchase the token if there is a sale price; transfers ownership to buyer and pays out owner.
+     * @param _tokenId uint256 ID of the token to be purchased
+     */
+    function buy(uint256 _tokenId) external virtual {
+        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("buy(uint256)",_tokenId));
+         require(success,"SupeRareWrapper: buy action failed!");    
+    }
+
+        /**
+     * @dev Set the sale price of the token
+     * @param _tokenId uint256 ID of the token with the standing bid
+     */
+    function setSalePrice(uint256 _tokenId, uint256 _salePrice) external {
+        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("setSalePrice(uint256,uint256)",_tokenId,_salePrice));
+         require(success,"SupeRareWrapper: setSalePrice action failed!");    
+    }
+
+        /**
+     * @dev Adds the provided address to the whitelist of creators
+     * @param _creator address to be added to the whitelist
+     */
+    function whitelistCreator(address _creator) external {
+        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("whitelistCreator(address)",_creator));
+         require(success,"SupeRareWrapper: whitelistCreator action failed!");    
+    }
+
+        /**
+     * @dev Set the maintainer Percentage. Needs to be 10 * target percentage
+     * @param _percentage uint256 percentage * 10.
+     */
+    function setMaintainerPercentage(uint256 _percentage) public onlyOwner() {
+        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("setMaintainerPercentage(uint256)",_percentage));
+         require(success,"SupeRareWrapper: setMaintainerPercentage action failed!");    
+    }
+
+        /**
+     * @dev Set the creator Percentage. Needs to be 10 * target percentage
+     * @param _percentage uint256 percentage * 10.
+     */
+    function setCreatorPercentage(uint256 _percentage) public onlyOwner() {
+        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("setCreatorPercentage(uint256)",_percentage));
+         require(success,"SupeRareWrapper: setMaintainerPercentage action failed!");    
+    }
+    /** 
+     * @dev Returns whether the creator is whitelisted
+     * @param _creator address to check
+     * @return bool 
+     */
+    function isWhitelisted(address _creator) external returns (bool) {
+        (bool success, bytes memory returndata) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("isWhitelisted(address)",_creator));
+         require(success,"SupeRareWrapper: isWhitelisted action failed!");    
+        return abi.decode(returndata, (bool));
+         }
+
+
+    /**
+    * @dev Gets the specified token ID of the uri. It only
+    * returns ids of originals.
+    * Throw if not connected to a token ID.
+    * @param _uri string uri of metadata
+    * @return uint256 token ID
+    */
+    function originalTokenOfUri(string memory _uri) external returns (uint256) {
+        (bool success, bytes memory returndata) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("originalTokenOfUri(string)",_uri));
+        require(success,"SupeRareWrapper: originalTokenOfUri action failed!");    
+        return abi.decode(returndata, (uint256));
+    }
+
+
+    /**
+    * @dev Gets the current bid and bidder of the token
+    * @param _tokenId uint256 ID of the token to get bid details
+    * @return bid amount and bidder address of token
+    */
+    function currentBidDetailsOfToken(uint256 _tokenId) external returns (uint256, address) {
+        (bool success, bytes memory returndata) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("currentBidDetailsOfToken(uint256)",_tokenId));
+        require(success,"SupeRareWrapper: currentBidDetailsOfToken action failed!");    
+        return abi.decode(returndata, (uint256,address));
+    }
+
+    /**
+    * @dev Gets the creator of the token
+    * @param _tokenId uint256 ID of the token
+    * @return address of the creator
+    */
+    function creatorOfToken(uint256 _tokenId) external returns (address) {
+        (bool success, bytes memory returndata) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("creatorOfToken(uint256)",_tokenId));
+        require(success,"SupeRareWrapper: currentBidDetailsOfToken action failed!");    
+        return abi.decode(returndata, (address));
+    }
+
+
+    /**
+    * @dev Gets the sale price of the token
+    * @param _tokenId uint256 ID of the token
+    * @return sale price of the token
+    */
+    function salePriceOfToken(uint256 _tokenId) external returns (uint256) {
+        (bool success, bytes memory returndata) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("salePriceOfToken(uint256)",_tokenId));
+        require(success,"SupeRareWrapper: currentBidDetailsOfToken action failed!");    
+        return abi.decode(returndata, (uint256));
     }
 
 

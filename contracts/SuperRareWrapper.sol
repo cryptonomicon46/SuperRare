@@ -123,15 +123,8 @@ import "hardhat/console.sol";
 
      */
     function approve(address to, uint256 tokenId) public virtual override {
-        // address owner = ERC721.ownerOf(tokenId);
-        // require(to != owner, "ERC721: approval to current owner");
+        revert("SupeRareWrapper: approve Not implemented!");
 
-        // require(_msgSender() == owner || ERC721.isApprovedForAll(owner, _msgSender()),
-        //     "ERC721: approve caller is not owner nor approved for all"
-        // );
-
-        // _approve(to, tokenId);
-        revert();
     }
 
 
@@ -186,19 +179,13 @@ import "hardhat/console.sol";
      * @dev See {IERC721-setApprovalForAll}.
      */
     function setApprovalForAll(address operator, bool approved) public virtual override {
-    //     require(operator != _msgSender(), "ERC721: approve to caller");
-
-    //     // _operatorApprovals[_msgSender()][operator] = approved;
-    //  (bool success, bytes memory data) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("approve(address,uint256)",operator,tokenId));
-    //      require(success,"SupeRareWrapper: Unable to set approval for all!");     
-    //     emit ApprovalForAll(_msgSender(), operator, approved);
-        revert();
+        revert("SupeRareWrapper: setApprovalForAll Not implemented!");
     }
     /**
      * @dev See {IERC721-isApprovedForAll}.
      */
     function isApprovedForAll(address owner, address operator) public view virtual override returns (bool) {
-        // return _operatorApprovals[owner][operator];
+        revert("SupeRareWrapper: isApprovedForAll Not implemented!");
    
     }
 

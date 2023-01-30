@@ -532,15 +532,17 @@ contract SupeRare is ERC721Token, Ownable, ERC721Metadata {
      * @param _creator address to be added to the whitelist
      */
     function whitelistCreator(address _creator) public onlyOwner {
+    console.log("Whitelist creator");
       creatorWhitelist[_creator] = true;
-      WhitelistCreator(_creator);
+      emit WhitelistCreator(_creator);
     }
     
     /**
      * @dev Set the maintainer Percentage. Needs to be 10 * target percentage
      * @param _percentage uint256 percentage * 10.
      */
-    function setMaintainerPercentage(uint256 _percentage) public onlyOwner() {
+    function setMaintainerPercentage(uint256 _percentage) public  {
+        console.log("SupeRare:", msg.sender);
        maintainerPercentage = _percentage;
     }
     

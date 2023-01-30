@@ -2,18 +2,20 @@
 pragma solidity =0.7.6;
 pragma abicoder v2;
 
+import "hardhat/console.sol";
 import "./ISupeRare.sol";
+
 import "./IERC721Metadata.sol";
 import "./IERC721Receiver.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
+
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/introspection/ERC165.sol";
 
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "hardhat/console.sol";
 
 
 
@@ -99,14 +101,37 @@ import "hardhat/console.sol";
     }
 
     /**
+     * @dev See {SupeRare get maintainer percentage function}.
+     */
+    function getMaintainerPercentage(address account) external view returns (uint256) {
+        require(account != address(0), "ERC721: balance query for the zero address");
+
+        (bool success, bytes memory data) = address(OriginalSupeRareAddr_).staticcall(abi.encodeWithSignature("maintainerPercentage()"));
+         require(success,"SupeRareWrapper: getMaintainerPercentage action failed!");    
+         console.log("Maintainer percentage:", abi.decode(data,(uint256)));
+        return abi.decode(data,(uint256));
+    }
+
+    /**
+     * @dev See {SupeRare get creator percentage function}.
+     */
+    function getCreatorPercentage(address account) external view returns (uint256) {
+        require(account != address(0), "ERC721: balance query for the zero address");
+
+        (bool success, bytes memory data) = address(OriginalSupeRareAddr_).staticcall(abi.encodeWithSignature("creatorPercentage()"));
+         require(success,"SupeRareWrapper: getCreatorPercentage action failed!");    
+         console.log("Creator percentage:", abi.decode(data,(uint256)));
+        return abi.decode(data,(uint256));
+    }
+
+
+    /**
      * @dev See {IERC721-balanceOf}.
      */
     function balanceOf(address account) public view virtual override returns (uint256) {
         require(account != address(0), "ERC721: balance query for the zero address");
         return supe.balanceOf(account);
     }
-
-
 
     /**
      * @dev See {IERC721-ownerOf}.
@@ -262,111 +287,16 @@ import "hardhat/console.sol";
 
 
     /// @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
-    function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
+    function onERC721Received(address, address, uint256, bytes memory) public view virtual override returns (bytes4) {
         // return this.onERC721Received.selector;
+            console.logBytes4(_ERC721_RECEIVED);
+
+
         return _ERC721_RECEIVED;
     }
 
 
-
-
-    /**
-     * @dev Adds a new unique token to the supply
-     * @param _uri string metadata uri associated with the token
-     */
-    function addNewToken(string memory _uri) external virtual {
-          (bool success, ) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("transfer(string)",_uri));
-         require(success,"SupeRareWrapper: addNewToken action failed!");     
-
-    }
-
-    /**
-     * @dev Adds a new unique token to the supply with N editions. The sale price is set for all editions
-     * @param _uri string metadata uri associated with the token.
-     * @param _editions uint256 number of editions to create.
-     * @param _salePrice uint256 wei price of editions.
-     */
-    function addNewTokenWithEditions(string memory _uri, uint256 _editions, uint256 _salePrice) external virtual {
-        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("addNewTokenWithEditions(string,uint256,uint256)",_uri,_editions,_salePrice));
-         require(success,"SupeRareWrapper: addNewTokenWithEditions action failed!");     
-    }
-
-
-
-    /**
-    * @dev Bids on the token, replacing the bid if the bid is higher than the current bid. You cannot bid on a token you already own.
-    * @param _tokenId uint256 ID of the token to bid on
-    */
-    function bid(uint256 _tokenId) external virtual {
-        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("bid(uint256)",_tokenId));
-         require(success,"SupeRareWrapper: bid action failed!");     
-    }
-
-
-        /**
-     * @dev Accept the bid on the token, transferring ownership to the current bidder and paying out the owner.
-     * @param _tokenId uint256 ID of the token with the standing bid
-     */
-    function acceptBid(uint256 _tokenId) external virtual {
-        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("acceptBid(uint256)",_tokenId));
-         require(success,"SupeRareWrapper: acceptBid action failed!");     
-    }
-
-
-    /**
-     * @dev Cancels the bid on the token, returning the bid amount to the bidder.
-     * @param _tokenId uint256 ID of the token with a bid
-     */
-    function cancelBid(uint256 _tokenId) external virtual {
-        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("cancelBid(uint256)",_tokenId));
-         require(success,"SupeRareWrapper: cancelBid action failed!");    
-    }
-
-
-        /**
-     * @dev Purchase the token if there is a sale price; transfers ownership to buyer and pays out owner.
-     * @param _tokenId uint256 ID of the token to be purchased
-     */
-    function buy(uint256 _tokenId) external virtual {
-        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("buy(uint256)",_tokenId));
-         require(success,"SupeRareWrapper: buy action failed!");    
-    }
-
-        /**
-     * @dev Set the sale price of the token
-     * @param _tokenId uint256 ID of the token with the standing bid
-     */
-    function setSalePrice(uint256 _tokenId, uint256 _salePrice) external {
-        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("setSalePrice(uint256,uint256)",_tokenId,_salePrice));
-         require(success,"SupeRareWrapper: setSalePrice action failed!");    
-    }
-
-        /**
-     * @dev Adds the provided address to the whitelist of creators
-     * @param _creator address to be added to the whitelist
-     */
-    function whitelistCreator(address _creator) external {
-        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("whitelistCreator(address)",_creator));
-         require(success,"SupeRareWrapper: whitelistCreator action failed!");    
-    }
-
-        /**
-     * @dev Set the maintainer Percentage. Needs to be 10 * target percentage
-     * @param _percentage uint256 percentage * 10.
-     */
-    function setMaintainerPercentage(uint256 _percentage) public onlyOwner() {
-        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("setMaintainerPercentage(uint256)",_percentage));
-         require(success,"SupeRareWrapper: setMaintainerPercentage action failed!");    
-    }
-
-        /**
-     * @dev Set the creator Percentage. Needs to be 10 * target percentage
-     * @param _percentage uint256 percentage * 10.
-     */
-    function setCreatorPercentage(uint256 _percentage) public onlyOwner() {
-        (bool success,) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("setCreatorPercentage(uint256)",_percentage));
-         require(success,"SupeRareWrapper: setMaintainerPercentage action failed!");    
-    }
+   
     /** 
      * @dev Returns whether the creator is whitelisted
      * @param _creator address to check

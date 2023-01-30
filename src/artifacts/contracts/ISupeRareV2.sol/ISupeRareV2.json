@@ -7,11 +7,43 @@
       "inputs": [
         {
           "internalType": "uint256",
+          "name": "_v1TokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getAddedToWhitelist",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getSupeRareAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
           "name": "_tokenId",
           "type": "uint256"
         }
       ],
-      "name": "deposit",
+      "name": "isPegged",
       "outputs": [
         {
           "internalType": "bool",
@@ -26,38 +58,16 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "v2TokenId",
+          "name": "_tokenId",
           "type": "uint256"
         }
       ],
-      "name": "getOwnerPosition",
+      "name": "mintV2",
       "outputs": [
         {
-          "components": [
-            {
-              "internalType": "address",
-              "name": "tokenOwner",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "tokenID",
-              "type": "uint256"
-            },
-            {
-              "internalType": "string",
-              "name": "tokenURI",
-              "type": "string"
-            },
-            {
-              "internalType": "uint256",
-              "name": "timeStamp",
-              "type": "uint256"
-            }
-          ],
-          "internalType": "struct ISupeRareV2.Position",
+          "internalType": "bool",
           "name": "",
-          "type": "tuple"
+          "type": "bool"
         }
       ],
       "stateMutability": "nonpayable",

@@ -2,39 +2,67 @@
 pragma solidity =0.7.6;
 pragma abicoder v2;
 
-// import "./ISupeRare.sol";
-// import "./ISupeRareV2.sol";
-// import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-// import "@openzeppelin/contracts/access/Ownable.sol";
-// import "hardhat/console.sol";
-
-
 import "hardhat/console.sol";
+import "./ISupeRareV2.sol";
 import "./ISupeRare.sol";
-
-// import "./IERC721Metadata.sol";
-// import "./IERC721Receiver.sol";
-// import "@openzeppelin/contracts/math/SafeMath.sol";
-
 import "@openzeppelin/contracts/access/Ownable.sol";
-// import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-// import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-// import "@openzeppelin/contracts/introspection/ERC165.sol";
 
-contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {   
+
+contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {   
     using Address for address;  
     address private  OriginalSupeRareAddr_;
     ISupeRare private supe;
     address private owner_;
-    bool private _stopped;
-
     string private _name = "SupeRare";
 
     // Token symbol
     string private _symbol = "SUPR";
 
+    /**
+     * @dev Maintain a mapping of the original owner address to V1 TokenID to minted V2 TokenID
+     **/
+    mapping(address => mapping (uint256=>uint256)) public ownerAddrToV1toV2TokenId; 
 
+    /**
+     * @dev Owner of V1 token needs to get added to the white list
+     **/
+    mapping(uint256 => address) public ownerWhiteList;
+
+
+    mapping(uint256=>bool) private v1_v2_peg; 
+
+
+
+    /**
+     * @dev The V1 token has been deposited into this contract and is pegged
+     **/
+    event Pegged( uint256 indexed v1tokenId);
+
+       /**
+     * @dev Owner of V1 token has been added to the whitelist 
+     **/
+    event OwnerWhitelisted(address indexed v1owner, uint256 indexed v1tokenId);
+
+       /**
+     * @dev Triggered when a V1 token is deposited to mint a V2 token 
+     **/
+    event MintV2(address indexed v1owner, uint256 indexed v2tokenId);
+
+       /**
+     * @dev Triggered when a V2 token is burned to withdraw the v2 token
+     **/
+    event WithdrawV1(address indexed v2owner, uint256 indexed v2tokenId);
+      
+       /**
+     * @dev Triggered when a the v2tokenId's tokenURI is set
+     **/
+    event TokenURISet(uint256 _tokenId,string _tokenURI);
+
+       /**
+     * @dev Triggered when a the v2tokenId's tokenURI is set
+     **/
+      event  BaseURISet(string _baseURI);
 
     // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
     // which can be also obtained as `IERC721Receiver(0).onERC721Received.selector`
@@ -74,56 +102,9 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
     bytes4 private constant _INTERFACE_ID_ERC721_ENUMERABLE = 0x780e9d63;
 
 
-     /**
-     * @dev The V1 token has been deposited into this contract and is pegged
-     **/
-    event Pegged( uint256 indexed v1tokenId);
-
-       /**
-     * @dev Owner of V1 token has been added to the whitelist 
-     **/
-    event OwnerWhitelisted(address indexed v1owner, uint256 indexed v1tokenId);
-
-       /**
-     * @dev Triggered when a V1 token is deposited to mint a V2 token 
-     **/
-    event MintV2(address indexed v1owner, uint256 indexed v2tokenId);
-
-       /**
-     * @dev Triggered when a V2 token is burned to withdraw the v2 token
-     **/
-    event WithdrawV1(address indexed v2owner, uint256 indexed v2tokenId);
-      
-       /**
-     * @dev Triggered when a the v2tokenId's tokenURI is set
-     **/
-    event TokenURISet(uint256 _tokenId,string _tokenURI);
-
-       /**
-     * @dev Triggered when a the v2tokenId's tokenURI is set
-     **/
-      event  BaseURISet(string _baseURI);
-  /**
-   * 
-     * @dev Maintain a mapping of the original owner address to V1 TokenID to minted V2 TokenID
-     **/
-    mapping(address => mapping (uint256=>uint256)) public ownerAddrToV1toV2TokenId; 
-
-
-  /**
-   * 
-     * @dev Owner of V1 token needs to get added to the white list
-     **/
-    mapping(uint256 => address) public ownerWhiteList;
-
-
-    mapping(uint256=>bool) private v1_v2_peg; 
-
-    // constructor (address OriginalSupeRareAddr__) ERC721 ("SupeRareV2","SUPRV2"){
-    //     OriginalSupeRareAddr_ = OriginalSupeRareAddr__;
-    //     supe = ISupeRare(OriginalSupeRareAddr_); }   
-
-            constructor (address OriginalSupeRareAddr__) ERC721 (_name,_symbol){
+ 
+  
+          constructor (address OriginalSupeRareAddr__) ERC721 (_name,_symbol){
         OriginalSupeRareAddr_ = OriginalSupeRareAddr__;
         supe = ISupeRare(OriginalSupeRareAddr_);
         _registerInterface(_INTERFACE_ID_ERC721);
@@ -177,7 +158,7 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
      * @param _v1TokenId the v1 tokenID 
      * @return bool true if the operation succeeds
      */
-    function getAddedToWhitelist(uint256 _v1TokenId) external onlyOwnerOfV1(_v1TokenId) returns (bool){
+    function getAddedToWhitelist(uint256 _v1TokenId) external virtual override onlyOwnerOfV1(_v1TokenId) returns (bool){
         require(ownerWhiteList[_v1TokenId] != _msgSender(),"SupeRareV2: Account already whitelisted!");
          ownerWhiteList[_v1TokenId] = _msgSender();
         emit OwnerWhitelisted(_msgSender(),_v1TokenId);
@@ -191,7 +172,7 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
      * @param _tokenId the v1 tokenID 
      * @return returns true if there's a peg
      */
-    function isPegged(uint _tokenId) external view returns (bool) {
+    function isPegged(uint _tokenId) external virtual override view returns (bool) {
         return v1_v2_peg[_tokenId];
     }
 
@@ -215,7 +196,7 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
    * @return bool returns true if the operation succeeds
    * @dev emits a PositionCreated event
    */
-    function mintV2(uint256 _tokenId) external onlyWhitelisted(_tokenId) returns (bool) {
+    function mintV2(uint256 _tokenId) external virtual override onlyWhitelisted(_tokenId) returns (bool) {
         require(_setPeg(_tokenId),"SupeRareV2: Get added to whitelist, transfer the V1 token to this contract, then call mintV2!");
         _safeMint(_msgSender(), _tokenId);
         _setTokenURI(_tokenId, supe.tokenURI(_tokenId));
@@ -232,7 +213,7 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
    * @return bool true if the function succeeds in its operation
    * @dev emits a PositionDeleted event
    */
-    function withdraw(uint256 _tokenId) external onlyOwnerOfToken(_tokenId) onlyPegged(_tokenId) returns (bool) {
+    function withdraw(uint256 _tokenId) external virtual override onlyOwnerOfToken(_tokenId) onlyPegged(_tokenId) returns (bool) {
         require(_msgSender()!= address(0),"SupeRareV2: Invalid recipient address!");
         _burn(_tokenId); 
         (bool success, ) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("transfer(address,uint256)",_msgSender(),_tokenId));
@@ -243,9 +224,11 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
     }
 
 
-
-    ///@notice getSupeRareAddress returns the address of the SupeRareV1 Contract
-    function getSupeRareAddress() external view returns (address) {
+    /**
+   * @notice getSupeRareAddress returns the address of the SupeRareV1 contract
+   * @return address of the V1 contract
+   */
+    function getSupeRareAddress() external view virtual override returns (address) {
         return OriginalSupeRareAddr_;
     }
 
@@ -257,7 +240,7 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
    * @param _tokenId Owner's current V2 TokenID
    * @return bool returns true of the operation succeeds
    */
-    function setTokenURI(uint256 _tokenId,string calldata _tokenURI) external onlyOwner returns (bool) {
+    function setTokenURI(uint256 _tokenId,string calldata _tokenURI) external virtual override onlyOwner returns (bool) {
          _setTokenURI(_tokenId, _tokenURI);
         emit TokenURISet(_tokenId,_tokenURI);
         return true;
@@ -269,7 +252,7 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
    * @param baseURI Owner's current V2 TokenID
    * @return bool returns true of the operation succeeds
    */
-    function setBaseURI(string calldata baseURI) external  onlyOwner returns (bool) {
+    function setBaseURI(string calldata baseURI) external virtual override  onlyOwner returns (bool) {
         _setBaseURI(baseURI);
         emit BaseURISet(baseURI);
         return true;

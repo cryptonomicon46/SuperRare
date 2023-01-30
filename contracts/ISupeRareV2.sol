@@ -6,41 +6,46 @@ pragma abicoder v2;
 
 interface ISupeRareV2 {
 
+
+
     /**
-     * @dev This captures the Depositer's V1 Position 
+   * @notice getSupeRareAddress returns the address of the SupeRareV1 contract
+   * @return address of the V1 contract
+   */
+    function getSupeRareAddress() external returns (address);
+
+    /**
+     * @dev isPegged: Returns true if the V1 token has been transferred to this contract
+     * @param _tokenId the v1 tokenID 
+     * @return returns true if there's a peg
      */
-    struct  Position {
-        address tokenOwner;
-        uint256 tokenID;
-        string tokenURI;
-        uint256 timeStamp;   
-    } 
-
+    function isPegged(uint _tokenId) external  returns (bool);
 
     /**
-   * @notice deposit allows the owner of SupeRareV1 to deposit an NFT and get a minted representation  SupeRareV2 with the same tokenID
-   * @param _tokenId uint256 ID of the SupeRareV1 or original tokenId being deposited by owner
+   * @notice mintV2, should allow a whitelisted owner to call mint, if it's a contract then it needs to implement the onERC721Received function 
+   * @param _tokenId v1 tokenID
    * @return bool returns true if the operation succeeds
    * @dev emits a PositionCreated event
    */
-    function deposit(uint256 _tokenId) external returns (bool);
+    function mintV2(uint256 _tokenId) external returns (bool);
 
 
 
     /**
-   * @notice withdraw allows the owner of SupeRareV1 to withdraw the deposited V1 SupeRare NFT 
-   * @param _tokenId uint256 ID of the SupeRareV1 which will be mapped to find the corresponding V2 NFT TokenID
-   * @return  true if it succeeds in it's operation
-   * @dev emits a burn event
+   * @notice withdraw, should allow the owner of a v2 token only for a pegged v1 token.
+   * @param _tokenId is the v2 tokenID to be burned
+   * @return bool true if the function succeeds in its operation
+   * @dev emits a PositionDeleted event
    */
     function withdraw(uint256 _tokenId) external returns (bool);
 
+
     /**
-   * @notice getOwnerPosition gets the owner's V1 position corresponding to teh v1TokenId
-   * @param v2TokenId Owner's current V2 TokenID
-   * @return  Position corresponding to the minted V2TokenID
-   */
-    function getOwnerPosition(uint256 v2TokenId) external returns (Position memory);
+     * @dev SupeRareV2: Owner gets added to the whitelist based on the v1 token ownership
+     * @param _v1TokenId the v1 tokenID 
+     * @return bool true if the operation succeeds
+     */
+    function getAddedToWhitelist(uint256 _v1TokenId) external  returns (bool);
 
 
     /**

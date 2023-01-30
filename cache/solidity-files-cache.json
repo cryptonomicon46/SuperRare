@@ -851,8 +851,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SupeRare.sol": {
-      "lastModificationDate": 1675093956727,
-      "contentHash": "2f75d10024470ed76b0d266a0144873b",
+      "lastModificationDate": 1675117078699,
+      "contentHash": "b48504da28889cbc1cd433b04b03cce3",
       "sourceName": "contracts/SupeRare.sol",
       "solcConfig": {
         "version": "0.7.6",

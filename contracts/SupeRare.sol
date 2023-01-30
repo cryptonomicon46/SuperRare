@@ -284,6 +284,9 @@ contract ERC721Token is ERC721 {
     // the lastToken to the first position, and then dropping the element placed in the last position of the list
 
     // ownedTokens[_from].length--;
+        ownedTokens[_from].pop();
+
+    // delete ownedTokens[_from][balanceOf(_from).sub(1)];
     ownedTokensIndex[_tokenId] = 0;
     ownedTokensIndex[lastToken] = tokenIndex;
     totalTokens = totalTokens.sub(1);

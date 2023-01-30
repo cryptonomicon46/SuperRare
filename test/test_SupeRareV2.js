@@ -109,16 +109,9 @@ describe("SupeRareV2 Test Suit: The Basics", function () {
         .to.emit(supeRare, "WhitelistCreator")
         .withArgs(creator.address);
 
-      await expect(
-        supeRare
-          .connect(creator)
-          .addNewTokenWithEditions("", 1, parseEther("1"))
-      ).to.emit(supeRare, "SalePriceSet");
-      // await expect(
-      //   supeRare
-      //     .connect(creator)
-      //     .addNewTokenWithEditions("NewEditions_20", 20, parseEther("1"))
-      // ).to.emit(supeRare, "SalePriceSet");
+      await expect(supeRare.connect(creator).addNewToken("NewEditions_1"))
+        .to.emit(supeRare, "Transfer")
+        .withArgs(ethers.constants.AddressZero, creator.address, 1);
 
       return { supeRare, supeRareV2, owner, addr1, creator };
     }
@@ -178,6 +171,21 @@ describe("SupeRareV2 Test Suit: The Basics", function () {
       await expect(supeRareV2.connect(owner).setPeg(1))
         .to.emit(supeRareV2, "Pegged")
         .withArgs(1);
+    });
+
+    it("SupeRareV2 Deposits verify balances: V1 Onwer gets whitelisted, transfers V1 token check balances before and after ", async function () {
+      const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
+        deployTokenFixture
+      );
+      expect(await supeRare.balanceOf(creator.address)).to.equal(1);
+      expect(await supeRare.balanceOf(supeRareV2.address)).to.equal(0);
+
+      await expect(supeRare.connect(creator).transfer(supeRareV2.address, 1))
+        .to.emit(supeRare, "Transfer")
+        .withArgs(creator.address, supeRareV2.address, 1);
+
+      expect(await supeRare.balanceOf(creator.address)).to.equal(0);
+      expect(await supeRare.balanceOf(supeRareV2.address)).to.equal(1);
     });
   });
   describe("SupeRareV2 TokenURI: Tests related to setting TokenURI/BaseURI", function () {
@@ -274,7 +282,7 @@ describe("SupeRareV2 Test Suit: The Basics", function () {
         .withArgs("baseURI_tag");
     });
   });
-  describe("SupeRareV2 Withdraw: Tests related to withdrawing an NFT", function () {
+  describe("SupeRareV2 Withdraw: Tests related to withdrawing a V1 token", function () {
     async function deployTokenFixture() {
       [owner, addr1, creator] = await ethers.getSigners();
 
@@ -293,27 +301,82 @@ describe("SupeRareV2 Test Suit: The Basics", function () {
         .to.emit(supeRare, "WhitelistCreator")
         .withArgs(creator.address);
 
-      await expect(
-        supeRare
-          .connect(creator)
-          .addNewTokenWithEditions("NewEditions_20", 20, parseEther("1"))
-      ).to.emit(supeRare, "SalePriceSet");
+      await expect(supeRare.connect(creator).addNewToken("NewEditions_1"))
+        .to.emit(supeRare, "Transfer")
+        .withArgs(ethers.constants.AddressZero, creator.address, 1);
+
+      console.log(
+        `Balance of creator on v1 contract before transfer ${await supeRare.balanceOf(
+          creator.address
+        )}`
+      );
+
+      console.log(
+        `Balance of superRareV2 on v1 contract before transfer ${await supeRareV2.balanceOf(
+          creator.address
+        )}`
+      );
+
+      console.log(
+        `TotalSupply on v1 contract is ${await supeRare.totalSupply()}`
+      );
+
+      await expect(supeRareV2.connect(creator).getAddedToWhitelist(1))
+        .to.emit(supeRareV2, "OwnerWhitelisted")
+        .withArgs(creator.address, 1);
+
+      await expect(supeRare.connect(creator).transfer(supeRareV2.address, 1))
+        .to.emit(supeRare, "Transfer")
+        .withArgs(creator.address, supeRareV2.address, 1);
+
+      console.log(
+        `Balance of creator on v1 contract after transfer ${await supeRare.balanceOf(
+          creator.address
+        )}`
+      );
+
+      console.log(
+        `Balance of superRareV2 on v1 contract after transfer ${await supeRare.balanceOf(
+          supeRareV2.address
+        )}`
+      );
+
+      await expect(supeRareV2.connect(owner).setPeg(1))
+        .to.emit(supeRareV2, "Pegged")
+        .withArgs(1);
+
+      await expect(supeRareV2.connect(creator).mintV2(1))
+        .to.be.emit(supeRareV2, "MintV2")
+        .withArgs(creator.address, 1);
 
       return { supeRare, supeRareV2, owner, addr1, creator };
     }
 
-    it("SupeRareV2 Withdraw: Owner deposits V1 tokens, then tries to withdraw them", async function () {
+    it("SupeRareV2 Withdraw onlyOwnerOfV2: Owner deposits V1 tokens, then tries to withdraw them", async function () {
       const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
         deployTokenFixture
       );
 
-      await expect(supeRareV2.connect(creator).deposit(10))
-        .to.emit(supeRareV2, "PositionCreated")
-        .withArgs(creator.address, 10, "NewEditions_20");
+      expect(await supeRare.ownerOf(1)).to.equal(supeRareV2.address);
+      expect(await supeRare.balanceOf(supeRareV2.address)).to.equal(1);
+      expect((await supeRare.tokensOf(supeRareV2.address))[0]).to.equal(
+        BigNumber.from("1")
+      );
+      expect(await supeRare.balanceOf(creator.address)).to.equal(1);
 
-      await expect(supeRareV2.connect(creator).withdraw(10))
-        .to.emit(supeRareV2, "PositionDeleted")
-        .withArgs(creator.address, 10);
+      await expect(supeRareV2.connect(addr1).withdraw(1)).to.be.revertedWith(
+        "SupeRareV2: Sender isn't the owner of the V2 token!"
+      );
+      await expect(supeRareV2.connect(creator).withdraw(1))
+        .to.be.emit(supeRareV2, "WithdrawV1")
+        .withArgs(creator.address, 1);
+
+      //   expect(await supeRare.balanceOf(supeRareV2.address)).to.equal(0);
+      expect(await supeRare.balanceOf(creator.address)).to.equal(2);
+
+      //   expect((await supeRare.tokensOf(supeRareV2.address))[0]).to.equal(
+      //     BigNumber.from("1")
+      //   );
     });
 
     it("SupeRareV2 Withdraw after V1 Transfer: Owner deposits V1 token and new owner of V1 tries to withdraw it", async function () {

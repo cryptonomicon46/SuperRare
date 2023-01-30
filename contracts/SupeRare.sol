@@ -572,7 +572,7 @@ contract SupeRare is ERC721Token, Ownable, ERC721Metadata {
      * @notice approve is not a supported function for this contract
      */
     function approve(address _to, uint256 _tokenId) public virtual override{
-        revert();
+        revert("SUPERARE:NOT IMPLEMENTED!");
     }
 
     /** 

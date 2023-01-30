@@ -33,15 +33,7 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
 
     // Token symbol
     string private _symbol = "SUPR";
-    /**
-     * @dev This captures the Depositer's V1 Position 
-     */
-    struct  Position {
-        address tokenOwner;
-        uint256 tokenID;
-        string tokenURI;
-        uint256 timeStamp;   
-    } 
+
 
 
     // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
@@ -81,43 +73,26 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
      */
     bytes4 private constant _INTERFACE_ID_ERC721_ENUMERABLE = 0x780e9d63;
 
-   /**
-     * @dev V2 TokenID => Position mapping (owner,v1tokenID,block.timestamp)
-     **/
-    mapping  (uint256 => Position) public  V1Position;
 
+     /**
+     * @dev The V1 token has been deposited into this contract and is pegged
+     **/
+    event Pegged( uint256 indexed v1tokenId);
 
        /**
-     * @dev V1 TokenID to Owner address mapping 
+     * @dev Owner of V1 token has been added to the whitelist 
      **/
-    mapping  (uint256 => address) private  _ownerDeposits;
-
-
-       /**
-     * @dev Triggered when a V1 token is deposited to mint a V2 token 
-     **/
-    event V1TokenDeposited(address indexed tokenOwner, uint256 indexed _tokenId);
-
-   /**
-     * @dev Triggered when the contract is stopped or started
-     **/
-    event ToggleStartStop(bool);
-
-   /**
-     * @dev Triggered when the ownership of the V1 token changes
-     **/
-      event  OwnershipUpdated(address indexed OrigV1Owner,address indexed NewV1Owner,uint256 indexed v1TokenId);
-
+    event OwnerWhitelisted(address indexed v1owner, uint256 indexed v1tokenId);
 
        /**
      * @dev Triggered when a V1 token is deposited to mint a V2 token 
      **/
-    event PositionCreated(address indexed tokenOwner, uint256 indexed _tokenId, string indexed tokenURI);
+    event MintV2(address indexed v1owner, uint256 indexed v2tokenId);
 
        /**
-     * @dev Triggered when a V2 token is burned to withdraw position
+     * @dev Triggered when a V2 token is burned to withdraw the v2 token
      **/
-    event PositionDeleted(address indexed OrigOwner, uint256 indexed _tokenId);
+    event WithdrawV1(address indexed v2owner, uint256 indexed v2tokenId);
       
        /**
      * @dev Triggered when a the v2tokenId's tokenURI is set
@@ -134,11 +109,16 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
      **/
     mapping(address => mapping (uint256=>uint256)) public ownerAddrToV1toV2TokenId; 
 
+
   /**
    * 
-     * @dev Maintain a V1:V2 tokenID peg
+     * @dev Owner of V1 token needs to get added to the white list
      **/
-    mapping(uint256=>uint256) public v1_v2_peg; 
+    mapping(uint256 => address) public ownerWhiteList;
+
+
+    mapping(uint256=>bool) private v1_v2_peg; 
+
     // constructor (address OriginalSupeRareAddr__) ERC721 ("SupeRareV2","SUPRV2"){
     //     OriginalSupeRareAddr_ = OriginalSupeRareAddr__;
     //     supe = ISupeRare(OriginalSupeRareAddr_); }   
@@ -154,121 +134,107 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
  
 
     /**
-  * @dev Guarantees msg.sender is owner of the v1 token on the original SupeRareV1 contract
-  * @param _tokenId uint256 ID of the token to validate its ownership belongs to msg.sender
+  * @dev Guarantees msg.sender is owner of the v2 token 
+  * @param _tokenId is the v2 tokenId
   */
   modifier onlyOwnerOfToken(uint256 _tokenId) {
-    require(_ownerDeposits[_tokenId] == _msgSender(),"SupeRareV2: Not the Owner of the SupeRareV1 Token!");
+    require(ERC721.ownerOf(_tokenId) == _msgSender(),"SupeRareV2: Sender isn't the owner of the V2 token!");
+    _;
+  }
+
+      /**
+     * @dev Guarantees msg.sender is owner of the v1 token on the original SupeRareV1 contract
+     * @param _tokenId uint256 ID of the token to validate its ownership belongs to msg.sender
+     */
+  modifier onlyOwnerOfV1(uint256 _tokenId) {
+    require(supe.ownerOf(_tokenId) == _msgSender(),"SupeRareV2: Sender isn't the owner of the V1 Token!");
     _;
   }
 
 
     /**
-     * @dev See {IERC721Metadata-name}.
+     * @dev Guarantees msg.sender is whitelisted
+     * @param _tokenId is the V1 tokenId
      */
-    function name() public view  override returns (string memory) {
-        return _name;
+    modifier onlyWhitelisted(uint256 _tokenId) {
+        require(ownerWhiteList[_tokenId] == _msgSender(),"SupeRareV2: Sender isn't whitelisted or approved for this operation!");
+        _;
     }
 
     /**
-     * @dev See {IERC721Metadata-symbol}.
+     * @dev SupeRareV2: Owner gets added to the whitelist based on the v1 token ownership
+     * @param _v1TokenId the v1 tokenID 
+     * @return bool true if the operation succeeds
      */
-    function symbol() public view virtual override returns (string memory) {
-        return _symbol;
+    function getAddedToWhitelist(uint256 _v1TokenId) external onlyOwnerOfV1(_v1TokenId) returns (bool){
+        require(ownerWhiteList[_v1TokenId] != _msgSender(),"SupeRareV2: Account already whitelisted!");
+         ownerWhiteList[_v1TokenId] = _msgSender();
+        emit OwnerWhitelisted(_msgSender(),_v1TokenId);
+         return true;
+    }
+
+
+
+    /**
+     * @dev isPeggedToV1: Returns true if the V1 token has been transferred to this contract
+     * @param _tokenId the v1 tokenID 
+     * @return returns true if there's a peg
+     */
+    function isPeggedToV1(uint _tokenId) external view returns (bool) {
+        return v1_v2_peg[_tokenId];
     }
 
     /**
-     * @dev See {IERC721Metadata-tokenURI}.
+     * @dev setPeg: will set the v1_v2_peg[tokenId] to true if the contract owns the v1 token
+     * @param _tokenId the v1 tokenID 
+     * @return returns true if the peg assignment succeeds
      */
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        return supe.tokenURI(tokenId);
+    function setPeg(uint256 _tokenId) external onlyOwner returns (bool) {
+        require(supe.ownerOf(_tokenId)== address(this),"SupeRareV2: Unable to peg the V1 token!");
+        v1_v2_peg[_tokenId] = true;
+        emit Pegged(_tokenId);
+        return true;
     }
-
-
-
-/**
-     * @dev See {IERC721-balanceOf}.
-     */
-    function balanceOf(address account) public view virtual override returns (uint256) {
-        require(account != address(0), "ERC721: balance query for the zero address");
-        // return supe.balanceOf(account);
-        return ERC721.balanceOf(account);
-    }
-
     /**
-     * @dev See {IERC721-ownerOf}.
-     */
-    function ownerOf(uint256 tokenId) public view virtual override returns (address) {
-        // return supe.ownerOf(tokenId);
-        return ERC721.ownerOf(tokenId);
-    }
-
-
-   
-
- function getOwnerDeposit(uint256 tokenId) external view returns (address){
-    return _ownerDeposits[tokenId];
- }
-    /**
-   * @notice deposit, should allow the owner of a SupeRareV1 NFT to deposit their NFT into the V2 contract and mint a V2 Token with the same tokenId
-   * @param _tokenId uint256 ID of the SupeRareV1 being deposited by owner
+   * @notice mintV2, should allow a whitelisted owner to call mint, if it's a contract then it needs to implement the onERC721Received function 
+   * @param _tokenId v1 tokenID
    * @return bool returns true if the operation succeeds
    * @dev emits a PositionCreated event
    */
-    function mintV2(uint256 _tokenId) external onlyOwnerOfToken(_tokenId) returns (bool) {
-
-
-        _mint(_msgSender(), _tokenId);
+    function mintV2(uint256 _tokenId) external onlyWhitelisted(_tokenId) returns (bool) {
+        require(supe.ownerOf(_tokenId)== address(this),"SupeRareV2: Get added to whitelist, transfer the V1 token to this contract, then call mintV2!");
+        _safeMint(_msgSender(), _tokenId);
         _setTokenURI(_tokenId, supe.tokenURI(_tokenId));
-
-        // V1Position[_tokenId] = Position(_msgSender(),_tokenId,supe.tokenURI(_tokenId), block.timestamp);
-
-        // emit PositionCreated(_msgSender(),_tokenId,supe.tokenURI(_tokenId));
+        v1_v2_peg[_tokenId]= true; 
+        emit MintV2(_msgSender(),_tokenId);
         return true;
     }
 
 
 
     /**
-   * @notice withdraw, should allow the original owner of the SupeRareV1 to withdraw their position
-   * @param _tokenId uint256 ID of the SupeRareV1 being withdrawn
+   * @notice withdraw, should allow the owner of a v2 token to get back a v1 token
+   * @param _tokenId is the v2 tokenID to be burned
    * @return bool true if the function succeeds in its operation
    * @dev emits a PositionDeleted event
    */
     function withdraw(uint256 _tokenId) external onlyOwnerOfToken(_tokenId) returns (bool) {
-
-        _burn(_tokenId);
-        delete V1Position[_tokenId];
-        emit PositionDeleted(_msgSender(),_tokenId);
+        require(_msgSender()!= address(0),"SupeRareV2: Invalid recipient address!");
+        _burn(_tokenId); 
+        (bool success, ) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("transfer(address,uint256)",_msgSender(),_tokenId));
+         require(success,"SupeRareV2: Unable to withdraw V1 token!");     
+        v1_v2_peg[_tokenId] = false;
+        emit WithdrawV1(_msgSender(),_tokenId);
         return true;
     }
 
-    ///@notice contract_status, check if deposits are halted 
-    ///@dev returns true= stopped || false == active
-    function contract_status() external view returns (bool) {
-        return _stopped;
-    }
 
-    ///@notice ToggleContract, toggle stopped flag to stop deposits and only enable withdraws
-    function ToggleContract() onlyOwner public{
-        _stopped = !_stopped;
-        emit ToggleStartStop(_stopped);
-    }
 
     ///@notice getSupeRareAddress returns the address of the SupeRareV1 Contract
     function getSupeRareAddress() external view returns (address) {
         return OriginalSupeRareAddr_;
     }
 
-        /**
-   * @notice getOwnerPosition gets the owner's V1 position corresponding to teh v1TokenId
-   * @param _tokenId Owner's current V2 TokenID
-   * @return  DepositerPositionV1 corresponding to the minted V2TokenID
-   */
-    function getOwnerPosition(uint256 _tokenId) external view returns (Position memory) {
-        require(_exists(_tokenId), "SupeRare V2: tokenID doesn't exist");
-        return V1Position[_tokenId];
-    }
 
 
       
@@ -305,6 +271,5 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
 
         return _ERC721_RECEIVED;
     }
-
 
 }

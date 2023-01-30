@@ -90,156 +90,190 @@ describe("SupeRareV2 Test Suit: The Basics", function () {
       .withArgs(true);
   });
 
-  it("SupeRareV2 StopDeposits: Owner toggles the contract to stop deposits", async function () {
-    const { supeRare, supeRareV2, owner, addr1, addr2 } = await loadFixture(
-      deployTokenFixture
-    );
-    await expect(supeRareV2.connect(owner).ToggleContract())
-      .to.emit(supeRareV2, "ToggleStartStop")
-      .withArgs(true);
+  describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () {
+    async function deployTokenFixture() {
+      [owner, addr1, creator] = await ethers.getSigners();
 
-    expect(await supeRareV2.contract_status()).to.be.equal(true);
+      const SupeRare = await ethers.getContractFactory("SupeRare");
+      //console.log("Deploying SupeRare ...\n");
+      const supeRare = await SupeRare.deploy();
+      await supeRare.deployed();
 
-    await expect(supeRareV2.connect(owner).ToggleContract())
-      .to.emit(supeRareV2, "ToggleStartStop")
-      .withArgs(false);
+      const SupeRareV2 = await ethers.getContractFactory("SupeRareV2");
+      //console.log("Deploying SupeRareV2 ...\n");
+      const supeRareV2 = await SupeRareV2.deploy(supeRare.address);
+      await supeRareV2.deployed();
+      //console.log(`supeRareV2 contract deployed at ${supeRareV2.address}`);
 
-    expect(await supeRareV2.contract_status()).to.be.equal(false);
+      await expect(supeRare.connect(owner).whitelistCreator(creator.address))
+        .to.emit(supeRare, "WhitelistCreator")
+        .withArgs(creator.address);
+
+      await expect(
+        supeRare
+          .connect(creator)
+          .addNewTokenWithEditions("", 1, parseEther("1"))
+      ).to.emit(supeRare, "SalePriceSet");
+      // await expect(
+      //   supeRare
+      //     .connect(creator)
+      //     .addNewTokenWithEditions("NewEditions_20", 20, parseEther("1"))
+      // ).to.emit(supeRare, "SalePriceSet");
+
+      return { supeRare, supeRareV2, owner, addr1, creator };
+    }
+
+    it("SupeRareV2 Deposit getAddedToWhitelist: Owner of an V1 NFT gets whitelisted", async function () {
+      const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
+        deployTokenFixture
+      );
+
+      await expect(
+        supeRareV2.connect(addr1).getAddedToWhitelist(1)
+      ).to.be.revertedWith(
+        "SupeRareV2: Sender isn't the owner of the V1 Token!"
+      );
+
+      await expect(supeRareV2.connect(creator).getAddedToWhitelist(1))
+        .to.emit(supeRareV2, "OwnerWhitelisted")
+        .withArgs(creator.address, 1);
+    });
+
+    it("SupeRareV2 Deposit getAddedToWhitelist again: Owner of tries to get whitelisted again", async function () {
+      const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
+        deployTokenFixture
+      );
+
+      await expect(
+        supeRareV2.connect(addr1).getAddedToWhitelist(1)
+      ).to.be.revertedWith(
+        "SupeRareV2: Sender isn't the owner of the V1 Token!"
+      );
+
+      await expect(supeRareV2.connect(creator).getAddedToWhitelist(1))
+        .to.emit(supeRareV2, "OwnerWhitelisted")
+        .withArgs(creator.address, 1);
+
+      await expect(
+        supeRareV2.connect(creator).getAddedToWhitelist(1)
+      ).to.be.revertedWith("SupeRareV2: Account already whitelisted!");
+    });
+
+    it("SupeRareV2 Deposit setPeg: V1:V2 peg checked after v1 owner transfers the v1 token to this contract", async function () {
+      const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
+        deployTokenFixture
+      );
+      await expect(supeRareV2.connect(addr1).setPeg(1)).to.be.revertedWith(
+        "Ownable: caller is not the owner"
+      );
+
+      await expect(supeRareV2.setPeg(1)).to.be.revertedWith(
+        "SupeRareV2: Unable to peg the V1 token!"
+      );
+
+      await expect(supeRare.connect(creator).transfer(supeRareV2.address, 1))
+        .to.emit(supeRare, "Transfer")
+        .withArgs(creator.address, supeRareV2.address, 1);
+
+      await expect(supeRareV2.connect(owner).setPeg(1))
+        .to.emit(supeRareV2, "Pegged")
+        .withArgs(1);
+    });
   });
-});
+  describe("SupeRareV2 TokenURI: Tests related to setting TokenURI/BaseURI", function () {
+    async function deployTokenFixture() {
+      [owner, addr1, creator] = await ethers.getSigners();
 
-describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () {
-  async function deployTokenFixture() {
-    [owner, addr1, creator] = await ethers.getSigners();
+      const SupeRare = await ethers.getContractFactory("SupeRare");
+      //console.log("Deploying SupeRare ...\n");
+      const supeRare = await SupeRare.deploy();
+      await supeRare.deployed();
 
-    const SupeRare = await ethers.getContractFactory("SupeRare");
-    //console.log("Deploying SupeRare ...\n");
-    const supeRare = await SupeRare.deploy();
-    await supeRare.deployed();
+      const SupeRareV2 = await ethers.getContractFactory("SupeRareV2");
+      //console.log("Deploying SupeRareV2 ...\n");
+      const supeRareV2 = await SupeRareV2.deploy(supeRare.address);
+      await supeRareV2.deployed();
+      //console.log(`supeRareV2 contract deployed at ${supeRareV2.address}`);
 
-    const SupeRareV2 = await ethers.getContractFactory("SupeRareV2");
-    //console.log("Deploying SupeRareV2 ...\n");
-    const supeRareV2 = await SupeRareV2.deploy(supeRare.address);
-    await supeRareV2.deployed();
-    //console.log(`supeRareV2 contract deployed at ${supeRareV2.address}`);
+      await expect(supeRare.connect(owner).whitelistCreator(creator.address))
+        .to.emit(supeRare, "WhitelistCreator")
+        .withArgs(creator.address);
 
-    await expect(supeRare.connect(owner).whitelistCreator(creator.address))
-      .to.emit(supeRare, "WhitelistCreator")
-      .withArgs(creator.address);
+      await expect(
+        supeRare
+          .connect(creator)
+          .addNewTokenWithEditions("", 1, parseEther("1"))
+      ).to.emit(supeRare, "SalePriceSet");
+      // await expect(
+      //   supeRare
+      //     .connect(creator)
+      //     .addNewTokenWithEditions("NewEditions_20", 20, parseEther("1"))
+      // ).to.emit(supeRare, "SalePriceSet");
 
-    await expect(
-      supeRare.connect(creator).addNewTokenWithEditions("", 1, parseEther("1"))
-    ).to.emit(supeRare, "SalePriceSet");
-    // await expect(
-    //   supeRare
-    //     .connect(creator)
-    //     .addNewTokenWithEditions("NewEditions_20", 20, parseEther("1"))
-    // ).to.emit(supeRare, "SalePriceSet");
+      return { supeRare, supeRareV2, owner, addr1, creator };
+    }
 
-    return { supeRare, supeRareV2, owner, addr1, creator };
-  }
+    it("SupeRareV2 SetTokenURI: Owner sets the tokenURI on the v2 contract", async function () {
+      const { supeRare, supeRareV2, owner, addr1, addr2 } = await loadFixture(
+        deployTokenFixture
+      );
 
-  //   it("SupeRareV2 Deposit: Owner of an V1 NFT cannot deposit token, if contract's stopped due to an issue.", async function () {
-  //     const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
-  //       deployTokenFixture
-  //     );
+      await expect(supeRareV2.connect(creator).getAddedToWhitelist(1))
+        .to.emit(supeRareV2, "OwnerWhitelisted")
+        .withArgs(creator.address, 1);
 
-  //     await expect(supeRareV2.connect(owner).ToggleContract())
-  //       .to.emit(supeRareV2, "ToggleStartStop")
-  //       .withArgs(true);
+      await expect(supeRare.connect(creator).transfer(supeRareV2.address, 1))
+        .to.emit(supeRare, "Transfer")
+        .withArgs(creator.address, supeRareV2.address, 1);
 
-  //     expect(await supeRareV2.contract_status()).to.be.equal(true);
+      await expect(supeRareV2.connect(owner).setPeg(1))
+        .to.emit(supeRareV2, "Pegged")
+        .withArgs(1);
 
-  //     await expect(supeRareV2.connect(creator).deposit(10)).to.be.revertedWith(
-  //       "DEPOSITS_DISABLED"
-  //     );
-  //   });
+      await expect(supeRareV2.connect(creator).mintV2(1))
+        .to.be.emit(supeRareV2, "MintV2")
+        .withArgs(creator.address, 1);
 
-  it("SupeRareV2 Deposit NFT: Owner of an V1 NFT allowed to deposit an NFT and mints a token on the v2 contract", async function () {
-    const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
-      deployTokenFixture
-    );
+      await expect(
+        supeRareV2.connect(addr1).setTokenURI(1, "V2EditionTokenURI.json")
+      ).to.be.revertedWith("Ownable: caller is not the owner");
 
-    // Transfer(_from, _to, _tokenId);
-    await expect(supeRare.connect(creator).transfer(supeRareV2.address, 1))
-      .to.emit(supeRare, "Transfer")
-      .withArgs(creator.address, supeRareV2.address, 1);
+      await expect(
+        supeRareV2.connect(owner).setTokenURI(1, "V2EditionTokenURI.json")
+      )
+        .to.emit(supeRareV2, "TokenURISet")
+        .withArgs(1, "V2EditionTokenURI.json");
+    });
+    it("SupeRareV2 SetBaseURI: Owner sets the baseURI on the v2 contract", async function () {
+      const { supeRare, supeRareV2, owner, addr1, addr2 } = await loadFixture(
+        deployTokenFixture
+      );
 
-    console.log(await supeRare.balanceOf(creator.address));
+      await expect(supeRareV2.connect(creator).getAddedToWhitelist(1))
+        .to.emit(supeRareV2, "OwnerWhitelisted")
+        .withArgs(creator.address, 1);
 
-    // console.log(await supeRareV2.getOwnerDeposit(10));
+      await expect(supeRare.connect(creator).transfer(supeRareV2.address, 1))
+        .to.emit(supeRare, "Transfer")
+        .withArgs(creator.address, supeRareV2.address, 1);
 
-    // await expect(supeRareV2.connect(creator).deposit(10))
-    //   .to.emit(supeRareV2, "PositionCreated")
-    //   .withArgs(creator.address, 10, "NewEditions_20");
+      await expect(supeRareV2.connect(owner).setPeg(1))
+        .to.emit(supeRareV2, "Pegged")
+        .withArgs(1);
 
-    // expect(await supeRareV2.balanceOf(creator.address)).to.be.equal(1);
-    // expect(await supeRareV2.totalSupply()).to.be.equal(1);
-    // const Position = await supeRareV2.getOwnerPosition(10);
-    // expect(Position[0]).to.be.equal(creator.address);
-    // expect(Position[1]).to.be.equal(10);
-    // expect(Position[2]).to.be.equal("NewEditions_20");
+      await expect(supeRareV2.connect(creator).mintV2(1))
+        .to.be.emit(supeRareV2, "MintV2")
+        .withArgs(creator.address, 1);
+
+      await expect(
+        supeRareV2.connect(addr1).setBaseURI("baseURI_tag")
+      ).to.be.revertedWith("Ownable: caller is not the owner");
+
+      await expect(supeRareV2.connect(owner).setBaseURI("baseURI_tag"))
+        .to.emit(supeRareV2, "BaseURISet")
+        .withArgs("baseURI_tag");
+    });
   });
-
-  it("SupeRareV2 Deposit Duplicate NFT: Owner of tries to deposit the same token again.", async function () {
-    const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
-      deployTokenFixture
-    );
-
-    await expect(supeRareV2.connect(creator).deposit(10))
-      .to.emit(supeRareV2, "PositionCreated")
-      .withArgs(creator.address, 10, "NewEditions_20");
-
-    await expect(supeRareV2.connect(creator).deposit(10)).to.be.revertedWith(
-      "ERC721: token already minted"
-    );
-  });
-
-  it("SupeRareV2 SetTokenURI: Owner sets the tokwnURI on the v2 contract", async function () {
-    const { supeRare, supeRareV2, owner, addr1, addr2 } = await loadFixture(
-      deployTokenFixture
-    );
-
-    await expect(supeRareV2.connect(creator).deposit(10))
-      .to.emit(supeRareV2, "PositionCreated")
-      .withArgs(creator.address, 10, "NewEditions_20");
-
-    expect(await supeRareV2.balanceOf(creator.address)).to.be.equal(1);
-
-    await expect(
-      supeRareV2.connect(addr1).setTokenURI(10, "V2EditionTokenURI.json")
-    ).to.be.revertedWith("Ownable: caller is not the owner");
-
-    await expect(
-      supeRareV2.connect(owner).setTokenURI(1, "V2EditionTokenURI.json")
-    ).to.be.revertedWith("ERC721Metadata: URI set of nonexistent token");
-
-    await expect(
-      supeRareV2.connect(owner).setTokenURI(10, "V2EditionTokenURI.json")
-    )
-      .to.emit(supeRareV2, "TokenURISet")
-      .withArgs(10, "V2EditionTokenURI.json");
-  });
-  it("SupeRareV2 SetBaseURI: Owner sets the BaseURI on the v2 contract", async function () {
-    const { supeRare, supeRareV2, owner, addr1, addr2 } = await loadFixture(
-      deployTokenFixture
-    );
-
-    await expect(supeRareV2.connect(creator).deposit(10))
-      .to.emit(supeRareV2, "PositionCreated")
-      .withArgs(creator.address, 10, "NewEditions_20");
-
-    expect(await supeRareV2.balanceOf(creator.address)).to.be.equal(1);
-
-    await expect(
-      supeRareV2.connect(addr1).setBaseURI("V2BASE_URI")
-    ).to.be.revertedWith("Ownable: caller is not the owner");
-
-    await expect(supeRareV2.connect(owner).setBaseURI("V2BASE_URI"))
-      .to.emit(supeRareV2, "BaseURISet")
-      .withArgs("V2BASE_URI");
-  });
-
   describe("SupeRareV2 Withdraw: Tests related to withdrawing an NFT", function () {
     async function deployTokenFixture() {
       [owner, addr1, creator] = await ethers.getSigners();

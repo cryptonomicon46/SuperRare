@@ -161,6 +161,17 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
         _;
     }
 
+
+        /**
+     * @dev Guarantees that the V1:V2 tokens are pegged
+     * @param _tokenId is the V1 tokenId
+     */
+    modifier onlyPegged(uint256 _tokenId) {
+        require(v1_v2_peg[_tokenId],"SupeRareV2: The v1:v2 token peg hasn't been established!");
+        _;
+    }
+
+
     /**
      * @dev SupeRareV2: Owner gets added to the whitelist based on the v1 token ownership
      * @param _v1TokenId the v1 tokenID 
@@ -176,25 +187,28 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
 
 
     /**
-     * @dev isPeggedToV1: Returns true if the V1 token has been transferred to this contract
+     * @dev isPegged: Returns true if the V1 token has been transferred to this contract
      * @param _tokenId the v1 tokenID 
      * @return returns true if there's a peg
      */
-    function isPeggedToV1(uint _tokenId) external view returns (bool) {
+    function isPegged(uint _tokenId) external view returns (bool) {
         return v1_v2_peg[_tokenId];
     }
 
     /**
-     * @dev setPeg: will set the v1_v2_peg[tokenId] to true if the contract owns the v1 token
+     * @dev _setPeg: will set the v1_v2_peg[tokenId] to true if the contract owns the v1 token
      * @param _tokenId the v1 tokenID 
      * @return returns true if the peg assignment succeeds
      */
-    function setPeg(uint256 _tokenId) external onlyOwner returns (bool) {
+    function _setPeg(uint256 _tokenId) internal virtual  returns (bool) {
         require(supe.ownerOf(_tokenId)== address(this),"SupeRareV2: Unable to peg the V1 token!");
         v1_v2_peg[_tokenId] = true;
         emit Pegged(_tokenId);
         return true;
     }
+
+
+
     /**
    * @notice mintV2, should allow a whitelisted owner to call mint, if it's a contract then it needs to implement the onERC721Received function 
    * @param _tokenId v1 tokenID
@@ -202,7 +216,7 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
    * @dev emits a PositionCreated event
    */
     function mintV2(uint256 _tokenId) external onlyWhitelisted(_tokenId) returns (bool) {
-        require(supe.ownerOf(_tokenId)== address(this),"SupeRareV2: Get added to whitelist, transfer the V1 token to this contract, then call mintV2!");
+        require(_setPeg(_tokenId),"SupeRareV2: Get added to whitelist, transfer the V1 token to this contract, then call mintV2!");
         _safeMint(_msgSender(), _tokenId);
         _setTokenURI(_tokenId, supe.tokenURI(_tokenId));
         v1_v2_peg[_tokenId]= true; 
@@ -213,12 +227,12 @@ contract SupeRareV2 is Ownable,  ERC721, IERC721Receiver  {
 
 
     /**
-   * @notice withdraw, should allow the owner of a v2 token to get back a v1 token
+   * @notice withdraw, should allow the owner of a v2 token only for a pegged v1 token.
    * @param _tokenId is the v2 tokenID to be burned
    * @return bool true if the function succeeds in its operation
    * @dev emits a PositionDeleted event
    */
-    function withdraw(uint256 _tokenId) external onlyOwnerOfToken(_tokenId) returns (bool) {
+    function withdraw(uint256 _tokenId) external onlyOwnerOfToken(_tokenId) onlyPegged(_tokenId) returns (bool) {
         require(_msgSender()!= address(0),"SupeRareV2: Invalid recipient address!");
         _burn(_tokenId); 
         (bool success, ) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("transfer(address,uint256)",_msgSender(),_tokenId));

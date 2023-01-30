@@ -553,8 +553,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SuperRareWrapper.sol": {
-      "lastModificationDate": 1675040530205,
-      "contentHash": "7264c604a968a15ef3c9c3f32e3cacc0",
+      "lastModificationDate": 1675040778399,
+      "contentHash": "468ef2d61e11a8135defd134e41998db",
       "sourceName": "contracts/SuperRareWrapper.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -776,8 +776,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SupeRareV2.sol": {
-      "lastModificationDate": 1674917629506,
-      "contentHash": "163cb1acd5de168ba4a2216c2db2030c",
+      "lastModificationDate": 1675063892481,
+      "contentHash": "06506a177f8f863586ab6a36158c5314",
       "sourceName": "contracts/SupeRareV2.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -803,11 +803,10 @@
         }
       },
       "imports": [
+        "hardhat/console.sol",
         "./ISupeRare.sol",
-        "./ISupeRareV2.sol",
-        "@openzeppelin/contracts/token/ERC721/ERC721.sol",
         "@openzeppelin/contracts/access/Ownable.sol",
-        "hardhat/console.sol"
+        "@openzeppelin/contracts/token/ERC721/ERC721.sol"
       ],
       "versionPragmas": [
         "=0.7.6"

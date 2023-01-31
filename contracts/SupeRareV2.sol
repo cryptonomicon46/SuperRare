@@ -218,6 +218,7 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
    * @dev emits a PositionDeleted event
    */
     function withdraw(uint256 _tokenId) external virtual override onlyOwnerOfToken(_tokenId) onlyPegged(_tokenId) returns (bool) {
+        console.log("here");
         require(_msgSender()!= address(0),"SupeRareV2: Invalid recipient address!");
         _burn(_tokenId);    
          supe.transfer(_msgSender(),_tokenId);

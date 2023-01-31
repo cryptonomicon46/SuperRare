@@ -277,6 +277,12 @@ describe("SupeRareV2 SafeTransfer: Tests related to setting SafeTransfer of the 
     expect(await supeRareV2.balanceOf(creator.address)).to.equal(0);
     expect(await supeRareV2.balanceOf(eschrowERC721.address)).to.equal(1);
     expect(await supeRareV2.ownerOf(1)).to.equal(eschrowERC721.address);
+
+    // const eschrowERC721_ = await ethers.getSigner(eschrowERC721);
+    // console.log(eschrowERC721.address);
+    // await expect(supeRareV2.connect(eschrowERC721).withdraw(1))
+    //   .to.be.emit(supeRareV2, "WithdrawV1")
+    //   .withArgs(eschrowERC721.address, 1);
   });
 });
 
@@ -339,6 +345,45 @@ describe("SupeRareV2 Withdraw: Tests related to withdrawing a V1 token", functio
 
     expect(await supeRare.balanceOf(supeRareV2.address)).to.equal(0);
     expect(await supeRare.balanceOf(creator.address)).to.equal(1);
+
+    expect(await supeRareV2.totalSupply()).to.equal(0);
+    expect(await supeRareV2.balanceOf(creator.address)).to.equal(0);
+  });
+
+  it("SupeRareV2 Withdraw new V2 owner: Creator transfers V2 token and new owner of V2 tries to withdraw V1 token", async function () {
+    const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
+      deployTokenFixture
+    );
+
+    expect(await supeRare.ownerOf(1)).to.equal(supeRareV2.address);
+    expect(await supeRare.balanceOf(supeRareV2.address)).to.equal(1);
+    expect((await supeRare.tokensOf(supeRareV2.address))[0]).to.equal(
+      BigNumber.from("1")
+    );
+    expect(await supeRare.balanceOf(creator.address)).to.equal(0);
+
+    await expect(supeRareV2.connect(creator).approve(addr1.address, 1))
+      .to.be.emit(supeRareV2, "Approval")
+      .withArgs(creator.address, addr1.address, 1);
+
+    await expect(
+      supeRareV2
+        .connect(addr1)
+        .safelyTransfer(creator.address, addr1.address, 1)
+    )
+      .to.be.emit(supeRareV2, "Transfer")
+      .withArgs(creator.address, addr1.address, 1);
+
+    await expect(supeRareV2.connect(creator).withdraw(1)).to.be.revertedWith(
+      "SupeRareV2: Sender isn't the owner of the V2 token!"
+    );
+    await expect(supeRareV2.connect(addr1).withdraw(1))
+      .to.be.emit(supeRareV2, "WithdrawV1")
+      .withArgs(addr1.address, 1);
+
+    expect(await supeRare.balanceOf(supeRareV2.address)).to.equal(0);
+    expect(await supeRare.balanceOf(creator.address)).to.equal(0);
+    expect(await supeRare.balanceOf(addr1.address)).to.equal(1);
 
     expect(await supeRareV2.totalSupply()).to.equal(0);
     expect(await supeRareV2.balanceOf(creator.address)).to.equal(0);

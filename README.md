@@ -8,7 +8,8 @@ Instructions for owners of V1 tokens: \***\*\*\*\***----------------------------
 3.Owner/Creator/holder of the V1 token will then mint a V2 token on the v2 contract using the
 'mintV2(uint256)' function.
 4.Owner/Creator/holder now holds a minted V2 token with the same tokenID as the V1 token. Ensuring that the V1 token is locked away in the V2 contract.
-5.Owner of the V2 token can choose to safeTransfer the V2 token to an EOA or external contract that implements the 'IERC721Receiver.sol'. 6. Owner of the V2 token can also choose to withdraw the original V1 token. By using the 'withdraw(uint256)' function. This in turn burns the V2 token and transfer the V1 token back to the owner. \***\*\*\*\***-------------------------------------\***\*\*\*\***
+5.Owner of the V2 token can choose to safeTransfer the V2 token to an EOA or external contract that implements the 'IERC721Receiver.sol' using the 'safelyTransfer(address,address,uint256)' function.
+6.Owner of the V2 token can also choose to withdraw the original V1 token. By using the 'withdraw(uint256)' function. This in turn burns the V2 token and transfer the V1 token back to the owner. \***\*\*\*\***-------------------------------------\***\*\*\*\***
 Test coverage: \***\*\*\*\***-------------------------------------\***\*\*\*\***
 Version
 =======

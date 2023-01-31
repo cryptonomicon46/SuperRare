@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./ISupeRare.sol";
+import "./IMockV1.sol";
 import "./ISupeRareV2.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "hardhat/console.sol";
@@ -55,13 +55,13 @@ string private _symbol = "CERC721";
     bytes4 private constant _INTERFACE_ID_ERC721_ENUMERABLE = 0x780e9d63;
     address private _SupeRareV2Addr;
     address private _SupeRareV1Addr;
-    ISupeRare supeV1;
+    IMockV1 supeV1;
     ISupeRareV2 supeV2;
 
           constructor (address SupeRareV1Addr_, address SupeRareV2Addr_) ERC721 (_name,_symbol){
         _SupeRareV1Addr =  SupeRareV1Addr_;
         _SupeRareV2Addr = SupeRareV2Addr_;
-        supeV1 = ISupeRare(_SupeRareV1Addr);
+        supeV1 = IMockV1(_SupeRareV1Addr);
         supeV2 = ISupeRareV2(_SupeRareV2Addr);
 
 
@@ -107,7 +107,7 @@ function onERC721Received( address , address , uint256 , bytes calldata  ) publi
 
     function withdrawV1(uint  _tokenId) external onlyOwner returns (bool) {
         supeV2.withdraw(_tokenId);
-        console.log("Must be true:", supeV1.ownerOf(_tokenId)== address(this));
+        // console.log("Must be true:", supeV1.ownerOf(_tokenId)== address(this));
         emit WithdrawV1(address(this),_tokenId);
         return true;
         

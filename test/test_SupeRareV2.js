@@ -17,20 +17,20 @@ describe("SupeRareV2 Test Suit: The Basics", function () {
   async function deployTokenFixture() {
     [owner, addr1, addr2] = await ethers.getSigners();
 
-    const SupeRare = await ethers.getContractFactory("SupeRare");
-    //console.log("Deploying SupeRare ...\n");
-    const supeRare = await SupeRare.deploy();
-    await supeRare.deployed();
+    const MockV1 = await ethers.getContractFactory("MockV1");
+    //console.log("Deploying MockV1 ...\n");
+    const mockV1 = await MockV1.deploy();
+    await mockV1.deployed();
 
     const SupeRareV2 = await ethers.getContractFactory("SupeRareV2");
     //console.log("Deploying SupeRareV2 ...\n");
-    const supeRareV2 = await SupeRareV2.deploy(supeRare.address);
+    const supeRareV2 = await SupeRareV2.deploy(mockV1.address);
     await supeRareV2.deployed();
 
-    ////console.log("SupeRare contract deployed at:", supeRare.address);
+    ////console.log("MockV1 contract deployed at:", mockV1.address);
     ////console.log("Deployer Address", owner.address);
 
-    return { supeRare, supeRareV2, owner, addr1, addr2 };
+    return { mockV1, supeRareV2, owner, addr1, addr2 };
   }
 
   it("SupeRareV2 Deployed: check contract address to be a proper address", async function () {
@@ -49,14 +49,14 @@ describe("SupeRareV2 Test Suit: The Basics", function () {
   });
 
   it("SupeRareV2 Owner: Check owner or the deployer of the contract", async function () {
-    const { supeRare, supeRareV2, owner, addr1, addr2 } = await loadFixture(
+    const { mockV1, supeRareV2, owner, addr1, addr2 } = await loadFixture(
       deployTokenFixture
     );
     expect(await supeRareV2.owner()).to.be.equal(owner.address);
   });
 
   it("SupeRareV2 transferOwnership: Only owner can transfer ownership", async function () {
-    const { supeRare, supeRareV2, owner, addr1, addr2 } = await loadFixture(
+    const { mockV1, supeRareV2, owner, addr1, addr2 } = await loadFixture(
       deployTokenFixture
     );
 
@@ -66,7 +66,7 @@ describe("SupeRareV2 Test Suit: The Basics", function () {
   });
 
   it("SupeRareV2 TransferOwnership to new Owner: Check address of the new owner", async function () {
-    const { supeRare, supeRareV2, owner, addr1, addr2 } = await loadFixture(
+    const { mockV1, supeRareV2, owner, addr1, addr2 } = await loadFixture(
       deployTokenFixture
     );
 
@@ -82,30 +82,30 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
   async function deployTokenFixture() {
     [owner, addr1, creator] = await ethers.getSigners();
 
-    const SupeRare = await ethers.getContractFactory("SupeRare");
-    //console.log("Deploying SupeRare ...\n");
-    const supeRare = await SupeRare.deploy();
-    await supeRare.deployed();
+    const MockV1 = await ethers.getContractFactory("MockV1");
+    //console.log("Deploying MockV1 ...\n");
+    const mockV1 = await MockV1.deploy();
+    await mockV1.deployed();
 
     const SupeRareV2 = await ethers.getContractFactory("SupeRareV2");
     //console.log("Deploying SupeRareV2 ...\n");
-    const supeRareV2 = await SupeRareV2.deploy(supeRare.address);
+    const supeRareV2 = await SupeRareV2.deploy(mockV1.address);
     await supeRareV2.deployed();
     //console.log(`supeRareV2 contract deployed at ${supeRareV2.address}`);
 
-    await expect(supeRare.connect(owner).whitelistCreator(creator.address))
-      .to.emit(supeRare, "WhitelistCreator")
+    await expect(mockV1.connect(owner).whitelistCreator(creator.address))
+      .to.emit(mockV1, "WhitelistCreator")
       .withArgs(creator.address);
 
-    await expect(supeRare.connect(creator).addNewToken("NewEditions_1"))
-      .to.emit(supeRare, "Transfer")
+    await expect(mockV1.connect(creator).addNewToken("NewEditions_1"))
+      .to.emit(mockV1, "Transfer")
       .withArgs(ethers.constants.AddressZero, creator.address, 1);
 
-    return { supeRare, supeRareV2, owner, addr1, creator };
+    return { mockV1, supeRareV2, owner, addr1, creator };
   }
 
   it("SupeRareV2 Deposit whitelist pass: Owner of an V1 NFT gets whitelisted.", async function () {
-    const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
+    const { mockV1, supeRareV2, owner, addr1, creator } = await loadFixture(
       deployTokenFixture
     );
 
@@ -119,7 +119,7 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
   });
 
   it("SupeRareV2 Deposit and check if Whitelisted: Owner of an V1 NFT asks to get whitelisted and checks if whitelisted.", async function () {
-    const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
+    const { mockV1, supeRareV2, owner, addr1, creator } = await loadFixture(
       deployTokenFixture
     );
 
@@ -139,7 +139,7 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
   });
 
   it("SupeRareV2 Deposit whitelist fail: Owner of tries to get whitelisted again for the same v1 tokenID.", async function () {
-    const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
+    const { mockV1, supeRareV2, owner, addr1, creator } = await loadFixture(
       deployTokenFixture
     );
 
@@ -157,22 +157,22 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
   });
 
   it("SupeRareV2 Deposit verify balances before mint: V1 Onwer gets whitelisted, transfers V1 token check balances before and after ", async function () {
-    const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
+    const { mockV1, supeRareV2, owner, addr1, creator } = await loadFixture(
       deployTokenFixture
     );
-    expect(await supeRare.balanceOf(creator.address)).to.equal(1);
-    expect(await supeRare.balanceOf(supeRareV2.address)).to.equal(0);
+    expect(await mockV1.balanceOf(creator.address)).to.equal(1);
+    expect(await mockV1.balanceOf(supeRareV2.address)).to.equal(0);
 
-    await expect(supeRare.connect(creator).transfer(supeRareV2.address, 1))
-      .to.emit(supeRare, "Transfer")
+    await expect(mockV1.connect(creator).transfer(supeRareV2.address, 1))
+      .to.emit(mockV1, "Transfer")
       .withArgs(creator.address, supeRareV2.address, 1);
 
-    expect(await supeRare.balanceOf(creator.address)).to.equal(0);
-    expect(await supeRare.balanceOf(supeRareV2.address)).to.equal(1);
+    expect(await mockV1.balanceOf(creator.address)).to.equal(0);
+    expect(await mockV1.balanceOf(supeRareV2.address)).to.equal(1);
   });
 
   it("SupeRareV2 Deposit, mintV2: Mint the v2 token and confirm the v1:v2 peg, check balances", async function () {
-    const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
+    const { mockV1, supeRareV2, owner, addr1, creator } = await loadFixture(
       deployTokenFixture
     );
 
@@ -180,8 +180,8 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
       .to.emit(supeRareV2, "OwnerWhitelisted")
       .withArgs(creator.address, 1);
 
-    await expect(supeRare.connect(creator).transfer(supeRareV2.address, 1))
-      .to.emit(supeRare, "Transfer")
+    await expect(mockV1.connect(creator).transfer(supeRareV2.address, 1))
+      .to.emit(mockV1, "Transfer")
       .withArgs(creator.address, supeRareV2.address, 1);
 
     await expect(supeRareV2.connect(creator).mintV2(1))
@@ -198,40 +198,40 @@ describe("SupeRareV2 SafeTransfer: Creator mints V1 token, deposits it into V2 c
   async function deployTokenFixture() {
     [owner, addr1, creator] = await ethers.getSigners();
 
-    const SupeRare = await ethers.getContractFactory("SupeRare");
-    //console.log("Deploying SupeRare ...\n");
-    const supeRare = await SupeRare.deploy();
-    await supeRare.deployed();
+    const MockV1 = await ethers.getContractFactory("MockV1");
+    //console.log("Deploying MockV1 ...\n");
+    const mockV1 = await MockV1.deploy();
+    await mockV1.deployed();
 
     const SupeRareV2 = await ethers.getContractFactory("SupeRareV2");
     //console.log("Deploying SupeRareV2 ...\n");
-    const supeRareV2 = await SupeRareV2.deploy(supeRare.address);
+    const supeRareV2 = await SupeRareV2.deploy(mockV1.address);
     await supeRareV2.deployed();
     //console.log(`supeRareV2 contract deployed at ${supeRareV2.address}`);
 
     const Contract_ERC721 = await ethers.getContractFactory("Contract_ERC721");
     //console.log("Deploying Eschrow ...\n");
     const contract_ERC721 = await Contract_ERC721.deploy(
-      supeRare.address,
+      mockV1.address,
       supeRareV2.address
     );
     await contract_ERC721.deployed();
     //console.log(`Contract_ERC721 contract deployed at ${contract_ERC721.address}`);
 
-    await expect(supeRare.connect(owner).whitelistCreator(creator.address))
-      .to.emit(supeRare, "WhitelistCreator")
+    await expect(mockV1.connect(owner).whitelistCreator(creator.address))
+      .to.emit(mockV1, "WhitelistCreator")
       .withArgs(creator.address);
 
-    await expect(supeRare.connect(creator).addNewToken("NewEditions_1"))
-      .to.emit(supeRare, "Transfer")
+    await expect(mockV1.connect(creator).addNewToken("NewEditions_1"))
+      .to.emit(mockV1, "Transfer")
       .withArgs(ethers.constants.AddressZero, creator.address, 1);
 
     await expect(supeRareV2.connect(creator).getAddedToWhitelist(1))
       .to.emit(supeRareV2, "OwnerWhitelisted")
       .withArgs(creator.address, 1);
 
-    await expect(supeRare.connect(creator).transfer(supeRareV2.address, 1))
-      .to.emit(supeRare, "Transfer")
+    await expect(mockV1.connect(creator).transfer(supeRareV2.address, 1))
+      .to.emit(mockV1, "Transfer")
       .withArgs(creator.address, supeRareV2.address, 1);
 
     await expect(supeRareV2.connect(creator).mintV2(1))
@@ -239,7 +239,7 @@ describe("SupeRareV2 SafeTransfer: Creator mints V1 token, deposits it into V2 c
       .withArgs(creator.address, 1);
 
     return {
-      supeRare,
+      mockV1,
       supeRareV2,
       owner,
       addr1,
@@ -250,7 +250,7 @@ describe("SupeRareV2 SafeTransfer: Creator mints V1 token, deposits it into V2 c
 
   it("SupeRareV2 SafeTransfer to Contract_ERC721#1: This should pass, as the contract is ERC721 compliant", async function () {
     const {
-      supeRare,
+      mockV1,
       supeRareV2,
       owner,
       addr1,
@@ -286,7 +286,7 @@ describe("SupeRareV2 SafeTransfer: Creator mints V1 token, deposits it into V2 c
 
   it("SupeRareV2 SafeTransfer to Contract_ERC721#2: The external contract then tries to withdaw the V1 token", async function () {
     const {
-      supeRare,
+      mockV1,
       supeRareV2,
       owner,
       addr1,
@@ -353,51 +353,51 @@ describe("SupeRareV2 Withdraw: Tests related to withdrawing a V1 token", functio
   async function deployTokenFixture() {
     [owner, addr1, creator] = await ethers.getSigners();
 
-    const SupeRare = await ethers.getContractFactory("SupeRare");
-    //console.log("Deploying SupeRare ...\n");
-    const supeRare = await SupeRare.deploy();
-    await supeRare.deployed();
+    const MockV1 = await ethers.getContractFactory("MockV1");
+    //console.log("Deploying MockV1 ...\n");
+    const mockV1 = await MockV1.deploy();
+    await mockV1.deployed();
 
     const SupeRareV2 = await ethers.getContractFactory("SupeRareV2");
     //console.log("Deploying SupeRareV2 ...\n");
-    const supeRareV2 = await SupeRareV2.deploy(supeRare.address);
+    const supeRareV2 = await SupeRareV2.deploy(mockV1.address);
     await supeRareV2.deployed();
     //console.log(`supeRareV2 contract deployed at ${supeRareV2.address}`);
 
-    await expect(supeRare.connect(owner).whitelistCreator(creator.address))
-      .to.emit(supeRare, "WhitelistCreator")
+    await expect(mockV1.connect(owner).whitelistCreator(creator.address))
+      .to.emit(mockV1, "WhitelistCreator")
       .withArgs(creator.address);
 
-    await expect(supeRare.connect(creator).addNewToken("NewEditions_1"))
-      .to.emit(supeRare, "Transfer")
+    await expect(mockV1.connect(creator).addNewToken("NewEditions_1"))
+      .to.emit(mockV1, "Transfer")
       .withArgs(ethers.constants.AddressZero, creator.address, 1);
 
     await expect(supeRareV2.connect(creator).getAddedToWhitelist(1))
       .to.emit(supeRareV2, "OwnerWhitelisted")
       .withArgs(creator.address, 1);
 
-    await expect(supeRare.connect(creator).transfer(supeRareV2.address, 1))
-      .to.emit(supeRare, "Transfer")
+    await expect(mockV1.connect(creator).transfer(supeRareV2.address, 1))
+      .to.emit(mockV1, "Transfer")
       .withArgs(creator.address, supeRareV2.address, 1);
 
     await expect(supeRareV2.connect(creator).mintV2(1))
       .to.be.emit(supeRareV2, "MintV2")
       .withArgs(creator.address, 1);
 
-    return { supeRare, supeRareV2, owner, addr1, creator };
+    return { mockV1, supeRareV2, owner, addr1, creator };
   }
 
   it("SupeRareV2 Withdraw onlyOwnerOfV2: Owner deposits V1 tokens, then tries to withdraw them", async function () {
-    const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
+    const { mockV1, supeRareV2, owner, addr1, creator } = await loadFixture(
       deployTokenFixture
     );
 
-    expect(await supeRare.ownerOf(1)).to.equal(supeRareV2.address);
-    expect(await supeRare.balanceOf(supeRareV2.address)).to.equal(1);
-    expect((await supeRare.tokensOf(supeRareV2.address))[0]).to.equal(
+    expect(await mockV1.ownerOf(1)).to.equal(supeRareV2.address);
+    expect(await mockV1.balanceOf(supeRareV2.address)).to.equal(1);
+    expect((await mockV1.tokensOf(supeRareV2.address))[0]).to.equal(
       BigNumber.from("1")
     );
-    expect(await supeRare.balanceOf(creator.address)).to.equal(0);
+    expect(await mockV1.balanceOf(creator.address)).to.equal(0);
 
     await expect(supeRareV2.connect(addr1).withdraw(1)).to.be.revertedWith(
       "SupeRareV2: Sender isn't the owner of the V2 token!"
@@ -406,24 +406,24 @@ describe("SupeRareV2 Withdraw: Tests related to withdrawing a V1 token", functio
       .to.be.emit(supeRareV2, "WithdrawV1")
       .withArgs(creator.address, 1);
 
-    expect(await supeRare.balanceOf(supeRareV2.address)).to.equal(0);
-    expect(await supeRare.balanceOf(creator.address)).to.equal(1);
+    expect(await mockV1.balanceOf(supeRareV2.address)).to.equal(0);
+    expect(await mockV1.balanceOf(creator.address)).to.equal(1);
 
     expect(await supeRareV2.totalSupply()).to.equal(0);
     expect(await supeRareV2.balanceOf(creator.address)).to.equal(0);
   });
 
   it("SupeRareV2 Withdraw new V2 owner: Creator transfers V2 token and new owner of V2 tries to withdraw V1 token", async function () {
-    const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
+    const { mockV1, supeRareV2, owner, addr1, creator } = await loadFixture(
       deployTokenFixture
     );
 
-    expect(await supeRare.ownerOf(1)).to.equal(supeRareV2.address);
-    expect(await supeRare.balanceOf(supeRareV2.address)).to.equal(1);
-    expect((await supeRare.tokensOf(supeRareV2.address))[0]).to.equal(
+    expect(await mockV1.ownerOf(1)).to.equal(supeRareV2.address);
+    expect(await mockV1.balanceOf(supeRareV2.address)).to.equal(1);
+    expect((await mockV1.tokensOf(supeRareV2.address))[0]).to.equal(
       BigNumber.from("1")
     );
-    expect(await supeRare.balanceOf(creator.address)).to.equal(0);
+    expect(await mockV1.balanceOf(creator.address)).to.equal(0);
 
     await expect(supeRareV2.connect(creator).approve(addr1.address, 1))
       .to.be.emit(supeRareV2, "Approval")
@@ -444,9 +444,9 @@ describe("SupeRareV2 Withdraw: Tests related to withdrawing a V1 token", functio
       .to.be.emit(supeRareV2, "WithdrawV1")
       .withArgs(addr1.address, 1);
 
-    expect(await supeRare.balanceOf(supeRareV2.address)).to.equal(0);
-    expect(await supeRare.balanceOf(creator.address)).to.equal(0);
-    expect(await supeRare.balanceOf(addr1.address)).to.equal(1);
+    expect(await mockV1.balanceOf(supeRareV2.address)).to.equal(0);
+    expect(await mockV1.balanceOf(creator.address)).to.equal(0);
+    expect(await mockV1.balanceOf(addr1.address)).to.equal(1);
 
     expect(await supeRareV2.totalSupply()).to.equal(0);
     expect(await supeRareV2.balanceOf(creator.address)).to.equal(0);

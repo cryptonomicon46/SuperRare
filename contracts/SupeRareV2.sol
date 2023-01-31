@@ -3,8 +3,8 @@ pragma solidity =0.7.6;
 pragma abicoder v2;
 
 import "hardhat/console.sol";
+import "./IMockV1.sol";
 import "./ISupeRareV2.sol";
-import "./ISupeRare.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
@@ -16,7 +16,7 @@ Is an ERC721 compliant NFT contract that mints V2 tokens for pegged V1 tokens.
 contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {   
     using Address for address;  
     address private  OriginalSupeRareAddr_;
-    ISupeRare private supe;
+    IMockV1 private supe;
     address private owner_;
     string private _name = "SupeRare";
 
@@ -110,7 +110,7 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
   
           constructor (address OriginalSupeRareAddr_) ERC721 (_name,_symbol){
         OriginalSupeRareAddr_ = OriginalSupeRareAddr_;
-        supe = ISupeRare(OriginalSupeRareAddr_);
+        supe = IMockV1(OriginalSupeRareAddr_);
         _registerInterface(_INTERFACE_ID_ERC721);
         _registerInterface(_INTERFACE_ID_ERC721_METADATA);
         _registerInterface(_INTERFACE_ID_ERC721_ENUMERABLE); } 
@@ -175,7 +175,6 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
      * @return bool true if owner is whitelisted else return false
      */
     function isWhitelisted(uint256 _v1TokenId) external view virtual override returns (bool){
-        console.log("Sender", _msgSender(), " whitelisted true/false: ",(ownerWhiteList[_v1TokenId] == _msgSender())? true: false);
         return  (ownerWhiteList[_v1TokenId] == _msgSender())? true: false;
 
     }
@@ -228,7 +227,6 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
    * @dev emits a PositionDeleted event
    */
     function withdraw(uint256 _tokenId) external virtual override onlyOwnerOfToken(_tokenId) onlyPegged(_tokenId) returns (bool) {
-        console.log("here");
         require(_msgSender()!= address(0),"SupeRareV2: Invalid recipient address!");
         _burn(_tokenId);    
          supe.transfer(_msgSender(),_tokenId);
@@ -289,10 +287,6 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
 
     /// @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
     function onERC721Received(address, address, uint256, bytes memory) public view virtual override returns (bytes4) {
-        // return this.onERC721Received.selector;
-            console.logBytes4(_ERC721_RECEIVED);
-
-
         return _ERC721_RECEIVED;
     }
 

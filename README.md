@@ -74,7 +74,7 @@ SupeRareV2.sol | 74.29 | 60.71 | 73.33 | 80 |... 274,282,285 |
 All files | 43.79 | 29.46 | 47.22 | 47.51 | |
 --------------------|----------|----------|----------|----------|----------------|
 
-> Istanbul reports written to ./coverage/ and ./coverage.json \***\*\*\*\***-------------------------------------\***\*\*\*\***
+> Istanbul reports written to ./coverage/ and ./coverage.json
 
 Goerli Contracts
 npx hardhat run scripts/deploy_Goerli.js --network goerli
@@ -83,7 +83,7 @@ Goerli:
 npx hardhat verify "" --network goerli
 
 Test Script lines for test:
-npx hardhat coverage --testfiles "test/test\_\*.js"
+npx hardhat coverage --testfiles "test/test_SupeRareV2.js"
 npx hardhat test ./test/test_SupeRareV2.js --network localhost
 
 Mainnet:

@@ -25,6 +25,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -64,6 +67,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -101,6 +107,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -113,8 +122,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": {
-      "lastModificationDate": 1674839022322,
-      "contentHash": "3501ffd7a47c598c9846bdd9cbdb2984",
+      "lastModificationDate": 1675121810232,
+      "contentHash": "d05293efd2bbe806abf9f40f81bf9eb6",
       "sourceName": "@openzeppelin/contracts/token/ERC721/ERC721.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -136,6 +145,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -183,6 +195,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -218,6 +233,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -253,6 +271,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -288,6 +309,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -323,6 +347,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -360,6 +387,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -397,6 +427,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -434,6 +467,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -471,6 +507,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -506,6 +545,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -541,6 +583,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -553,8 +598,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SupeRareV2.sol": {
-      "lastModificationDate": 1675120719551,
-      "contentHash": "0691409a48153f42a6cc64f1a6794384",
+      "lastModificationDate": 1675124522292,
+      "contentHash": "7c229e0e9bfed8ef2233cc18ca21bc4e",
       "sourceName": "contracts/SupeRareV2.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -576,6 +621,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -617,6 +665,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -652,6 +703,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -664,7 +718,7 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/SupeRare.sol": {
-      "lastModificationDate": 1675117078699,
+      "lastModificationDate": 1675124039228,
       "contentHash": "b48504da28889cbc1cd433b04b03cce3",
       "sourceName": "contracts/SupeRare.sol",
       "solcConfig": {
@@ -687,6 +741,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -707,8 +764,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/EschrowERC721.sol": {
-      "lastModificationDate": 1674666449509,
-      "contentHash": "e3c77159f6e35d7b64a4c2719edf115d",
+      "lastModificationDate": 1675123087032,
+      "contentHash": "0eda97ac9cc755eecaa464c0fe37f6cb",
       "sourceName": "contracts/EschrowERC721.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -730,6 +787,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },
@@ -746,8 +806,8 @@
       ]
     },
     "/Users/snallani/Documents/Documents/Projects/Hardhat/LuckyProjs/SuperRare/contracts/ISupeRareV2.sol": {
-      "lastModificationDate": 1675120645000,
-      "contentHash": "6aba020711dbe813b19e308f16b80448",
+      "lastModificationDate": 1675122004681,
+      "contentHash": "b1111f2dfa420ffdb96b8b6189904031",
       "sourceName": "contracts/ISupeRareV2.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -769,6 +829,9 @@
                 "ast"
               ]
             }
+          },
+          "metadata": {
+            "useLiteralContent": false
           }
         }
       },

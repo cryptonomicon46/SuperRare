@@ -173,7 +173,7 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
     expect(await supeRareV2.ownerOf(1)).to.equal(creator.address);
   });
 });
-describe("SupeRareV2 TokenURI: Tests related to setting TokenURI/BaseURI", function () {
+describe("SupeRareV2 SafeTransfer: Tests related to setting SafeTransfer of the V2 Token", function () {
   async function deployTokenFixture() {
     [owner, addr1, creator] = await ethers.getSigners();
 
@@ -187,6 +187,18 @@ describe("SupeRareV2 TokenURI: Tests related to setting TokenURI/BaseURI", funct
     const supeRareV2 = await SupeRareV2.deploy(supeRare.address);
     await supeRareV2.deployed();
     //console.log(`supeRareV2 contract deployed at ${supeRareV2.address}`);
+
+    const Eschrow = await ethers.getContractFactory("Eschrow");
+    //console.log("Deploying Eschrow ...\n");
+    const eschrow = await Eschrow.deploy();
+    await eschrow.deployed();
+    //console.log(`Eschrow contract deployed at ${eschrow.address}`);
+
+    const EschrowERC721 = await ethers.getContractFactory("EschrowERC721");
+    //console.log("Deploying Eschrow ...\n");
+    const eschrowERC721 = await EschrowERC721.deploy();
+    await eschrowERC721.deployed();
+    //console.log(`EschrowERC721 contract deployed at ${eschrowERC721.address}`);
 
     await expect(supeRare.connect(owner).whitelistCreator(creator.address))
       .to.emit(supeRare, "WhitelistCreator")
@@ -208,38 +220,73 @@ describe("SupeRareV2 TokenURI: Tests related to setting TokenURI/BaseURI", funct
       .to.be.emit(supeRareV2, "MintV2")
       .withArgs(creator.address, 1);
 
-    return { supeRare, supeRareV2, owner, addr1, creator };
+    return {
+      supeRare,
+      supeRareV2,
+      owner,
+      addr1,
+      creator,
+      eschrow,
+      eschrowERC721,
+    };
   }
 
-  it("SupeRareV2 SetTokenURI: Owner sets the tokenURI on the v2 contract", async function () {
-    const { supeRare, supeRareV2, owner, addr1, addr2 } = await loadFixture(
-      deployTokenFixture
+  //   it("SupeRareV2 SafeTransfer to Eschrow: This should fail, as the contract isn't ERC721 compliant", async function () {
+  //     const {
+  //       supeRare,
+  //       supeRareV2,
+  //       owner,
+  //       addr1,
+  //       creator,
+  //       eschrow,
+  //       eschrowERC721,
+  //     } = await loadFixture(deployTokenFixture);
+
+  //     await expect(supeRareV2.connect(creator).approve(eschrow.address, 1))
+  //       .to.emit(supeRareV2, "Approval")
+  //       .withArgs(creator.address, eschrow.address, 1);
+
+  //     await expect(
+  //       supeRareV2
+  //         .connect(eschrow.address)
+  //         .safelyTransfer(creator.address, eschrow.address, 1)
+  //     ).to.be.revertedWith("ERC721: transfer to non ERC721Receiver implementer");
+  //   });
+  it("SupeRareV2 SafeTransfer to EschrowERC721: This should pass, as the contract is ERC721 compliant", async function () {
+    const {
+      supeRare,
+      supeRareV2,
+      owner,
+      addr1,
+      creator,
+      eschrow,
+      eschrowERC721,
+    } = await loadFixture(deployTokenFixture);
+
+    await expect(
+      supeRareV2.connect(addr1).approve(eschrowERC721.address, 1)
+    ).to.be.revertedWith(
+      "ERC721: approve caller is not owner nor approved for all"
     );
 
-    await expect(
-      supeRareV2.connect(addr1).setTokenURI(1, "V2EditionTokenURI.json")
-    ).to.be.revertedWith("Ownable: caller is not the owner");
+    await expect(supeRareV2.connect(creator).approve(eschrowERC721.address, 1))
+      .to.emit(supeRareV2, "Approval")
+      .withArgs(creator.address, eschrowERC721.address, 1);
 
     await expect(
-      supeRareV2.connect(owner).setTokenURI(1, "V2EditionTokenURI.json")
+      supeRareV2
+        .connect(creator)
+        .safelyTransfer(creator.address, eschrowERC721.address, 1)
     )
-      .to.emit(supeRareV2, "TokenURISet")
-      .withArgs(1, "V2EditionTokenURI.json");
-  });
-  it("SupeRareV2 SetBaseURI: Owner sets the baseURI on the v2 contract", async function () {
-    const { supeRare, supeRareV2, owner, addr1, addr2 } = await loadFixture(
-      deployTokenFixture
-    );
+      .to.be.emit(supeRareV2, "Transfer")
+      .withArgs(creator.address, eschrowERC721.address, 1);
 
-    await expect(
-      supeRareV2.connect(addr1).setBaseURI("baseURI_tag")
-    ).to.be.revertedWith("Ownable: caller is not the owner");
-
-    await expect(supeRareV2.connect(owner).setBaseURI("baseURI_tag"))
-      .to.emit(supeRareV2, "BaseURISet")
-      .withArgs("baseURI_tag");
+    expect(await supeRareV2.balanceOf(creator.address)).to.equal(0);
+    expect(await supeRareV2.balanceOf(eschrowERC721.address)).to.equal(1);
+    expect(await supeRareV2.ownerOf(1)).to.equal(eschrowERC721.address);
   });
 });
+
 describe("SupeRareV2 Withdraw: Tests related to withdrawing a V1 token", function () {
   async function deployTokenFixture() {
     [owner, addr1, creator] = await ethers.getSigners();

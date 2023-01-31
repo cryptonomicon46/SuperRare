@@ -8,6 +8,10 @@ import "./ISupeRare.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
+/**
+ * @notice SupeRareV2.sol: Wrapper contract to the SupRare.sol V1 contract
+Is an ERC721 compliant NFT contract that mints V2 tokens for pegged V1 tokens.
+ */
 
 contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {   
     using Address for address;  
@@ -104,8 +108,8 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
 
  
   
-          constructor (address OriginalSupeRareAddr__) ERC721 (_name,_symbol){
-        OriginalSupeRareAddr_ = OriginalSupeRareAddr__;
+          constructor (address OriginalSupeRareAddr_) ERC721 (_name,_symbol){
+        OriginalSupeRareAddr_ = OriginalSupeRareAddr_;
         supe = ISupeRare(OriginalSupeRareAddr_);
         _registerInterface(_INTERFACE_ID_ERC721);
         _registerInterface(_INTERFACE_ID_ERC721_METADATA);
@@ -215,14 +219,26 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
    */
     function withdraw(uint256 _tokenId) external virtual override onlyOwnerOfToken(_tokenId) onlyPegged(_tokenId) returns (bool) {
         require(_msgSender()!= address(0),"SupeRareV2: Invalid recipient address!");
-        _burn(_tokenId); 
-        (bool success, ) = address(OriginalSupeRareAddr_).call(abi.encodeWithSignature("transfer(address,uint256)",_msgSender(),_tokenId));
-         require(success,"SupeRareV2: Unable to withdraw V1 token!");     
+        _burn(_tokenId);    
+         supe.transfer(_msgSender(),_tokenId);
         v1_v2_peg[_tokenId] = false;
         emit WithdrawV1(_msgSender(),_tokenId);
         return true;
     }
 
+
+    /**
+   * @notice safelyTransfer, should perform the ERC721 checks before transfering token to an external contract
+   * @param from address of approved or sender
+   * @param tokenId of the v2 token being transferred
+   * @return bool true if the function succeeds in its operation
+   * @dev emits a 'Transfer' event
+   */
+    function safelyTransfer(address from, address to, uint256 tokenId) external virtual override returns (bool) {
+        safeTransferFrom(from, to, tokenId, "");
+        return true;
+    }
+    
 
     /**
    * @notice getSupeRareAddress returns the address of the SupeRareV1 contract

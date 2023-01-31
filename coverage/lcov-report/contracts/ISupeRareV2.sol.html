@@ -72,7 +72,101 @@
 27
 28
 29
-30</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -104,31 +198,78 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&nbsp;
 // SPDX-License-Identifier: MIT
 pragma solidity =0.7.6;
+pragma abicoder v2;
 // pragma solidity ^0.4.18;
 &nbsp;
 interface ISupeRareV2 {
 &nbsp;
 &nbsp;
-      /**
-   * @notice deposit_V1 allows the owner of SupeRareV1 to deposit an NFT and get a minted representation in SupeRareV2
-   * @param _tokenId uint256 ID of the SupeRareV1 or original tokenId being deposited by owner
-   * @return Returns the V2 balance of the owner in the contract
-   * @dev emits a mint event
+&nbsp;
+    /**
+   * @notice getSupeRareAddress returns the address of the SupeRareV1 contract
+   * @return address of the V1 contract
    */
-    function deposit_V1(uint256 _tokenId) external returns (uint256);
+    function getSupeRareAddress() external returns (address);
+&nbsp;
+    /**
+     * @dev isPegged: Returns true if the V1 token has been transferred to this contract
+     * @param _tokenId the v1 tokenID 
+     * @return returns true if there's a peg
+     */
+    function isPegged(uint _tokenId) external  returns (bool);
+&nbsp;
+    /**
+   * @notice mintV2, should allow a whitelisted owner to call mint, if it's a contract then it needs to implement the onERC721Received function 
+   * @param _tokenId v1 tokenID
+   * @return bool returns true if the operation succeeds
+   * @dev emits a PositionCreated event
+   */
+    function mintV2(uint256 _tokenId) external returns (bool);
 &nbsp;
 &nbsp;
 &nbsp;
     /**
-   * @notice Withdraw_V1 allows the owner of SupeRareV1 to withdraw the deposited V1 SupeRare NFT 
-   * @param _tokenId uint256 ID of the SupeRareV1 which will be mapped to find the corresponding V2 NFT TokenID
-   * @return Returns the V2 balance of the owner in the contract
-   * @dev emits a burn event
+   * @notice withdraw, should allow the owner of a v2 token only for a pegged v1 token.
+   * @param _tokenId is the v2 tokenID to be burned
+   * @return bool true if the function succeeds in its operation
+   * @dev emits a PositionDeleted event
    */
-    function Withdraw_V1(uint256 _tokenId) external returns (uint256);
+    function withdraw(uint256 _tokenId) external returns (bool);
+&nbsp;
+&nbsp;
+    /**
+     * @dev SupeRareV2: Owner gets added to the whitelist based on the v1 token ownership
+     * @param _v1TokenId the v1 tokenID 
+     * @return bool true if the operation succeeds
+     */
+    function getAddedToWhitelist(uint256 _v1TokenId) external  returns (bool);
+&nbsp;
+&nbsp;
+    /**
+   * @notice setTokenURI   //ERC721: Change the tokenURI if needed on a per token basis by only by the owner of this contract
+   * @param v2tokenId Owner's current V2 TokenID
+   * @return bool returns true of the operation succeeds
+   */
+    function setTokenURI(uint256 v2tokenId,string calldata _tokenURI) external returns (bool);
+&nbsp;
+&nbsp;
+    /**
+   * @notice setBaseURI   //ERC721: Change the tokenURI if needed on a per token basis only by the owner of this contract
+   * @param _baseURI Owner's current V2 TokenID
+   * @return bool returns true of the operation succeeds
+   */
+    function setBaseURI(string calldata _baseURI) external returns (bool);
 &nbsp;
 &nbsp;
 &nbsp;
+    /**
+   * @notice safelyTransfer, should perform the ERC721 checks before transfering token to an external contract
+   * @param from address of approved or sender
+   * @param tokenId of the v2 token being transferred
+   * @return bool true if the function succeeds in its operation
+   * @dev emits a 'Transfer' event
+   */
+    function safelyTransfer(address from, address to, uint256 tokenId) external returns (bool);
 &nbsp;
 }</pre></td></tr>
 </table></pre>
@@ -136,7 +277,7 @@ interface ISupeRareV2 {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Jan 25 2023 10:06:41 GMT-0800 (Pacific Standard Time)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Jan 30 2023 16:29:55 GMT-0800 (Pacific Standard Time)
 </div>
 </div>
 <script src="../prettify.js"></script>

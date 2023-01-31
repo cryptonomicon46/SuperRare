@@ -63,4 +63,15 @@ interface ISupeRareV2 {
    */
     function setBaseURI(string calldata _baseURI) external returns (bool);
 
+
+
+    /**
+   * @notice safelyTransfer, should perform the ERC721 checks before transfering token to an external contract
+   * @param from address of approved or sender
+   * @param tokenId of the v2 token being transferred
+   * @return bool true if the function succeeds in its operation
+   * @dev emits a 'Transfer' event
+   */
+    function safelyTransfer(address from, address to, uint256 tokenId) external returns (bool);
+
 }

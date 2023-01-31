@@ -1,7 +1,8 @@
 \***\*\*\*\***-------------------------------------\***\*\*\*\***
 SupeRareV2.sol: Wrapper contract to the SupRare.sol V1 contract
-Is an ERC721 compliant NFT contract that mints V2 tokens for pegged V1 tokens. \***\*\*\*\***-------------------------------------\***\*\*\*\***
-Instructions for owners of V1 tokens: \***\*\*\*\***-------------------------------------\***\*\*\*\***
+Is an ERC721 compliant NFT contract that mints V2 tokens for pegged V1 tokens.
+\***\*\*\*\***-------------------------------------\***\*\*\*\***
+Instructions for owners of V1 tokens: 
 
 1.Owner/Creator/holder of the V1 token enlists in the V2 contract to get whitelisted for holding a V1 token on the original V1 contract.
 2.Owner/Creator/holder of the V1 token will then transfer the V1 token to the V2 contract to enable the V1:V2 peg.
@@ -10,8 +11,8 @@ Instructions for owners of V1 tokens: \***\*\*\*\***----------------------------
 4.Owner/Creator/holder now holds a minted V2 token with the same tokenID as the V1 token. Ensuring that the V1 token is locked away in the V2 contract.
 5.Owner of the V2 token can choose to safeTransfer the V2 token to an EOA or external contract that implements the 'IERC721Receiver.sol' using the 'safelyTransfer(address,address,uint256)' function.
 6.Owner of the V2 token can also choose to withdraw the original V1 token. By using the 'withdraw(uint256)' function. This in turn burns the V2 token and transfer the V1 token back to the owner.
-7.The same instructions apply to an ERC721 compliant contract. If this contract were to become the owner of a V2 token. In reverse order, it will be able to withdraw the underlying V1 token and maintain a balance of the original V1 token on the original V1 contract. \***\*\*\*\***-------------------------------------\***\*\*\*\***
-Test coverage: \***\*\*\*\***-------------------------------------\***\*\*\*\***
+7.The same instructions apply to an ERC721 compliant contract. If this contract were to become the owner of a V2 token. In reverse order, it will be able to withdraw the underlying V1 token and maintain a balance of the original V1 token on the original V1 contract. 
+Test coverage: 
 Version
 =======
 

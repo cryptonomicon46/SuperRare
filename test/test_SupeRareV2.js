@@ -188,12 +188,6 @@ describe("SupeRareV2 SafeTransfer: Tests related to setting SafeTransfer of the 
     await supeRareV2.deployed();
     //console.log(`supeRareV2 contract deployed at ${supeRareV2.address}`);
 
-    const Eschrow = await ethers.getContractFactory("Eschrow");
-    //console.log("Deploying Eschrow ...\n");
-    const eschrow = await Eschrow.deploy();
-    await eschrow.deployed();
-    //console.log(`Eschrow contract deployed at ${eschrow.address}`);
-
     const EschrowERC721 = await ethers.getContractFactory("EschrowERC721");
     //console.log("Deploying Eschrow ...\n");
     const eschrowERC721 = await EschrowERC721.deploy();
@@ -226,7 +220,6 @@ describe("SupeRareV2 SafeTransfer: Tests related to setting SafeTransfer of the 
       owner,
       addr1,
       creator,
-      eschrow,
       eschrowERC721,
     };
   }

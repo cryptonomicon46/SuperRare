@@ -8,6 +8,7 @@ const {
 } = require("@nomicfoundation/hardhat-network-helpers");
 const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 const { parse } = require("dotenv");
+const { c } = require("docker/src/languages");
 
 const NAME = "SupeRare";
 const SYMBOL = "SUPR";
@@ -117,6 +118,26 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
       .withArgs(creator.address, 1);
   });
 
+  it("SupeRareV2 Deposit and check if Whitelisted: Owner of an V1 NFT asks to get whitelisted and checks if whitelisted.", async function () {
+    const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
+      deployTokenFixture
+    );
+
+    await expect(
+      supeRareV2.connect(addr1).getAddedToWhitelist(1)
+    ).to.be.revertedWith("SupeRareV2: Sender isn't the owner of the V1 Token!");
+
+    await expect(supeRareV2.connect(creator).getAddedToWhitelist(1))
+      .to.emit(supeRareV2, "OwnerWhitelisted")
+      .withArgs(creator.address, 1);
+
+    const isWhitelisted = await supeRareV2.connect(creator).isWhitelisted(1);
+
+    expect(await supeRareV2.connect(creator).isWhitelisted(1)).to.equal(true);
+
+    expect(await supeRareV2.connect(addr1).isWhitelisted(1)).to.equal(false);
+  });
+
   it("SupeRareV2 Deposit whitelist fail: Owner of tries to get whitelisted again for the same v1 tokenID.", async function () {
     const { supeRare, supeRareV2, owner, addr1, creator } = await loadFixture(
       deployTokenFixture
@@ -173,7 +194,7 @@ describe("SupeRareV2 Deposits: Tests related to depositing an NFT", function () 
     expect(await supeRareV2.ownerOf(1)).to.equal(creator.address);
   });
 });
-describe("SupeRareV2 SafeTransfer: Tests related to setting SafeTransfer of the V2 Token", function () {
+describe("SupeRareV2 SafeTransfer: Creator mints V1 token, deposits it into V2 contract and transfers V2 token to an external ERC721 contract.", function () {
   async function deployTokenFixture() {
     [owner, addr1, creator] = await ethers.getSigners();
 
@@ -188,11 +209,14 @@ describe("SupeRareV2 SafeTransfer: Tests related to setting SafeTransfer of the 
     await supeRareV2.deployed();
     //console.log(`supeRareV2 contract deployed at ${supeRareV2.address}`);
 
-    const EschrowERC721 = await ethers.getContractFactory("EschrowERC721");
+    const Contract_ERC721 = await ethers.getContractFactory("Contract_ERC721");
     //console.log("Deploying Eschrow ...\n");
-    const eschrowERC721 = await EschrowERC721.deploy();
-    await eschrowERC721.deployed();
-    //console.log(`EschrowERC721 contract deployed at ${eschrowERC721.address}`);
+    const contract_ERC721 = await Contract_ERC721.deploy(
+      supeRare.address,
+      supeRareV2.address
+    );
+    await contract_ERC721.deployed();
+    //console.log(`Contract_ERC721 contract deployed at ${contract_ERC721.address}`);
 
     await expect(supeRare.connect(owner).whitelistCreator(creator.address))
       .to.emit(supeRare, "WhitelistCreator")
@@ -220,32 +244,11 @@ describe("SupeRareV2 SafeTransfer: Tests related to setting SafeTransfer of the 
       owner,
       addr1,
       creator,
-      eschrowERC721,
+      contract_ERC721,
     };
   }
 
-  //   it("SupeRareV2 SafeTransfer to Eschrow: This should fail, as the contract isn't ERC721 compliant", async function () {
-  //     const {
-  //       supeRare,
-  //       supeRareV2,
-  //       owner,
-  //       addr1,
-  //       creator,
-  //       eschrow,
-  //       eschrowERC721,
-  //     } = await loadFixture(deployTokenFixture);
-
-  //     await expect(supeRareV2.connect(creator).approve(eschrow.address, 1))
-  //       .to.emit(supeRareV2, "Approval")
-  //       .withArgs(creator.address, eschrow.address, 1);
-
-  //     await expect(
-  //       supeRareV2
-  //         .connect(eschrow.address)
-  //         .safelyTransfer(creator.address, eschrow.address, 1)
-  //     ).to.be.revertedWith("ERC721: transfer to non ERC721Receiver implementer");
-  //   });
-  it("SupeRareV2 SafeTransfer to EschrowERC721: This should pass, as the contract is ERC721 compliant", async function () {
+  it("SupeRareV2 SafeTransfer to Contract_ERC721#1: This should pass, as the contract is ERC721 compliant", async function () {
     const {
       supeRare,
       supeRareV2,
@@ -253,36 +256,96 @@ describe("SupeRareV2 SafeTransfer: Tests related to setting SafeTransfer of the 
       addr1,
       creator,
       eschrow,
-      eschrowERC721,
+      contract_ERC721,
     } = await loadFixture(deployTokenFixture);
 
     await expect(
-      supeRareV2.connect(addr1).approve(eschrowERC721.address, 1)
+      supeRareV2.connect(addr1).approve(contract_ERC721.address, 1)
     ).to.be.revertedWith(
       "ERC721: approve caller is not owner nor approved for all"
     );
 
-    await expect(supeRareV2.connect(creator).approve(eschrowERC721.address, 1))
+    await expect(
+      supeRareV2.connect(creator).approve(contract_ERC721.address, 1)
+    )
       .to.emit(supeRareV2, "Approval")
-      .withArgs(creator.address, eschrowERC721.address, 1);
+      .withArgs(creator.address, contract_ERC721.address, 1);
 
     await expect(
       supeRareV2
         .connect(creator)
-        .safelyTransfer(creator.address, eschrowERC721.address, 1)
+        .safelyTransfer(creator.address, contract_ERC721.address, 1)
     )
       .to.be.emit(supeRareV2, "Transfer")
-      .withArgs(creator.address, eschrowERC721.address, 1);
+      .withArgs(creator.address, contract_ERC721.address, 1);
 
     expect(await supeRareV2.balanceOf(creator.address)).to.equal(0);
-    expect(await supeRareV2.balanceOf(eschrowERC721.address)).to.equal(1);
-    expect(await supeRareV2.ownerOf(1)).to.equal(eschrowERC721.address);
+    expect(await supeRareV2.balanceOf(contract_ERC721.address)).to.equal(1);
+    expect(await supeRareV2.ownerOf(1)).to.equal(contract_ERC721.address);
+  });
 
-    // const eschrowERC721_ = await ethers.getSigner(eschrowERC721);
-    // console.log(eschrowERC721.address);
-    // await expect(supeRareV2.connect(eschrowERC721).withdraw(1))
-    //   .to.be.emit(supeRareV2, "WithdrawV1")
-    //   .withArgs(eschrowERC721.address, 1);
+  it("SupeRareV2 SafeTransfer to Contract_ERC721#2: The external contract then tries to withdaw the V1 token", async function () {
+    const {
+      supeRare,
+      supeRareV2,
+      owner,
+      addr1,
+      creator,
+      eschrow,
+      contract_ERC721,
+    } = await loadFixture(deployTokenFixture);
+
+    await expect(
+      supeRareV2.connect(addr1).approve(contract_ERC721.address, 1)
+    ).to.be.revertedWith(
+      "ERC721: approve caller is not owner nor approved for all"
+    );
+
+    await expect(
+      supeRareV2.connect(creator).approve(contract_ERC721.address, 1)
+    )
+      .to.emit(supeRareV2, "Approval")
+      .withArgs(creator.address, contract_ERC721.address, 1);
+
+    await expect(
+      supeRareV2
+        .connect(creator)
+        .safelyTransfer(creator.address, contract_ERC721.address, 1)
+    )
+      .to.be.emit(supeRareV2, "Transfer")
+      .withArgs(creator.address, contract_ERC721.address, 1);
+
+    expect(await supeRareV2.balanceOf(creator.address)).to.equal(0);
+    expect(await supeRareV2.balanceOf(contract_ERC721.address)).to.equal(1);
+    expect(await supeRareV2.ownerOf(1)).to.equal(contract_ERC721.address);
+    expect(await contract_ERC721.checkV1Ownership(1)).to.equal(false);
+
+    expect(await contract_ERC721.checkV2Ownership(1)).to.equal(true);
+    await expect(contract_ERC721.withdrawV1(1))
+      .to.emit(contract_ERC721, "WithdrawV1")
+      .withArgs(contract_ERC721.address, 1);
+
+    // expect(await contract_ERC721.checkV2Ownership(1)).to.equal(false);
+
+    expect(await contract_ERC721.checkV1Ownership(1)).to.equal(true);
+
+    await expect(contract_ERC721.getWhiteListed(1))
+      .to.emit(supeRareV2, "OwnerWhitelisted")
+      .withArgs(contract_ERC721.address, 1);
+
+    await expect(contract_ERC721.mintV2(1)).to.be.revertedWith(
+      "SupeRareV2: Unable to peg the V1 token!"
+    );
+
+    await expect(contract_ERC721.transferV1(supeRareV2.address, 1))
+      .to.emit(contract_ERC721, "transferredV1")
+      .withArgs(contract_ERC721.address, supeRareV2.address, 1);
+
+    await expect(contract_ERC721.mintV2(1))
+      .to.be.emit(contract_ERC721, "MintV2")
+      .withArgs(contract_ERC721.address, 1);
+
+    expect(await contract_ERC721.checkV2Ownership(1)).to.equal(true);
   });
 });
 

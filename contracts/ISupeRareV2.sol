@@ -29,7 +29,12 @@ interface ISupeRareV2 {
    */
     function mintV2(uint256 _tokenId) external returns (bool);
 
-
+    /**
+     * @dev isWhitelisted: Check if EOA or external contract is whitelisted
+     * @param _v1TokenId the v1 tokenID 
+     * @return bool true if whitelisted else false
+     */
+    function isWhitelisted(uint256 _v1TokenId) external  returns (bool);
 
     /**
    * @notice withdraw, should allow the owner of a v2 token only for a pegged v1 token.
@@ -73,5 +78,7 @@ interface ISupeRareV2 {
    * @dev emits a 'Transfer' event
    */
     function safelyTransfer(address from, address to, uint256 tokenId) external returns (bool);
+
+
 
 }

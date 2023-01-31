@@ -158,7 +158,7 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
 
 
     /**
-     * @dev SupeRareV2: Owner gets added to the whitelist based on the v1 token ownership
+     * @dev getAddedToWhitelist: Owner gets added to the whitelist based on the v1 token ownership
      * @param _v1TokenId the v1 tokenID 
      * @return bool true if the operation succeeds
      */
@@ -169,6 +169,16 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
          return true;
     }
 
+    /**
+     * @dev isWhitelisted: Check if EOA or external contract is whitelisted
+     * @param _v1TokenId the v1 tokenID 
+     * @return bool true if owner is whitelisted else return false
+     */
+    function isWhitelisted(uint256 _v1TokenId) external view virtual override returns (bool){
+        console.log("Sender", _msgSender(), " whitelisted true/false: ",(ownerWhiteList[_v1TokenId] == _msgSender())? true: false);
+        return  (ownerWhiteList[_v1TokenId] == _msgSender())? true: false;
+
+    }
 
 
     /**

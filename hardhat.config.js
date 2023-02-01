@@ -46,6 +46,8 @@ module.exports = {
       enabled: true,
       runs: 1000,
     },
+
+    skipFiles: ["./contracts/MockV1.sol", "./contracts/IMockV1.sol"],
   },
   viaIR: true,
   defaultNetwork: "hardhat",

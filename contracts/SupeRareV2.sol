@@ -33,7 +33,9 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
      **/
     mapping(uint256 => address) public ownerWhiteList;
 
-
+/**
+     * @dev V1 token pegged to V2 token mapping
+     **/
     mapping(uint256=>bool) private v1_v2_peg; 
 
 

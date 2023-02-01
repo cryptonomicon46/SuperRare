@@ -204,7 +204,7 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
 
 
     /**
-   * @notice mintV2, should allow a whitelisted owner to call mint, if it's a contract then it needs to implement the onERC721Received function 
+   * @notice mintV2, should allow a whitelisted owner of a v1 tokenId to call mintV2, if it's a contract then it needs to implement the onERC721Received function 
    * @param _tokenId v1 tokenID
    * @return bool returns true if the operation succeeds
    * @dev emits a PositionCreated event
@@ -250,7 +250,7 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
     
 
     /**
-   * @notice getSupeRareAddress returns the address of the SupeRareV1 contract
+   * @notice getSupeRareAddress returns the address of the original SupeRare contract, which here we call the V1 contract
    * @return address of the V1 contract
    */
     function getSupeRareAddress() external view virtual override returns (address) {
@@ -285,7 +285,15 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
 
 
 
-    /// @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
+    /**
+   * @notice onERC721Received   Implementes the IReceiver.sol interface. Withouth which, the safeTransfer operation isn't possible between contracts 
+   * @param address placeholder
+   * @param address placeholder
+   * @param uint256 placeholder
+   * @param bytees placeholder
+   * @return`bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
+   */
+    /// @return 
     function onERC721Received(address, address, uint256, bytes memory) public view virtual override returns (bytes4) {
         return _ERC721_RECEIVED;
     }

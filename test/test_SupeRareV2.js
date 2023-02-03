@@ -334,7 +334,7 @@ describe("SupeRareV2 SafeTransfer: Creator mints V1 token, deposits it into V2 c
       .withArgs(contract_ERC721.address, 1);
 
     await expect(contract_ERC721.mintV2(1)).to.be.revertedWith(
-      "SupeRareV2: Unable to peg the V1 token!"
+      "SupeRareV2: Please add yourself to the whitlist followed by transfering your V1 token to this contract before minting a V2 token!"
     );
 
     await expect(contract_ERC721.transferV1(supeRareV2.address, 1))

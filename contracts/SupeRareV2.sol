@@ -166,11 +166,11 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
      */
     function getAddedToWhitelist(uint256 _v1TokenId) external virtual override onlyOwnerOfV1(_v1TokenId) returns (bool){
         require(ownerWhiteList[_v1TokenId] != _msgSender(),"SupeRareV2: Account already whitelisted!");
+
          ownerWhiteList[_v1TokenId] = _msgSender();
         emit OwnerWhitelisted(_msgSender(),_v1TokenId);
          return true;
     }
-
     /**
      * @dev isWhitelisted: Check if EOA or external contract is whitelisted
      * @param _v1TokenId the v1 tokenID 
@@ -178,6 +178,14 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
      */
     function isWhitelisted(uint256 _v1TokenId) external view virtual override returns (bool){
         return  (ownerWhiteList[_v1TokenId] == _msgSender())? true: false;
+
+    }
+    /**
+     * @dev _contractOwnsV1: Check if this contract owns the V1 tokenId (_v1TokenId)
+
+     */
+    function _contractOwnsV1(uint256 _v1TokenId) private view returns (bool){
+        return  (supe.ownerOf(_v1TokenId)== address(this))? true: false;
 
     }
 
@@ -194,13 +202,11 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
     /**
      * @dev _setPeg: will set the v1_v2_peg[tokenId] to true if the contract owns the v1 token
      * @param _tokenId the v1 tokenID 
-     * @return returns true if the peg assignment succeeds
+     * @return _peg returns if the peg is true or false
      */
-    function _setPeg(uint256 _tokenId) internal virtual  returns (bool) {
-        require(supe.ownerOf(_tokenId)== address(this),"SupeRareV2: Unable to peg the V1 token!");
-        v1_v2_peg[_tokenId] = true;
-        emit Pegged(_tokenId);
-        return true;
+    function _setPeg(uint256 _tokenId) internal virtual  returns (bool _peg ) {
+         _contractOwnsV1(_tokenId)?  v1_v2_peg[_tokenId] = true:  v1_v2_peg[_tokenId] = false;
+          _peg =  v1_v2_peg[_tokenId];
     }
 
 
@@ -212,7 +218,7 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
    * @dev emits a PositionCreated event
    */
     function mintV2(uint256 _tokenId) external virtual override onlyWhitelisted(_tokenId) returns (bool) {
-        require(_setPeg(_tokenId),"SupeRareV2: Get added to whitelist, transfer the V1 token to this contract, then call mintV2!");
+        require(_setPeg(_tokenId),"SupeRareV2: Please add yourself to the whitlist followed by transfering your V1 token to this contract before minting a V2 token!");
         _safeMint(_msgSender(), _tokenId);
         _setTokenURI(_tokenId, supe.tokenURI(_tokenId));
         v1_v2_peg[_tokenId]= true; 
@@ -232,10 +238,23 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
         require(_msgSender()!= address(0),"SupeRareV2: Invalid recipient address!");
         _burn(_tokenId);    
          supe.transfer(_msgSender(),_tokenId);
-        v1_v2_peg[_tokenId] = false;
+        _resetWhitelistAndPeg(_tokenId);
+
         emit WithdrawV1(_msgSender(),_tokenId);
         return true;
     }
+
+    
+
+    /**
+     * @dev This will reset the Whitelist for the tokenId, Removes the peg for the tokenId as the contract no longer owns the V1 token
+     */
+
+    function _resetWhitelistAndPeg(uint256 _tokenId) private {
+             ownerWhiteList[_tokenId] = address(0);
+            v1_v2_peg[_tokenId] = false;
+    } 
+
 
 
     /**

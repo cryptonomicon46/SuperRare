@@ -167,7 +167,7 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
     function getAddedToWhitelist(uint256 _v1TokenId) external virtual override onlyOwnerOfV1(_v1TokenId) returns (bool){
         require(ownerWhiteList[_v1TokenId] != _msgSender(),"SupeRareV2: Account already whitelisted!");
 
-         ownerWhiteList[_v1TokenId] = _msgSender();
+         ownerWhiteList[_v1TokenId] = msg.sender;
         emit OwnerWhitelisted(_msgSender(),_v1TokenId);
          return true;
     }
@@ -205,8 +205,10 @@ contract SupeRareV2 is Ownable, ISupeRareV2, ERC721, IERC721Receiver {
      * @return _peg returns if the peg is true or false
      */
     function _setPeg(uint256 _tokenId) internal virtual  returns (bool _peg ) {
-         _contractOwnsV1(_tokenId)?  v1_v2_peg[_tokenId] = true:  v1_v2_peg[_tokenId] = false;
-          _peg =  v1_v2_peg[_tokenId];
+        //  _contractOwnsV1(_tokenId)?  v1_v2_peg[_tokenId] = true:  v1_v2_peg[_tokenId] = false;
+         v1_v2_peg[_tokenId] =  _contractOwnsV1(_tokenId);
+        //   _peg =  v1_v2_peg[_tokenId];
+          _peg =  _contractOwnsV1(_tokenId);
     }
 
 

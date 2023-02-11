@@ -5,11 +5,13 @@ Instructions for owners of V1 token holders (EOAs or ERC721 Contracts):
 
 1. Owner/Creator/holder of the V1 token enlists in the V2 contract to get whitelisted by calling the 'getAddedToWhitelist(uint256)' before transfering to token to this contract.
    Warning:Do not transfer your V1 token to to contract before getting whitelisted, as your V1 token will get locked away in the V2 contract wothout proof of your ownership.
-2. Owner/Creator/holder of the V1 token will then transfer the V1 token to the V2 contract to enable to ensure that the V1 token is locked away in the contract and is unavailable to the market. This also enables the V1:V2 peg in the contract. 
+2. Owner/Creator/holder of the V1 token will then transfer the V1 token to the V2 contract to enable to ensure that the V1 token is locked away in the contract and is unavailable to the market. This also enables the V1:V2 peg in the contract.
 3. Owner/Creator/holder of the V1 token will then be allowed to mint a V2 token by specifiying their V1 tokenId and calling the 'mintV2(uint256)' function.
 4. Owner/Creator/holder now holds a minted V2 token with the same tokenID as the V1 token. This V2 token now holds the same value as the V1 token.
 5. Owner of the minted V2 token can choose to safeTransfer the V2 token to an EOA or external contract that implements the 'IERC721Receiver.sol' using the 'safelyTransfer(address,address,uint256)' function.
 6. Owner of the minted V2 token can also choose to withdraw the original V1 token by calling the 'withdraw(uint256)' function. This will burns the V2 token and transfer the V1 token back to the owner(EOA/external contract).
+
+npx hardhat compile SupeRareV2.sol --network localhost
 
 (base) $ npx hardhat coverage --testfiles "test/test_SupeRareV2.js"
 
